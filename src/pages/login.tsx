@@ -9,8 +9,8 @@ export const Login = () => {
   React.useEffect(() => {
     if (qrCodeUri) {
       const qrCode = new QRCodeStyling({
-        width: 355,
-        height: 355,
+        width: 255,
+        height: 255,
         type: 'svg',
         data: qrCodeUri,
         dotsOptions: {
@@ -43,11 +43,15 @@ export const Login = () => {
   }, [qrCodeUri]);
   return (
     <div className="w-full h-full flex items-center justify-center flex-col">
-      <h4 className="text-white">Welcome to New DAO Jones</h4>
-      <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden mt-8 qrcode">
-        <img className="w-16 h-16 absolute" src={logoIcon} alt="" />
-      </div>
-      <p className="text-white mt-4">scan the thingy to connect a wallet</p>
+      <h4 className="text-white">Welcome to the StoreFront DApp</h4>
+      <a href={qrCodeUri}>
+        <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden mt-8 qrcode">
+          <img className="w-16 h-16 absolute" src={logoIcon} alt="" />
+          </div>
+      </a>
+      <a href={qrCodeUri}>
+      <p className="text-white mt-4 mb-4">scan the thingy to connect a wallet</p>
+      </a>
     </div>
   );
 };

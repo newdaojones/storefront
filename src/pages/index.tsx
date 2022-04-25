@@ -61,7 +61,7 @@ export const Main = () => {
   }
 
   return (
-    <div className="h-screen w-screen flex">
+    <div className="h-screen w-screen flex flex-col">
       <Menu
         status={isLoading ? 'Connecting...' : account ? 'Connected' : 'Disconnected'}
         onDisconnect={onDisconnect}
@@ -69,7 +69,7 @@ export const Main = () => {
         account={account}
         ensName={ens}
         items={menuItems}
-        size={450}
+        size={200}
         key={'orbitalMenu'}
       />
       {isLoading || isInitializing ? <Landing /> : account ? <Dashboard /> : <Login />}

@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import 'chart.js/auto';
 
 import './assets/styles/index.scss';
 
