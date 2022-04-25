@@ -1,0 +1,85 @@
+{
+  "name": "new-dao-jones",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "/walletconnect-v2",
+  "dependencies": {
+    "@craco/craco": "^6.1.1",
+    "@ensdomains/ensjs": "^2.0.1",
+    "@ethersproject/abi": "^5.5.0",
+    "@solana/web3.js": "^1.37.1",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@walletconnect/client": "2.0.0-beta.26",
+    "@walletconnect/types": "2.0.0-beta.26",
+    "@walletconnect/utils": "2.0.0-beta.26",
+    "axios": "^0.24.0",
+    "chart.js": "^3.6.2",
+    "craco-less": "^1.18.0",
+    "eth-sig-util": "^3.0.1",
+    "gsap": "^3.8.0",
+    "immer": "^9.0.1",
+    "moment": "^2.29.1",
+    "node-sass": "^6.0.1",
+    "numeral": "^2.0.6",
+    "qr-code-styling": "^1.6.0-rc.1",
+    "react": "^17.0.2",
+    "react-chartjs-2": "^4.0.0",
+    "react-dom": "^17.0.2",
+    "react-modal": "^3.14.4",
+    "react-redux": "^7.2.3",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "react-toastify": "^8.1.0",
+    "react-use": "^17.3.1",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-saga": "^1.1.3",
+    "reselect": "^4.0.0",
+    "typescript": "^4.1.2",
+    "web-vitals": "^1.0.1",
+    "web3": "^1.6.1"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject",
+    "code-clean": "prettier --write \".\""
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss7-compat": "^2.1.0",
+    "@types/numeral": "^2.0.2",
+    "@types/react-modal": "^3.13.1",
+    "@types/react-redux": "^7.1.16",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/redux-actions": "^2.6.1",
+    "autoprefixer": "^9.8.6",
+    "postcss": "^7.0.35",
+    "prettier": "2.2.1",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.0"
+  }
+}
