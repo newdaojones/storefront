@@ -14,6 +14,7 @@ export interface IUserState {
   ensName?: string;
   accountInfo?: IUserInfo;
   tickers: ITicker[];
+  transactionInfo: boolean;
 }
 
 

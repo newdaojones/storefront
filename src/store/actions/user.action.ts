@@ -29,9 +29,18 @@ const getTickersSuccess = (payload: ITicker[]) => {
     payload,
   };
 };
+
+const setTransactionInfoWallet = (payload: boolean) => {
+  console.info(`setting transactinon as ${payload}`)
+  return {
+    type: EUserActionTypes.SET_TRANSACTION_INFO,
+    payload,
+  };
+};
 export const userAction = {
   loginSuccess,
   getAccountInfoSuccess,
   getEnsNameSuccess,
   getTickersSuccess,
+  setTransactionInfoWallet
 };

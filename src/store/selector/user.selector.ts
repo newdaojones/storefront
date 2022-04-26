@@ -37,3 +37,7 @@ export const selectEnsName = createSelector([selectUserState], userState => {
 export const selectTickers = createSelector([selectUserState], userState => {
   return userState.tickers;
 });
+
+export const selectBuyTransaction = createSelector([selectUserState], userState => {
+  return userState.transactionInfo;
+});

@@ -8,4 +8,5 @@ export const userState: IUserState = {
   ensName: '',
   signature: '',
   tickers: [],
+  transactionInfo: false,
 };

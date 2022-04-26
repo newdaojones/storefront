@@ -3,14 +3,19 @@ import numeral from 'numeral';
 import QRIcon from '../assets/images/creditcard.svg';
 import BTCIcon from '../assets/images/btcIcon.svg';
 import {useHistory} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {selectBuyTransaction} from "../store/selector";
+import {userAction} from "../store/actions";
 
 export const BuyPage = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
+  let transactionInfo = useSelector(selectBuyTransaction)
 
-  const moveToWallet = (): void => {
-    console.log(`navigating to scan page `)
-    //dispatch(userAction.setSelectedWallet(wallet));
-    history.push("/scan");
+  const onBuyClick = (): void => {
+    console.log(`onBuy Click ${transactionInfo}`)
+    dispatch(userAction.setTransactionInfoWallet(true));
+    transactionInfo = true;
   };
 
   return (
@@ -18,7 +23,7 @@ export const BuyPage = () => {
       <div className="w-3/4 shadow-md">
         <p className="text-white text-secondary font-bold">Payment Method</p>
         <div className="flex flex-col w-150 text-black p-8 justify-between ml-10 mr-10" style={{ backgroundImage: `url(${QRIcon})`, backgroundSize: "cover", backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
-          <img  style={{alignSelf: 'end'}} className="w-10 h-10" src={BTCIcon} alt="" onClick={moveToWallet}/>
+          <img  style={{alignSelf: 'end'}} className="w-10 h-10" src={BTCIcon} alt=""/>
           <p style={{fontFamily: 'Montserrat', fontStyle: 'normal', color: '#8E8EA9'}} className="pt-2">0xff43...038d</p>
           <div className="flex w-full justify-between" style={{fontFamily: 'Righteous', fontStyle: 'normal', color: '#8E8EA9'}} >
             <p className="text-grey text-sm">notdevin.eth</p>
@@ -48,14 +53,15 @@ export const BuyPage = () => {
           </div>
         </div>
 
-        <button style={{
+        <button onClick={onBuyClick} style={{
           backgroundColor: '#615793',
           fontSize: '20px',
           padding: '10px 20px',
           borderRadius: '25px',
           margin: '10px 0px',
           cursor: 'pointer'
-        }} className="w-full text-white mt-8 mb-4">Pay $50.00
+        }} className="w-full text-white mt-8 mb-4">
+          {(transactionInfo === true) ? "Loading" :`Pay $50.00`}
         </button>
       </div>
     </div>
