@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
 import numeral from 'numeral';
-
-import BTCIcon from '../assets/images/btcIcon.svg';
 import QRIcon from '../assets/images/qRCodeIcon.svg';
-import DollarIcon from '../assets/images/dollarIcon.svg';
+import {useHistory} from "react-router-dom";
 
 export const getFormat = (prefix: string, suffix: string, digits: number = 0) => {
   const formatArray: any[] = [prefix];
@@ -48,10 +46,19 @@ export const getFormat = (prefix: string, suffix: string, digits: number = 0) =>
 // };
 
 export const ProfilePage = () => {
+  const history = useHistory();
+
+  const moveToWallet = (): void => {
+    console.log(`navigating to scan page `)
+    //dispatch(userAction.setSelectedWallet(wallet));
+    //history.push("/scan");
+    history.push("/buy");
+  };
+
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-1/2 min-w-max shadow-md p-10">
-        <img className="w-full p-10" src={QRIcon} alt="" />
+        <img className="w-full p-10" src={QRIcon} alt="" onClick={moveToWallet} />
         <p className="text-white text-center font-bold">Scan QR Code</p>
         <div className="mt-4">
           <p className="text-center text-white text-sm" style={{fontFamily: 'Righteous', fontStyle: 'normal',}}>

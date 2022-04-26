@@ -54,8 +54,7 @@ export const Login = () => {
             <p className="text-white mt-4 mb-4">scan the qRCode or tap the button below to connect a wallet</p>
             <a href={qrCodeUri}>
                 <button style={{
-                    backgroundColor: '#00ff00',
-                    fontSize: '20px',
+                    backgroundColor: '#615793',
                     padding: '10px 20px',
                     borderRadius: '25px',
                     margin: '10px 0px',

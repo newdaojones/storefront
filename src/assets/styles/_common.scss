@@ -8,6 +8,20 @@ body {
   background-color: #30314c;
 }
 
+creditcard {
+  background-image: url(../images/creditcard.svg);
+}
+
+button {
+  background-color: #00ff00;
+  font_size: '20px';
+  padding: 10px 20px;
+  border_radius: '25px';
+  margin: 10px 0px;
+  cursor: pointer;
+}
+
+
 @font-face {
   font-family: 'Righteous';
   src: local('Righteous'), url(../fonts/Righteous-Regular.ttf) format('truetype');
@@ -20,6 +34,8 @@ body {
   font-family: 'Montserrat';
   src: local('Montserrat'), url(../fonts/Montserrat-VariableFont_wght.ttf) format('truetype');
 }
+
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
