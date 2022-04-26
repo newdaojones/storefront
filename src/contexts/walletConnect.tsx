@@ -152,47 +152,52 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     }
   }, [accounts]);
 
+  async function signNonce(account: string, nonce: string) {
+    const [namespace, reference, address] = account.split(':');
+    const message = nonce;
+    const hexMsg = encoding.utf8ToHex(message, true);
+
+    // personal_sign params
+    const params = [hexMsg, address];
+    // send message
+    const signature = await client?.request({
+      topic: session!.topic,
+      chainId: `${namespace}:${reference}`,
+      request: {
+        method: DEFAULT_EIP155_METHODS.PERSONAL_SIGN,
+        params,
+      },
+    });
+
+    localStorage.setItem(`${SIGNATURE_PREFIX}_${account}`, signature);
+    return signature;
+  }
+
   const login = useCallback(
     async (account: string) => {
       try {
         setIsLoading(true);
         const startTime = moment();
 
+
+
+        // const res = await UserService.loginApi(address);
+        // const nonce = res.data.nonce;
+        //
+        // if (!nonce) {
+        //   throw new Error(res.data.message);
+        // }
+
+        // let signature = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
+        // if (!signature) {
+        //   signature = await signNonce(account, nonce);
+        // }
+        //
+        // axios.setAuthorizationToken(signature);
+        // axios.setNonce(nonce);
         const [namespace, reference, address] = account.split(':');
 
-        const res = await UserService.loginApi(address);
-        const nonce = res.data.nonce;
-
-        if (!nonce) {
-          throw new Error(res.data.message);
-        }
-
-        let signature = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
-
-        if (!signature) {
-          const message = nonce;
-          const hexMsg = encoding.utf8ToHex(message, true);
-
-          // personal_sign params
-          const params = [hexMsg, address];
-          // send message
-          signature = await client?.request({
-            topic: session!.topic,
-            chainId: `${namespace}:${reference}`,
-            request: {
-              method: DEFAULT_EIP155_METHODS.PERSONAL_SIGN,
-              params,
-            },
-          });
-
-          localStorage.setItem(`${SIGNATURE_PREFIX}_${account}`, signature);
-        }
-
-        axios.setAuthorizationToken(signature);
-        axios.setNonce(nonce);
-
         const duration = moment.duration(moment().diff(startTime)).asSeconds();
-
         const waitTime = loadingTimeout - duration;
 
         if (waitTime > 0) {
@@ -201,7 +206,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
         setAccount(account);
         localStorage.setItem(NDJ_ADDRESS, account);
-        dispatch(userAction.loginSuccess({ account: address, nonce, signature }));
+        dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
       } catch (err: any) {
         localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
         toast.error(err.message);

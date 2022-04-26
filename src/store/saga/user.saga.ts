@@ -13,7 +13,7 @@ export function storageKey(storagePrefix: string): string {
 
 export default function* root() {
   yield all([
-    takeLatest(EUserActionTypes.LOGIN_SUCCESS as any, watchGetAccountInfo),
+    // takeLatest(EUserActionTypes.LOGIN_SUCCESS as any, watchGetAccountInfo),
     takeLatest(EUserActionTypes.LOGIN_REQUEST as any, watchGetEnsName),
     takeLatest(EUserActionTypes.LOGIN_SUCCESS as any, watchGetTickers),
 
@@ -22,14 +22,14 @@ export default function* root() {
   ]);
 }
 
-function* watchGetAccountInfo() {
-  try {
-    const res: AxiosResponse<IUserInfo> = yield call(UserService.getMeApi);
-    yield put(userAction.getAccountInfoSuccess(res.data));
-  } catch (err: any) {
-    toast.error(err.message);
-  }
-}
+// function* watchGetAccountInfo() {
+//   try {
+//     const res: AxiosResponse<IUserInfo> = yield call(UserService.getMeApi);
+//     yield put(userAction.getAccountInfoSuccess(res.data));
+//   } catch (err: any) {
+//     toast.error(err.message);
+//   }
+// }
 
 function* watchGetEnsName(action: { type: EUserActionTypes; payload: string }) {
   try {
