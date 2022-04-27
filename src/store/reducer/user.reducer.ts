@@ -9,6 +9,7 @@ export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.LOGIN_SUCCESS]: setLoginSuccessStatus,
   [userActionTypes.GET_ENS_NAME_SUCCESS]: setEnsNameStatus,
   [userActionTypes.GET_PRICE_TICKERS_SUCCESS]: setTickersStatus,
+  [userActionTypes.SET_TRANSACTION_INFO]: setTransactionInfo,
 });
 
 function setLoginSuccessStatus(state: IUserState, { payload }: IAction<{ account: string; nonce: string; signature: string }>) {
@@ -30,5 +31,11 @@ function setEnsNameStatus(state: IUserState, { payload }: IAction<string>) {
 function setTickersStatus(state: IUserState, { payload }: IAction<ITicker[]>) {
   return produce(state, draft => {
     draft.tickers = payload;
+  });
+}
+
+function setTransactionInfo(state: IUserState, { payload }: IAction<boolean>) {
+  return produce(state, draft => {
+    draft.transactionInfo = payload;
   });
 }
