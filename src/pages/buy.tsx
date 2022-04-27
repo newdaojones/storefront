@@ -20,11 +20,12 @@ export const BuyPage = () => {
 
   return (
     <div className="w-full h-full flex justify-center">
-      <div className="m-2">
-        <p className="text-white text-secondary font-bold">Payment Method</p>
+      <div className="w-3/4 m-10">
+        <p className="text-white text-secondary font-bold mb-2">Payment Method</p>
 
         {/*Credit Card*/}
-        <div className="flex flex-col w-full text-black justify-between p-4" style={{ backgroundImage: `url(${QRIcon})`, backgroundSize: "cover", backgroundPosition: 'left', backgroundRepeat: 'no-repeat'}}>
+        <div className="flex flex-col text-black justify-between "
+             style={{ padding: '2.5rem', minHeight: '10rem', maxWidth: '30rem', paddingRight: '2.5rem', backgroundImage: `url(${QRIcon})`, backgroundSize: "cover", backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
           <img  style={{alignSelf: 'end'}} className="w-10 h-10" src={BTCIcon} alt=""/>
           <p style={{fontFamily: 'Montserrat', fontStyle: 'normal', color: '#8E8EA9'}} className="pt-2">0xff43...038d</p>
           <div className="flex w-full justify-between" style={{fontFamily: 'Righteous', fontStyle: 'normal', color: '#8E8EA9'}} >
