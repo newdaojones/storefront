@@ -4,6 +4,12 @@ export interface IRootState {
   userState: IUserState;
 }
 
+export interface IAccountInfo {
+  address: string;
+  namespace: string;
+  reference: string;
+}
+
 export interface IUserState {
   isLogged: boolean;
   loading: boolean;
@@ -12,7 +18,8 @@ export interface IUserState {
   signature: string;
   error?: string;
   ensName?: string;
-  accountInfo?: IUserInfo;
+  //accountInfo?: IUserInfo;
+  accountInfo?: IAccountInfo;
   tickers: ITicker[];
   transactionInfo: boolean;
 }

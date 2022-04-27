@@ -1,8 +1,8 @@
 import { EUserActionTypes } from '../../enums';
-import { ITicker, IUserInfo } from '../../models';
+import {IAccountInfo, ITicker, IUserInfo} from '../../models';
 
 //namespace, reference, address
-const loginSuccess = (payload: { namespace: string; reference: string; address: string;}) => {
+const loginSuccess = (payload: IAccountInfo) => {
   return {
     type: EUserActionTypes.LOGIN_SUCCESS,
     payload,

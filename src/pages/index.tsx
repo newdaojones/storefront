@@ -56,9 +56,9 @@ export const Main = () => {
   ];
 
   let ens = ensName;
-  if (!ensName) {
-    ens = accountInfo?.memberENSAddress;
-  }
+  // if (!ensName) {
+  //   ens = accountInfo?.memberENSAddress;
+  // }
 
   return (
     <div className="h-screen w-screen flex flex-col">

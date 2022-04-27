@@ -9,4 +9,5 @@ export const userState: IUserState = {
   signature: '',
   tickers: [],
   transactionInfo: false,
+  accountInfo: undefined,
 };
