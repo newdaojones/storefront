@@ -47,8 +47,6 @@ export const Login = () => {
             <a href={qrCodeUri} className="">
                 <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden mt-8 qrcode">
                     <img className="w-16 h-16 absolute z-20" src={logoIcon} alt=""/>
-
-
                 </div>
             </a>
             <p className="text-white mt-4 mb-4">scan the qRCode or tap the button below to connect a wallet</p>
@@ -59,8 +57,7 @@ export const Login = () => {
                     borderRadius: '25px',
                     margin: '10px 0px',
                     cursor: 'pointer'
-                }} className="text-white mt-4 mb-4">Connect with WalletConnect v2
-                </button>
+                }} className="text-white mt-4 mb-4">Connect with WalletConnect v2</button>
             </a>
         </div>
     );

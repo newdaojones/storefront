@@ -12,10 +12,12 @@ import { Main } from './pages';
 import reportWebVitals from './reportWebVitals';
 import { store } from './store';
 import { WalletConnectProvider } from './contexts/walletConnect';
+import {JsonRpcContextProvider} from "./contexts/JsonRpcContext";
 
 ReactDOM.render(
   <Provider store={store}>
     <WalletConnectProvider>
+        <JsonRpcContextProvider>
       <Router basename={'/walletconnect-v2'}>
         <Main />
         <ToastContainer
@@ -27,6 +29,7 @@ ReactDOM.render(
           closeOnClick={false}
         />
       </Router>
+        </JsonRpcContextProvider>
     </WalletConnectProvider>
   </Provider>,
   document.getElementById('root')

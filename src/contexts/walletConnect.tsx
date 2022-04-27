@@ -22,6 +22,8 @@ import { UserService } from '../services';
 import axios from '../services/axios';
 import { sleep } from '../utils';
 import { toast } from 'react-toastify';
+import {AccountBalances} from "../helpers";
+import {apiGetAccountBalance} from "../helpers/api";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -45,7 +47,9 @@ interface IContext {
   account: string | undefined;
   accounts: string[];
   solanaPublicKeys?: Record<string, PublicKey>;
+  balances: AccountBalances;
   setChains: any;
+  sendTrx: (account: string, from: string, to: string) => Promise<void>;
 }
 
 /**
@@ -64,6 +68,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   const [qrCodeUri, setQRCodeUri] = useState<string>();
   const [initialized, setInitialized] = useState(false);
+  const [isFetchingBalances, setIsFetchingBalances] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,9 +77,12 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [solanaPublicKeys, setSolanaPublicKeys] = useState<Record<string, PublicKey>>();
   const [chains, setChains] = useState<string[]>(DEFAULT_CHAINS);
 
+  const [balances, setBalances] = useState<AccountBalances>({});
+
   const reset = () => {
     setPairings([]);
     setQRCodeUri(undefined);
+    setBalances({});
     setSession(undefined);
     setAccount(undefined);
     setAccounts([]);
@@ -87,6 +95,30 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       }
     }
     localStorage.removeItem(NDJ_ADDRESS);
+  };
+
+  const getAccountBalances = async (_accounts: string[]) => {
+    setIsFetchingBalances(true);
+    try {
+      const arr = await Promise.all(
+          _accounts.map(async account => {
+            const [namespace, reference, address] = account.split(":");
+            const chainId = `${namespace}:${reference}`;
+            const assets = await apiGetAccountBalance(address, chainId);
+            return { account, assets: [assets] };
+          }),
+      );
+
+      const balances: AccountBalances = {};
+      arr.forEach(({ account, assets }) => {
+        balances[account] = assets;
+      });
+      setBalances(balances);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsFetchingBalances(false);
+    }
   };
 
   const getSupportedNamespaces = useCallback(() => {
@@ -128,6 +160,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     setChains(_session.permissions.blockchain.chains);
     setAccounts(_session.state.accounts);
     setSolanaPublicKeys(getPublicKeysFromAccounts(_session.state.accounts));
+    //setWeb3Provider(_session.)
   }, []);
 
   useEffect(() => {
@@ -365,6 +398,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       isLoading,
       account,
       accounts,
+      balances,
       solanaPublicKeys,
       chains,
       client,
