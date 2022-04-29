@@ -3,7 +3,11 @@ import * as encoding from '@walletconnect/encoding';
 import { TypedDataUtils } from 'eth-sig-util';
 import * as ethUtil from 'ethereumjs-util';
 
-import { DEFAULT_CHAINS } from '../consts';
+import {DEFAULT_CHAINS, DEFAULT_EIP155_METHODS} from '../consts';
+import {web3} from "../utils/walletConnect";
+import {useState} from "react";
+import Client from "@walletconnect/client";
+import {RLPEncodedTransaction} from "web3-core";
 
 export function capitalize(string: string): string {
   return string
@@ -94,6 +98,65 @@ export function hashPersonalMessage(msg: string): string {
   return ethUtil.bufferToHex(hash);
 }
 
+// export const testSendTransaction: (from: string, to: string) => Promise<any> = async (from: string, to: string) => {
+//
+//   if (!web3) {
+//     throw new Error("web3Provider not connected");
+//   }
+//   const [address] = await web3.eth.getAccounts();
+//   console.log(`making trx from ${from} -> ${to}. address: ${address}`)
+//   const tx = {
+//     from: from,
+//     to: to,
+//     gasPrice: "20000000000",
+//     value: "0",
+//   };
+//
+//   // const signature = await client.request({
+//   //   topic: client?.session!.topics[0],
+//   //   chainId: `eip155:1`,
+//   //   request: {
+//   //     method: DEFAULT_EIP155_METHODS.ETH_SIGN_TRANSACTION,
+//   //     params: tx,
+//   //   },
+//   // });
+//   const encoded : RLPEncodedTransaction = await web3.eth.signTransaction(tx);
+//   console.log(`signed trx singature: ${encoded.tx}`)
+//
+//   return {
+//     method: "eth_signTransaction",
+//     address,
+//     valid: true,
+//     result: encoded,
+//   };
+// };
+
+// const testSignTransaction: () => Promise<any> = async () => {
+//   if (!web3) {
+//     throw new Error("web3Provider not connected");
+//   }
+//
+//   const [address] = await web3.eth.getAccounts();
+//
+//   const tx = {
+//     from: address,
+//     to: address,
+//     gasPrice: "20000000000",
+//     value: "0.01",
+//   };
+//
+//   // The return signature here is `RLPEncodedTransaction` but it actually returns as string (?).
+//   const signedTx = (await web3.eth.signTransaction(tx)) as unknown as string;
+//   //const valid = Transaction.from(signedTx as any).verifySignatures();
+//   const valid = true;
+//   return {
+//     method: "eth_signTransaction",
+//     address,
+//     valid,
+//     result: signedTx,
+//   };
+// };
+
 export function encodeTypedDataMessage(msg: string): string {
   const data = TypedDataUtils.sanitizeData(JSON.parse(msg));
   const buf = Buffer.concat([
@@ -175,6 +238,7 @@ export function getLocalStorageTestnetFlag(): boolean {
   } else {
     value = persisted === 'true' ? true : false;
   }
+  console.info(`is it TESTNET ${value}`)
   return value;
 }
 

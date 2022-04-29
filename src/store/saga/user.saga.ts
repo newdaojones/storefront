@@ -5,7 +5,7 @@ import { UserService } from '../../services';
 import { userAction } from '../actions/user.action';
 import { toast } from 'react-toastify';
 import { ens } from '../../utils/walletConnect';
-import { ITicker, IUserInfo } from '../../models';
+import { ITicker } from '../../models';
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;

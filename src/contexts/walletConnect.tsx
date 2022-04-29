@@ -9,7 +9,7 @@ import {
   DEFAULT_APP_METADATA,
   DEFAULT_CHAINS,
   DEFAULT_COSMOS_METHODS,
-  DEFAULT_EIP155_METHODS,
+  DEFAULT_EIP155_METHODS, DEFAULT_LOGGER,
   DEFAULT_PROJECT_ID,
   DEFAULT_RELAY_URL,
   DEFAULT_SOLANA_METHODS,
@@ -49,7 +49,6 @@ interface IContext {
   solanaPublicKeys?: Record<string, PublicKey>;
   balances: AccountBalances;
   setChains: any;
-  sendTrx: (account: string, from: string, to: string) => Promise<void>;
 }
 
 /**
@@ -105,6 +104,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
             const assets = await apiGetAccountBalance(address, chainId);
+            console.info(`fetching account for chainId ${chainId} : ${address} balance = ${assets.symbol} ${assets.balance}`)
             return { account, assets: [assets] };
           }),
       );
@@ -160,6 +160,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     setChains(_session.permissions.blockchain.chains);
     setAccounts(_session.state.accounts);
     setSolanaPublicKeys(getPublicKeysFromAccounts(_session.state.accounts));
+    await getAccountBalances(_session.state.accounts);
     //setWeb3Provider(_session.)
   }, []);
 
@@ -366,7 +367,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       setIsInitializing(true);
 
       const _client = await Client.init({
-        // logger: DEFAULT_LOGGER,
+        logger: DEFAULT_LOGGER,
         relayUrl: DEFAULT_RELAY_URL,
         projectId: DEFAULT_PROJECT_ID,
         metadata: DEFAULT_APP_METADATA,
@@ -416,6 +417,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       qrCodeUri,
       account,
       accounts,
+      balances,
       solanaPublicKeys,
       chains,
       client,

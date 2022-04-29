@@ -20,11 +20,11 @@ ReactDOM.render(
         <JsonRpcContextProvider>
       <Router basename={'/walletconnect-v2'}>
         <Main />
-        <ToastContainer
+        <ToastContainer className="p-4"
           toastClassName="w-full m-w-45 flex bg-white bg-opacity-25 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
           bodyClassName={() => 'text-sm font-white font-med block p-1'}
           autoClose={false}
-          position="top-center"
+          position="bottom-center"
           hideProgressBar={true}
           closeOnClick={false}
         />

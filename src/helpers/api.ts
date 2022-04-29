@@ -1,6 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 import { AssetData, GasPrices, ParsedTx } from "./types";
 
+//FIXME this should be done via the rpc provider
+
+// https://github.com/pedrouid/ethereum-api
+//
 const ethereumApi: AxiosInstance = axios.create({
     baseURL: "https://ethereum-api.xyz",
     timeout: 30000, // 30 secs
@@ -20,7 +24,9 @@ export async function apiGetAccountAssets(address: string, chainId: string): Pro
 }
 
 export async function apiGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
-    const ethChainId = chainId.split(":")[1];
+    //const ethChainId = chainId.split(":")[1];
+    //FIXME remove this hardcoded
+    const ethChainId = 42
     const response = await ethereumApi.get(
         `/account-balance?address=${address}&chainId=${ethChainId}`,
     );

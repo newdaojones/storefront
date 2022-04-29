@@ -1,24 +1,15 @@
 import React, {useState} from 'react';
 import QRIcon from '../assets/images/creditcard.svg';
 import BTCIcon from '../assets/images/btcIcon.svg';
-import {useHistory} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {selectAccountInfo, selectBuyTransaction} from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {ellipseAddress, testSendTransaction} from "../helpers";
-import Client from "@walletconnect/client";
-import { providers } from "ethers";
+import {ellipseAddress, getLocalStorageTestnetFlag} from "../helpers";
 import {web3} from "../utils/walletConnect";
-import {formatTestTransaction} from "../helpers/tx";
-import {useJsonRpc} from "../contexts/JsonRpcContext";
-
-interface IFormattedRpcResponse {
-  method: string;
-  address: string;
-  valid: boolean;
-  result: string;
-}
+import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
+import {Toast} from "react-toastify/dist/components";
+import {toast} from "react-toastify";
 
 /**
  * Test code
@@ -26,26 +17,24 @@ interface IFormattedRpcResponse {
  * @constructor
  */
 export const BuyPage = () => {
-  // const history = useHistory();
   const dispatch = useDispatch();
   const accountInfo = useSelector(selectAccountInfo)
 
   // Initialize the WalletConnect client.
   const {
-    client,
-    session,
-    disconnect,
-      account,
+    account,
     accounts,
-    sendTrx,
   } = useWalletConnectClient();
 
   const {
+    rpcResult,
+    isRpcRequestPending,
     ethereumRpc,
   } = useJsonRpc();
 
   let transactionInfo = useSelector(selectBuyTransaction)
-  console.log(`web 3 eth: ${web3.eth}`);
+  // console.log(`account info - address ${accountInfo?.address} namespace ${accountInfo?.namespace}`)
+
 
   const onBuyClick = (): void => {
     console.log(`onBuy Click ${transactionInfo}`)
@@ -56,77 +45,37 @@ export const BuyPage = () => {
     onSendTransaction(account!!, accountInfo?.address!!)
   };
 
-  // const testSendTransaction: () => Promise<IFormattedRpcResponse> = async () => {
-  //   if (!web3) {
-  //     throw new Error("web3Provider not connected");
-  //   }
-  //
-  //   //const { chainId } = await web3.currentProvider.();
-  //   const [address] = await web3.listAccounts();
-  //   const balance = await web3.getBalance(address);
-  //
-  //   //FIXME chainidd = 1
-  //   const tx = await formatTestTransaction("eip155:" + 1 + ":" + address);
-  //
-  //   if (balance.lt(BigNumber.from(tx.gasPrice).mul(tx.gasLimit))) {
-  //     return {
-  //       method: "eth_sendTransaction",
-  //       address,
-  //       valid: false,
-  //       result: "Insufficient funds for intrinsic transaction cost",
-  //     };
-  //   }
-  //
-  //   const txHash = await web3Provider.send("eth_sendTransaction", [tx]);
-  //
-  //   return {
-  //     method: "eth_sendTransaction",
-  //     address,
-  //     valid: true,
-  //     result: txHash,
-  //   };
-  // };
-
-  // const testSignTransaction: () => Promise<IFormattedRpcResponse> = async () => {
-  //   if (!web3Provider) {
-  //     throw new Error("web3Provider not connected");
-  //   }
-  //
-  //   const { chainId } = await web3Provider.getNetwork();
-  //   const [address] = await web3Provider.listAccounts();
-  //
-  //   const tx = await formatTestTransaction("eip155:" + chainId + ":" + address);
-  //
-  //   const signature = await web3Provider.send("eth_signTransaction", [tx]);
-  //   return {
-  //     method: "eth_signTransaction",
-  //     address,
-  //     valid: true,
-  //     result: signature,
-  //   };
-  // };
-
   const onSendTransaction = async (account: string, address: string) => {
     // FIXME mark as loading openRequestModal();
-    //FIXME client could be null
-    console.log(`sending trx for address : ${address}`)
+    console.log(`sending sign trx for address : ${address}`)
     const [namespace, reference, address2] = account.split(":");
     const chainId = `${namespace}:${reference}`;
-    const trxSendResult = await ethereumRpc.testSignTransaction(chainId, address)
-    //const trxSendResult = await sendTrx(account, address, address)
 
+    // with callbacks
+    //const result = await ethereumRpc.testSendTransaction(chainId, address)
+    //Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
+    // https://kovan.etherscan.io/address/0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
+    const result = await ethereumRpc.testSendTransaction(chainId, address)
+        .then((res) => {
+          console.info(`trxSignResult result:${res?.result} method: ${res?.method} `)
+          dispatch(userAction.setTransactionInfoWallet(false));
+          //TODO enable confirmation stuff
+          if (res?.valid) {
+            console.info(`valid transaction result moving to purchase confirmation screen`)
+            //TODO history
+          } else {
+            console.info(`invalid transaction result`)
+            toast.error(res?.result || "Something went wrong, please try again. ");
+          }
 
-    // const trxSendResult = await testSendTransaction(address, address);
-    console.log(`sending trx result: ${trxSendResult}`)
+        })
+        .catch((error) => console.log(`error on signing trx ${error} state: ${rpcResult}`)  )
+
+    //with await
+    // const result = await ethereumRpc.testSignTransaction(chainId, address)
+    // console.info(`trxSignResult ${result}`)
   };
-  const onSignTransaction = async (chainId: string, address: string) => {
-    // FIXME mark as loading openRequestModal();
-    // await ethereumRpc.testSignTransaction(chainId, address);
-  };
 
-  console.log(`account info - address ${accountInfo?.address} namespace ${accountInfo?.namespace}`)
-  //console.log(`wc account info: ${account}`)
-  console.log(`wc accounts: ${accounts}`)
 
   return (
     <div className="w-full h-full flex justify-center">

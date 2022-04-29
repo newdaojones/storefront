@@ -1,48 +1,25 @@
 import { BigNumber, utils } from "ethers";
 import { createContext, ReactNode, useContext, useState } from "react";
 import * as encoding from "@walletconnect/encoding";
-import { TypedDataField } from "@ethersproject/abstract-signer";
 import { Transaction as EthTransaction } from "@ethereumjs/tx";
-// import {
-//   formatDirectSignDoc,
-//   stringifySignDocValues,
-//   verifyAminoSignature,
-//   verifyDirectSignature,
-// } from "cosmos-wallet";
-// import bs58 from "bs58";
-// import { verifyMessageSignature } from "solana-wallet";
-import {
-  clusterApiUrl,
-  Connection,
-  Keypair,
-  SystemProgram,
-  Transaction as SolanaTransaction,
-} from "@solana/web3.js";
-
-import { getLocalStorageTestnetFlag } from "../helpers";
+import {getLocalStorageTestnetFlag} from "../helpers";
 import { useWalletConnectClient } from "./walletConnect";
 import {
-  DEFAULT_APP_METADATA,
-  DEFAULT_CHAINS,
-  DEFAULT_COSMOS_METHODS,
   DEFAULT_EIP155_METHODS,
-  DEFAULT_PROJECT_ID,
-  DEFAULT_RELAY_URL,
-  DEFAULT_SOLANA_METHODS,
 } from '../consts';
 import {formatTestTransaction} from "../helpers/tx";
 
 /**
  * Types
  */
-interface IFormattedRpcResponse {
+export interface IFormattedRpcResponse {
   method?: string;
   address?: string;
   valid: boolean;
   result: string;
 }
 
-type TRpcRequestCallback = (chainId: string, address: string) => Promise<void>;
+type TRpcRequestCallback = (chainId: string, address: string) => Promise<IFormattedRpcResponse | null>;
 
 interface IContext {
   ping: () => Promise<void>;
@@ -95,18 +72,25 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
 
       try {
         setPending(true);
+        console.info(`executing rpc request`)
         const result = await rpcRequest(chainId, address);
         setResult(result);
+        console.info(`set successful rpc request result ${result.result} ${result.address}`)
+        return result;
       } catch (err: any) {
         console.error("RPC request failed: ", err);
-        setResult({
+        let errorResult = {
           address,
           valid: false,
           result: err?.message ?? err,
-        });
+        };
+        setResult(errorResult);
+
+        //return result;
       } finally {
         setPending(false);
       }
+      return null
     };
 
   const _verifyEip155MessageSignature = (message: string, signature: string, address: string) =>
@@ -150,14 +134,22 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
 
   const ethereumRpc = {
     testSendTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string) => {
+      console.info(`testSendTransaction for trx chainId: ${chainId} address: ${address}`)
       const caipAccountAddress = `${chainId}:${address}`;
       const account = accounts.find((account: string) => account === caipAccountAddress);
       if (account === undefined) throw new Error(`Account for ${caipAccountAddress} not found`);
+      console.info(`there are ${accounts.length} registered accounts`)
+      accounts.forEach(value => {
+        const balance = BigNumber.from(balances[value][0].balance || "0");
+        console.info(`checking account: ${value} balance ${balance}`)
+      })
 
       const tx = await formatTestTransaction(account);
 
       const balance = BigNumber.from(balances[account][0].balance || "0");
+      console.info(`current balance is ${balance}`)
       if (balance.lt(BigNumber.from(tx.gasPrice).mul(tx.gasLimit))) {
+        console.info(`Insufficient funds for intrinsic transaction cost`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
           address,
@@ -166,6 +158,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         };
       }
 
+      console.info(`committing trx to wc`)
       const result = await client!.request({
         topic: session!.topic,
         chainId,
@@ -174,6 +167,8 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           params: [tx],
         },
       });
+      console.info(`ETH_SEND_TRANSACTION result: ${result.result}`)
+      console.info(`ETH_SEND_TRANSACTION error: ${result.error}`)
 
       // format displayed result
       return {
@@ -183,13 +178,14 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         result,
       };
     }),
-    testSignTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string) => {
+    testSignTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string): Promise<IFormattedRpcResponse> => {
       const caipAccountAddress = `${chainId}:${address}`;
       const account = accounts.find((account: string) => account === caipAccountAddress);
       if (account === undefined) throw new Error(`Account for ${caipAccountAddress} not found`);
 
       const tx = await formatTestTransaction(account);
 
+      console.info(`testSignTransaction request for trx ${tx.from}`)
       const signedTx: string = await client!.request({
         topic: session!.topic,
         chainId,
@@ -198,15 +194,25 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           params: [tx],
         },
       });
-
       const valid = EthTransaction.fromSerializedTx(signedTx as any).verifySignature();
+      console.info(`send signTransaction result: ${signedTx} valid: ${valid}`)
 
-      return {
+      // if (valid) {
+      //   console.info(`valid transaction, calling send on it`)
+      //   const sendResult = await ethereumRpc.testSendTransaction(chainId, address)
+      //   // const sendResult = await testSendTransaction(tx.from, tx.to)
+      //   console.info(`sendTrx result ${sendResult}`)
+      // }
+
+
+      let rpcResult = {
         method: DEFAULT_EIP155_METHODS.ETH_SIGN_TRANSACTION,
         address,
         valid,
         result: signedTx,
       };
+      setResult(result)
+      return rpcResult;
     }),
     testSignPersonalMessage: _createJsonRpcRequestHandler(
       async (chainId: string, address: string) => {
