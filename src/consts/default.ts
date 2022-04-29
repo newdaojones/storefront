@@ -30,7 +30,7 @@ export enum DEFAULT_SOLANA_METHODS {
   SOL_SIGN_MESSAGE = 'solana_signMessage',
 }
 
-export const DEFAULT_LOGGER = 'debug';
+export const DEFAULT_LOGGER = 'info';
 
 export const DEFAULT_APP_METADATA = {
   name: 'New DAO Jones',
