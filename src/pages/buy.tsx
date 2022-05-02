@@ -5,10 +5,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectAccountInfo, selectBuyTransaction} from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {ellipseAddress, getLocalStorageTestnetFlag} from "../helpers";
-import {web3} from "../utils/walletConnect";
-import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
-import {Toast} from "react-toastify/dist/components";
+import {ellipseAddress} from "../helpers";
+import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 
 /**
@@ -40,8 +38,6 @@ export const BuyPage = () => {
     console.log(`onBuy Click ${transactionInfo}`)
     dispatch(userAction.setTransactionInfoWallet(true));
     transactionInfo = true;
-
-    //namespace == chainId
     onSendTransaction(account!!, accountInfo?.address!!)
   };
 
@@ -51,25 +47,29 @@ export const BuyPage = () => {
     const [namespace, reference, address2] = account.split(":");
     const chainId = `${namespace}:${reference}`;
 
-    // with callbacks
-    //const result = await ethereumRpc.testSendTransaction(chainId, address)
-    //Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
+    // Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
     // https://kovan.etherscan.io/address/0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
+    // https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
     const result = await ethereumRpc.testSendTransaction(chainId, address)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method} `)
           dispatch(userAction.setTransactionInfoWallet(false));
-          //TODO enable confirmation stuff
+
           if (res?.valid) {
             console.info(`valid transaction result moving to purchase confirmation screen`)
+            console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
+            //TODO enable confirmation stuff
             //TODO history
           } else {
-            console.info(`invalid transaction result`)
+            console.info(`invalid transaction result ${res?.result}`)
             toast.error(res?.result || "Something went wrong, please try again. ");
           }
 
         })
-        .catch((error) => console.log(`error on signing trx ${error} state: ${rpcResult}`)  )
+        .catch((error) => {
+          toast.error(error || "Something went wrong, please try again. ");
+          console.log(`error on signing trx ${error} state: ${rpcResult}`)
+        })
 
     //with await
     // const result = await ethereumRpc.testSignTransaction(chainId, address)

@@ -18,8 +18,6 @@ import { ERROR, getAppMetadata } from '@walletconnect/utils';
 import { getPublicKeysFromAccounts } from '../helpers/solana';
 import { useDispatch } from 'react-redux';
 import { userAction } from '../store/actions';
-import { UserService } from '../services';
-import axios from '../services/axios';
 import { sleep } from '../utils';
 import { toast } from 'react-toastify';
 import {AccountBalances} from "../helpers";

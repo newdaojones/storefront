@@ -2,8 +2,6 @@ import * as encoding from "@walletconnect/encoding";
 
 import { apiGetAccountNonce, apiGetGasPrices } from "./api";
 import { toWad } from "./utilities";
-import {TransactionInstruction} from "@solana/web3.js";
-import {TransactionConfig} from "web3-core";
 
 export async function getGasPrice(chainId: string): Promise<string> {
     if (chainId === "eip155:1") return toWad("20", 9).toHexString();
@@ -11,6 +9,14 @@ export async function getGasPrice(chainId: string): Promise<string> {
     return toWad(`${gasPrices.slow.price}`, 9).toHexString();
 }
 
+
+/**
+ * See transaction https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
+ * by hash
+ *
+ *
+ * @param account
+ */
 export async function formatTestTransaction(account: string) {
     const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
 
