@@ -1,6 +1,6 @@
 export const DEFAULT_MAIN_CHAINS = [
   // mainnets
-  'eip155:1',
+  'eip155:42',
   'eip155:137',
   'bep20:1',
   'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',

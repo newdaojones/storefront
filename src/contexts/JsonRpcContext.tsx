@@ -85,7 +85,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           result: err?.message ?? err,
         };
         setResult(errorResult);
-
+        return errorResult
         //return result;
       } finally {
         setPending(false);

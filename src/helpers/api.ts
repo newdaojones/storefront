@@ -24,9 +24,9 @@ export async function apiGetAccountAssets(address: string, chainId: string): Pro
 }
 
 export async function apiGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
-    //const ethChainId = chainId.split(":")[1];
+    const ethChainId = chainId.split(":")[1];
     //FIXME remove this hardcoded
-    const ethChainId = 42
+    // const ethChainId = 42
     const response = await ethereumApi.get(
         `/account-balance?address=${address}&chainId=${ethChainId}`,
     );

@@ -12,6 +12,8 @@ export async function getGasPrice(chainId: string): Promise<string> {
 }
 
 export async function formatTestTransaction(account: string) {
+    const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
+
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
 
@@ -33,9 +35,9 @@ export async function formatTestTransaction(account: string) {
     const gasLimit = encoding.sanitizeHex(encoding.numberToHex(_gasLimit));
 
     // value
-    const _value = 0;
+    const _value = 12340000;
     const value = encoding.sanitizeHex(encoding.numberToHex(_value));
 
-    const tx = { from: address, to: address, data: "0x", nonce, gasPrice, gasLimit, value };
+    const tx = { from: address, to: toAddress, data: "0x", nonce, gasPrice, gasLimit, value };
     return tx;
 }
