@@ -17,7 +17,7 @@ export interface ITicker {
   name: string;
   logo_url: string;
   status: 'active' | 'inactive' | 'dead';
-  price: string;
+  price: number;
   price_date: string;
   price_timestamp: string;
   circulating_supply: string;

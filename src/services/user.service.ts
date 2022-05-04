@@ -10,7 +10,7 @@ export const UserService = (function () {
   // };
 
   const getTickersApi = async () => {
-    return axios.get('/fund/prices/tickers');
+    return axios.get('/tickers');
   };
 
   return {

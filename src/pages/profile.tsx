@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
-import numeral from 'numeral';
-import QRIcon from '../assets/images/qrCodeIcon.svg';
+import QRIcon from '../assets/images/qRCodeIcon.svg';
 import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getBalanceInUSD} from "../helpers/tx";
+import {useSelector} from "react-redux";
+import {selectTickers} from "../store/selector";
+import { BigNumber, utils } from "ethers";
+import numeral from "numeral";
 
 export const ProfilePage = () => {
   const history = useHistory();
@@ -11,6 +14,7 @@ export const ProfilePage = () => {
   const { accounts, balances } = useWalletConnectClient();
 
   const accountBalance = getBalanceInUSD(accounts, balances);
+  const tickers = useSelector(selectTickers)
 
   const moveToWallet = (): void => {
     console.log(`navigating to scan page `)
@@ -20,6 +24,16 @@ export const ProfilePage = () => {
   };
 
   console.info(`account balance ${accountBalance.balance} ${accountBalance.balanceString}`)
+
+  const ethTicker = tickers.find(value => value.currency === 'ETH');
+  console.info(`tickers: ${tickers.length} available. eth: ${ethTicker?.price}`)
+  let balanceUsd = 0;
+  if (ethTicker) {
+    const balanceN = Number(accountBalance.balanceString);
+    balanceUsd = balanceN * ethTicker.price;
+    console.info(`balance in USD: ${balanceUsd} available.`)
+  }
+
 
   return (
     <div className="w-full h-full flex justify-center">
@@ -39,12 +53,14 @@ export const ProfilePage = () => {
               <div className="text-white text-center font-bold">
                 <p style={{fontSize: "xx-large", fontFamily: 'Montserrat', fontStyle: 'normal',}} >
                   {/*{numeral(accountBalance.balance || 0).format('0,0.0000')}*/}
-                  {accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)}
+                  {
+                    ethTicker ? numeral(balanceUsd).format('0,0.0000')
+                        :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)
+                  }
                 </p>
               </div>
               <p style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="text-white text-center font-bold text-sm pt-2 ml-1">
-                {/*USD*/}
-                ETH
+                {ethTicker ? "USD" : "ETH"}
               </p>
             </div>
           </div>
