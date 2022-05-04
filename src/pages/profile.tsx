@@ -54,7 +54,7 @@ export const ProfilePage = () => {
                 <p style={{fontSize: "xx-large", fontFamily: 'Montserrat', fontStyle: 'normal',}} >
                   {/*{numeral(accountBalance.balance || 0).format('0,0.0000')}*/}
                   {
-                    ethTicker ? numeral(balanceUsd).format('0,0.0000')
+                    ethTicker ? numeral(balanceUsd).format('0,0.00')
                         :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)
                   }
                 </p>
