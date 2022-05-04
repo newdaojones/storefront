@@ -59,7 +59,8 @@ export const Menu = ({
 
     if (chainData[namespace] && chainData[namespace][reference]) {
       const chainMeta = chainData[namespace][reference];
-      name = `${chainMeta.symbol}: ${address.slice(0, 5)}...`;
+      const lenght = address.length
+      name = `${chainMeta.symbol.toLowerCase()}: ${address.slice(0, 6)}...${address.slice(lenght - 4, lenght)}`;
     }
   }
 
@@ -74,12 +75,11 @@ export const Menu = ({
         }}
       >
         <img className="h-20 w-20 ml-4" src={meneIcon} alt="" draggable={false} />
-        <div>
+        <div className="flex flex-col items-end justify-end">
           <p className="text-white mr-4">
             {status}
-            {!disabled && name ? ' as..' : ''}
           </p>
-          {!disabled && name && <p className="text-white font-bold ml-4">{name}</p>}
+          {!disabled && name && <p className="text-white mr-4">{name}</p>}
         </div>
         {/*<MenuItem onFocused={() => setFocused(true)} zIndex={0} items={items} size={size + 50} disabled={disabled} focused={focused} />*/}
       </div>

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import QRIcon from '../assets/images/creditcard.svg';
 import BTCIcon from '../assets/images/btcIcon.svg';
+import ETHIcon from '../assets/images/eth.svg';
 import {useDispatch, useSelector} from "react-redux";
 import {selectAccountInfo, selectBuyTransaction} from "../store/selector";
 import {userAction} from "../store/actions";
@@ -84,12 +85,12 @@ export const BuyPage = () => {
         {/*Credit Card*/}
         <div className="flex flex-col text-black justify-between"
              style={{ paddingTop: '1rem', paddingBottom: '1.5rem', paddingLeft: '3.5rem', minHeight: '10rem', maxWidth: '20rem', paddingRight: '3.5rem', backgroundImage: `url(${QRIcon})`, backgroundSize: "contain", backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
-          <img  style={{alignSelf: 'end'}} className="w-10 h-10" src={BTCIcon} alt=""/>
+          <img  style={{alignSelf: 'end'}} className="w-10 h-10" src={ETHIcon} alt=""/>
           <p style={{fontFamily: 'Montserrat', fontStyle: 'normal', color: '#8E8EA9'}} className="pt-2 text-sm">
             {`${ellipseAddress(accountInfo?.address)}`}</p>
           <div className="flex w-full justify-between" style={{fontFamily: 'Righteous', fontStyle: 'normal', color: '#8E8EA9'}} >
             <p className="text-grey text-sm">notdevin.eth</p>
-            <p className="text-grey text-sm">Bitcoin</p>
+            <p className="text-grey text-sm">Ethereum</p>
           </div>
       </div>
 
