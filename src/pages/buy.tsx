@@ -43,14 +43,14 @@ export const BuyPage = () => {
 
   const onSendTransaction = async (account: string, address: string) => {
     // FIXME mark as loading openRequestModal();
-    console.log(`sending sign trx for address : ${address}`)
+    console.log(`onSendTransaction trx from account: ${account} address: ${address}`)
     const [namespace, reference, address2] = account.split(":");
     const chainId = `${namespace}:${reference}`;
 
     // Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
     // https://kovan.etherscan.io/address/0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
     // https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
-    const result = await ethereumRpc.testSendTransaction(chainId, address)
+    await ethereumRpc.testSendTransaction(chainId, address)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method} `)
           dispatch(userAction.setTransactionInfoWallet(false));

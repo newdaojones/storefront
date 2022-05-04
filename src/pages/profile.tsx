@@ -1,10 +1,16 @@
 import React, {useState} from 'react';
 import numeral from 'numeral';
-import QRIcon from '../assets/images/qRCodeIcon.svg';
+import QRIcon from '../assets/images/qrCodeIcon.svg';
 import {useHistory} from "react-router-dom";
+import {useWalletConnectClient} from "../contexts/walletConnect";
+import {getBalanceInUSD} from "../helpers/tx";
 
 export const ProfilePage = () => {
   const history = useHistory();
+
+  const { accounts, balances } = useWalletConnectClient();
+
+  const accountBalance = getBalanceInUSD(accounts, balances);
 
   const moveToWallet = (): void => {
     console.log(`navigating to scan page `)
@@ -12,6 +18,8 @@ export const ProfilePage = () => {
     //history.push("/scan");
     history.push("/buy");
   };
+
+  console.info(`account balance ${accountBalance.balance} ${accountBalance.balanceString}`)
 
   return (
     <div className="w-full h-full flex justify-center">
@@ -29,10 +37,14 @@ export const ProfilePage = () => {
                className="text-white text-start text-xs mr-2 mt-2">Current Balance</p>
             <div className="flex items-center">
               <div className="text-white text-center font-bold">
-                <p style={{fontSize: "xx-large", fontFamily: 'Montserrat', fontStyle: 'normal',}} >{numeral(2.3434 || 0).format('0,0.00')}</p>
+                <p style={{fontSize: "xx-large", fontFamily: 'Montserrat', fontStyle: 'normal',}} >
+                  {/*{numeral(accountBalance.balance || 0).format('0,0.0000')}*/}
+                  {accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)}
+                </p>
               </div>
               <p style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="text-white text-center font-bold text-sm pt-2 ml-1">
-                USD
+                {/*USD*/}
+                ETH
               </p>
             </div>
           </div>

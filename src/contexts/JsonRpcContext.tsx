@@ -133,6 +133,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
   // -------- ETHEREUM/EIP155 RPC METHODS --------
 
   const ethereumRpc = {
+
     testSendTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string) => {
       console.info(`testSendTransaction for trx chainId: ${chainId} address: ${address}`)
       const caipAccountAddress = `${chainId}:${address}`;
@@ -145,7 +146,6 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       })
 
       const tx = await formatTestTransaction(account);
-
       const balance = BigNumber.from(balances[account][0].balance || "0");
       console.info(`current balance is ${balance}`)
       if (balance.lt(BigNumber.from(tx.gasPrice).mul(tx.gasLimit))) {
@@ -155,6 +155,16 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           address,
           valid: false,
           result: "Insufficient funds for intrinsic transaction cost",
+        };
+      }
+
+      if (balance.lt(tx.value)) {
+        console.info(`Insufficient funds for transaction`);
+        return {
+          method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
+          address,
+          valid: false,
+          result: "Insufficient funds for transaction",
         };
       }
 
