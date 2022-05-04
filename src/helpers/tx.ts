@@ -1,7 +1,10 @@
 import * as encoding from "@walletconnect/encoding";
+import { BigNumber, utils } from "ethers";
 
 import { apiGetAccountNonce, apiGetGasPrices } from "./api";
 import { toWad } from "./utilities";
+import {AccountBalances} from "./types";
+import {web3} from "../utils/walletConnect";
 
 export async function getGasPrice(chainId: string): Promise<string> {
     if (chainId === "eip155:1") return toWad("20", 9).toHexString();
@@ -41,9 +44,45 @@ export async function formatTestTransaction(account: string) {
     const gasLimit = encoding.sanitizeHex(encoding.numberToHex(_gasLimit));
 
     // value
-    const _value = 12340000;
+    const _value = 123500000000000; //12340000000000 wei -> 0.0001234 ETH
+
     const value = encoding.sanitizeHex(encoding.numberToHex(_value));
 
     const tx = { from: address, to: toAddress, data: "0x", nonce, gasPrice, gasLimit, value };
     return tx;
+}
+
+export interface AccountBalance {
+    account: string;
+    balance: BigNumber;
+    balanceUsd: BigNumber;
+    balanceString: string;
+}
+
+export function getBalanceInUSD(accounts: string[], balances: AccountBalances): AccountBalance {
+    console.info(`there are ${accounts.length} registered accounts`)
+    let balanceString = "0.00";
+    let firstNonZeroAccount = accounts[0];
+    let accountBalance = BigNumber.from(0);
+    let accountBalanceUSD = BigNumber.from(0);
+    accounts.forEach(value => {
+        let balanceElement = balances[value][0];
+        const balance = BigNumber.from(balanceElement.balance || "0");
+        console.info(`account: ${value} balance = ${balance}`)
+        if (balance.gt(0)) {
+            console.info(`selecting account ${value} with balance ${balance}`)
+            firstNonZeroAccount = value;
+            let formatEther = utils.formatEther(balance);
+            console.log(`formatted balance ${formatEther}`);
+            accountBalance = utils.parseUnits(balance.toString(), "ether")
+            accountBalanceUSD = accountBalance;
+            balanceString = formatEther;
+        }
+    })
+    return {
+        account: firstNonZeroAccount,
+        balance: accountBalance,
+        balanceUsd: accountBalanceUSD,
+        balanceString: balanceString,
+    }
 }
