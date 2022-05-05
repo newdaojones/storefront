@@ -7,7 +7,7 @@ import { useWalletConnectClient } from "./walletConnect";
 import {
   DEFAULT_EIP155_METHODS,
 } from '../consts';
-import {formatTestTransaction} from "../helpers/tx";
+import {formatTestTransaction, ITransaction} from "../helpers/tx";
 
 /**
  * Types
@@ -21,7 +21,8 @@ export interface IFormattedRpcResponse {
   value?: string;
 }
 
-type TRpcRequestCallback = (chainId: string, address: string) => Promise<IFormattedRpcResponse | null>;
+//type TRpcRequestCallback = (chainId: string, address: string) => Promise<IFormattedRpcResponse | null>;
+type TRpcRequestCallback = (chainId: string, address: string, trx: ITransaction) => Promise<IFormattedRpcResponse | null>;
 
 interface IContext {
   ping: () => Promise<void>;
@@ -63,19 +64,18 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
   // const { chainData } = useChainData();
 
   const _createJsonRpcRequestHandler =
-    (rpcRequest: (chainId: string, address: string) => Promise<IFormattedRpcResponse>) =>
-    async (chainId: string, address: string) => {
+    (rpcRequest: (chainId: string, address: string, trx: ITransaction) => Promise<IFormattedRpcResponse>) =>
+    async (chainId: string, address: string, trx: ITransaction) => {
       if (typeof client === "undefined") {
         throw new Error("WalletConnect is not initialized");
       }
       if (typeof session === "undefined") {
         throw new Error("Session is not connected");
       }
-
       try {
         setPending(true);
         console.info(`executing rpc request`)
-        const result = await rpcRequest(chainId, address);
+        const result = await rpcRequest(chainId, address, trx);
         setResult(result);
         console.info(`set successful rpc request result ${result.result} ${result.address}`)
         return result;
@@ -136,7 +136,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
 
   const ethereumRpc = {
 
-    testSendTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string) => {
+    testSendTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string, trx: ITransaction) => {
       console.info(`testSendTransaction for trx chainId: ${chainId} address: ${address}`)
       const caipAccountAddress = `${chainId}:${address}`;
       const account = accounts.find((account: string) => account === caipAccountAddress);
@@ -146,31 +146,29 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         const balance = BigNumber.from(balances[value][0].balance || "0");
         console.info(`checking account: ${value} balance ${balance}`)
       })
-
-      const tx = await formatTestTransaction(account);
       const balance = BigNumber.from(balances[account][0].balance || "0");
       console.info(`current balance is ${balance}`)
-      if (balance.lt(BigNumber.from(tx.gasPrice).mul(tx.gasLimit))) {
+      if (balance.lt(BigNumber.from(trx.gasPrice).mul(trx.gasLimit))) {
         console.info(`Insufficient funds for intrinsic transaction cost`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
           address,
           valid: false,
           result: "Insufficient funds for intrinsic transaction cost",
-          toAddress: tx.to,
-          value: tx.value,
+          toAddress: trx.to,
+          value: trx.value,
         };
       }
 
-      if (balance.lt(tx.value)) {
+      if (balance.lt(trx.value)) {
         console.info(`Insufficient funds for transaction`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
           address,
           valid: false,
           result: "Insufficient funds for transaction",
-          toAddress: tx.to,
-          value: tx.value,
+          toAddress: trx.to,
+          value: trx.value,
         };
       }
 
@@ -180,7 +178,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         chainId,
         request: {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
-          params: [tx],
+          params: [trx],
         },
       });
       console.info(`ETH_SEND_TRANSACTION result: ${result.result}`)
@@ -194,18 +192,17 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         address,
         valid: true,
         result,
-        toAddress: tx.to,
-        value: tx.value,
+        toAddress: trx.to,
+        value: trx.value,
       };
     }),
-    testSignTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string): Promise<IFormattedRpcResponse> => {
+    testSignTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string, tx: ITransaction): Promise<IFormattedRpcResponse> => {
       const caipAccountAddress = `${chainId}:${address}`;
       const account = accounts.find((account: string) => account === caipAccountAddress);
       if (account === undefined) throw new Error(`Account for ${caipAccountAddress} not found`);
-
-      const tx = await formatTestTransaction(account);
-
+      // const tx = await formatTestTransaction(account);
       console.info(`testSignTransaction request for trx ${tx.from}`)
+
       const signedTx: string = await client!.request({
         topic: session!.topic,
         chainId,
@@ -217,19 +214,13 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       const valid = EthTransaction.fromSerializedTx(signedTx as any).verifySignature();
       console.info(`send signTransaction result: ${signedTx} valid: ${valid}`)
 
-      // if (valid) {
-      //   console.info(`valid transaction, calling send on it`)
-      //   const sendResult = await ethereumRpc.testSendTransaction(chainId, address)
-      //   // const sendResult = await testSendTransaction(tx.from, tx.to)
-      //   console.info(`sendTrx result ${sendResult}`)
-      // }
-
-
       let rpcResult = {
         method: DEFAULT_EIP155_METHODS.ETH_SIGN_TRANSACTION,
-        address,
-        valid,
+        address: address,
+        valid: valid,
         result: signedTx,
+        toAddress: tx.to,
+        value: tx.value,
       };
       setResult(result)
       return rpcResult;
