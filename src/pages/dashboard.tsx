@@ -1,15 +1,14 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import { PlayPage } from './play';
+import {Redirect, Route, Switch} from 'react-router-dom';
+import {PlayPage} from './play';
 
-import { ProfilePage } from './profile';
-import {useSelector} from "react-redux";
-import {selectAccountInfo} from "../store/selector";
+import {ProfilePage} from './profile';
 import {ScanPage} from "./scan";
 import {BuyPage} from "./buy";
+import {ConfirmationPage} from "./confirmation";
 
 export const Dashboard = () => {
-    const accountInfo = useSelector(selectAccountInfo);
+    //const accountInfo = useSelector(selectAccountInfo);
 
     let mainPage = ProfilePage;
     return (
@@ -18,7 +17,8 @@ export const Dashboard = () => {
           <Route path="/profile" component={mainPage} />
           <Route path="/play" component={PlayPage} />
           <Route path="/scan" component={ScanPage} />
-            <Route path="/buy" component={BuyPage} />
+          <Route path="/buy" component={BuyPage} />
+          <Route path="/confirmation" component={ConfirmationPage} />
           <Redirect to="/profile" />
         </Switch>
       </div>
