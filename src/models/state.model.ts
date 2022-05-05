@@ -1,4 +1,4 @@
-import {ITicker, IUserInfo} from '.';
+import {ITicker, ITransactionInfo, IUserInfo} from '.';
 
 export interface IRootState {
   userState: IUserState;
@@ -18,10 +18,10 @@ export interface IUserState {
   signature: string;
   error?: string;
   ensName?: string;
-  //accountInfo?: IUserInfo;
   accountInfo?: IAccountInfo;
   tickers: ITicker[];
-  transactionInfo: boolean;
+  transactionInfo: ITransactionInfo | null;
+  transactionInProgress: boolean;
 }
 
 
