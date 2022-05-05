@@ -1,11 +1,10 @@
-import React, {useState} from 'react';
-import QRIcon from '../assets/images/qRCodeIcon.svg';
+import React from 'react';
+import QRIcon from '../assets/images/qrCodeIcon.svg';
 import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getBalanceInUSD} from "../helpers/tx";
 import {useSelector} from "react-redux";
 import {selectTickers} from "../store/selector";
-import { BigNumber, utils } from "ethers";
 import numeral from "numeral";
 
 export const ProfilePage = () => {
@@ -18,20 +17,29 @@ export const ProfilePage = () => {
 
   const moveToWallet = (): void => {
     console.log(`navigating to scan page `)
+    //TODO scan
     //dispatch(userAction.setSelectedWallet(wallet));
     //history.push("/scan");
     history.push("/buy");
   };
 
   console.info(`account balance ${accountBalance.balance} ${accountBalance.balanceString}`)
+  console.info(`tickers ${tickers} size: ${tickers.length}`)
 
-  const ethTicker = tickers.find(value => value.currency === 'ETH');
-  console.info(`tickers: ${tickers.length} available. eth: ${ethTicker?.price}`)
+  let ethTicker = null;
+  try {
+    ethTicker = tickers ? tickers.find(value => value.currency === 'ETH') : null;
+  } catch (e) {
+    console.info(`error searching for ticker: ${e}`)
+  }
   let balanceUsd = 0;
   if (ethTicker) {
+    console.info(`tickers: ${tickers.length} available. eth: ${ethTicker?.price}`)
     const balanceN = Number(accountBalance.balanceString);
     balanceUsd = balanceN * ethTicker.price;
     console.info(`balance in USD: ${balanceUsd} available.`)
+  } else {
+    console.info(`tickers are not available`)
   }
 
 
