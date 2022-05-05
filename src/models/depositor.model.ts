@@ -49,3 +49,11 @@ export interface IUpdateAddressRequest {
   addressENS: string;
   address: string;
 }
+
+
+export interface ITransactionInfo {
+  transactionHash: string;
+  fromAddress: string;
+  toAddress: string;
+  value: string;
+}

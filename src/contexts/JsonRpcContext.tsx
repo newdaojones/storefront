@@ -17,6 +17,8 @@ export interface IFormattedRpcResponse {
   address?: string;
   valid: boolean;
   result: string;
+  toAddress?: string;
+  value?: string;
 }
 
 type TRpcRequestCallback = (chainId: string, address: string) => Promise<IFormattedRpcResponse | null>;
@@ -155,6 +157,8 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           address,
           valid: false,
           result: "Insufficient funds for intrinsic transaction cost",
+          toAddress: tx.to,
+          value: tx.value,
         };
       }
 
@@ -165,6 +169,8 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           address,
           valid: false,
           result: "Insufficient funds for transaction",
+          toAddress: tx.to,
+          value: tx.value,
         };
       }
 
@@ -181,11 +187,15 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       console.info(`ETH_SEND_TRANSACTION error: ${result.error}`)
 
       // format displayed result
+      //let formatEther = utils.formatEther(tx.value);
+
       return {
         method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
         address,
         valid: true,
         result,
+        toAddress: tx.to,
+        value: tx.value,
       };
     }),
     testSignTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string): Promise<IFormattedRpcResponse> => {
