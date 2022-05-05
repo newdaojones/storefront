@@ -3,12 +3,15 @@ import QRIcon from '../assets/images/creditcard.svg';
 import BTCIcon from '../assets/images/btcIcon.svg';
 import ETHIcon from '../assets/images/eth.svg';
 import {useDispatch, useSelector} from "react-redux";
-import {selectAccountInfo, selectBuyTransaction} from "../store/selector";
+import {selectAccountInfo, selectBuyTransaction, selectTransactionInProgress} from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress} from "../helpers";
 import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
+import {AccountBalance, getBalanceInUSD} from "../helpers/tx";
+import {ITransactionInfo} from "../models";
+import {useHistory} from "react-router-dom";
 
 /**
  * Test code
@@ -16,14 +19,11 @@ import {toast} from "react-toastify";
  * @constructor
  */
 export const BuyPage = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const accountInfo = useSelector(selectAccountInfo)
-
-  // Initialize the WalletConnect client.
-  const {
-    account,
-    accounts,
-  } = useWalletConnectClient();
+  const { accounts, balances } = useWalletConnectClient();
+  const accountBalance = getBalanceInUSD(accounts, balances);
 
   const {
     rpcResult,
@@ -31,45 +31,50 @@ export const BuyPage = () => {
     ethereumRpc,
   } = useJsonRpc();
 
-  let transactionInfo = useSelector(selectBuyTransaction)
-  // console.log(`account info - address ${accountInfo?.address} namespace ${accountInfo?.namespace}`)
-
+  let transactionInProgress = useSelector(selectTransactionInProgress)
 
   const onBuyClick = (): void => {
-    console.log(`onBuy Click ${transactionInfo}`)
-    dispatch(userAction.setTransactionInfoWallet(true));
-    transactionInfo = true;
-    onSendTransaction(account!!, accountInfo?.address!!)
+    dispatch(userAction.setTransactionInProgress(true));
+    transactionInProgress = true;
+    onSendTransaction(accountBalance).then(r => {})
   };
 
-  const onSendTransaction = async (account: string, address: string) => {
+  const onSendTransaction = async (accountBalance: AccountBalance) => {
     // FIXME mark as loading openRequestModal();
-    console.log(`onSendTransaction trx from account: ${account} address: ${address}`)
-    const [namespace, reference, address2] = account.split(":");
+    const account = accountBalance.account;
+    const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
+
+    console.log(`onSendTransaction trx from account: ${account} address: ${address}`)
 
     // Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
     // https://kovan.etherscan.io/address/0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
     // https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
     await ethereumRpc.testSendTransaction(chainId, address)
         .then((res) => {
-          console.info(`trxSignResult result:${res?.result} method: ${res?.method} `)
-          dispatch(userAction.setTransactionInfoWallet(false));
-
+          console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
           if (res?.valid) {
-            console.info(`valid transaction result moving to purchase confirmation screen`)
             console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
-            //TODO enable confirmation stuff
-            //TODO history
+            const transactionInfo: ITransactionInfo = {
+              fromAddress: res.address!!,
+              toAddress: res.toAddress || "",
+              value: res.value  || "n/a",
+              transactionHash: res.result
+
+            }
+            dispatch(userAction.setTransactionInfoWallet(transactionInfo));
+            history.push("/confirmation");
           } else {
-            console.info(`invalid transaction result ${res?.result}`)
+            console.info(`valid = false. transaction result ${res?.result}`)
             toast.error(res?.result || "Something went wrong, please try again. ");
           }
+          dispatch(userAction.setTransactionInProgress(false));
 
         })
         .catch((error) => {
           toast.error(error || "Something went wrong, please try again. ");
           console.log(`error on signing trx ${error} state: ${rpcResult}`)
+          dispatch(userAction.setTransactionInProgress(false));
         })
 
     //with await
@@ -126,7 +131,7 @@ export const BuyPage = () => {
           margin: '10px 0px',
           cursor: 'pointer'
         }} className="w-full text-white mt-8 mb-4">
-          {(transactionInfo === true) ? "Loading" :`Pay $50.00`}
+          {(transactionInProgress === true) ? "Loading" :`Pay $50.00`}
         </button>
       </div>
     </div>
