@@ -45,7 +45,6 @@ export const BuyPage = () => {
   };
 
   const onSendTransaction = async (accountBalance: AccountBalance) => {
-    // FIXME mark as loading openRequestModal();
     const account = accountBalance.account;
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
@@ -82,9 +81,6 @@ export const BuyPage = () => {
           console.log(`error on signing trx ${error} state: ${rpcResult}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
         })
-    //with await
-    // const result = await ethereumRpc.testSignTransaction(chainId, address)
-    // console.info(`trxSignResult ${result}`)
   };
 
 
