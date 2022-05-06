@@ -6,6 +6,7 @@ import {getBalanceInUSD} from "../helpers/tx";
 import {useSelector} from "react-redux";
 import {selectTickers} from "../store/selector";
 import numeral from "numeral";
+import {convertETHtoUSD} from "../helpers/currency";
 
 export const ProfilePage = () => {
   const history = useHistory();
@@ -26,22 +27,8 @@ export const ProfilePage = () => {
   console.info(`account balance ${accountBalance.balance} ${accountBalance.balanceString}`)
   console.info(`tickers ${tickers} size: ${tickers.length}`)
 
-  let ethTicker = null;
-  try {
-    ethTicker = tickers ? tickers.find(value => value.currency === 'ETH') : null;
-  } catch (e) {
-    console.info(`error searching for ticker: ${e}`)
-  }
-  let balanceUsd = 0;
-  if (ethTicker) {
-    console.info(`tickers: ${tickers.length} available. eth: ${ethTicker?.price}`)
-    const balanceN = Number(accountBalance.balanceString);
-    balanceUsd = balanceN * ethTicker.price;
-    console.info(`balance in USD: ${balanceUsd} available.`)
-  } else {
-    console.info(`tickers are not available`)
-  }
-
+  const balanceN = Number(accountBalance.balanceString);
+  const balanceUSD = convertETHtoUSD(balanceN, tickers);
 
   return (
     <div className="w-full h-full flex justify-center">
@@ -61,13 +48,13 @@ export const ProfilePage = () => {
               <div className="text-white text-center font-bold">
                 <p style={{fontSize: "xx-large", fontFamily: 'Montserrat', fontStyle: 'normal',}} >
                   {
-                    ethTicker ? numeral(balanceUsd).format('0,0.00')
+                    balanceUSD ? numeral(balanceUSD).format('0,0.00')
                         :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)
                   }
                 </p>
               </div>
               <p style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="text-white text-center font-bold text-sm pt-2 ml-1">
-                {ethTicker ? "USD" : "ETH"}
+                {balanceUSD ? "USD" : "ETH"}
               </p>
             </div>
           </div>
