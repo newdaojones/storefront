@@ -4,7 +4,7 @@ import meneIcon from '../../assets/images/menu_icon.png';
 import { MenuItem } from './menu';
 import { IMenuItem } from '../../models';
 import { chainData } from '../../consts';
-
+import DropdownRender from "./dropdown";
 interface Props {
   size: number;
   onDisconnect?: () => void;
@@ -86,22 +86,24 @@ export const Menu = ({
         <img className="h-20 w-20 ml-4" src={meneIcon} alt="" draggable={false} />
 
         {/*right*/}
-        <div className="flex">
+        <div className="flex items-center">
           <div className="flex flex-col items-end justify-end">
-            <p className="text-white mr-4">
+            <p className="text-white mr-2">
               {status}
             </p>
-            {!disabled && name && <p className="text-white mr-4">{name}</p>}
+            {!disabled && name && <p className="text-white mr-2">{name}</p>}
           </div>
-          {
-            !disabled && name &&
-            <select className="select w-10 h-10 mr-4" name="fff" value="f">
-              <option className="option pt-4 pb-4" value="payments" onClick={onPaymentsClick}>Payments</option>
-              <option className="option pa-4" onClick={onDisconnectClicked} value="disconnect">Disconnect</option>
-            </select>
-          }
+
 
         </div>
+        {
+          !disabled && name &&
+          <DropdownRender/>
+          // <select className="select w-10 h-10 mr-4">
+          //   <option style={{backgroundColor: '#ff0000', padding: '40px'}} className="option" onClick={onPaymentsClick}>Payments</option>
+          //   <option className="option w-20 h-20 pa-4" onClick={onDisconnectClicked} value="disconnect">Disconnect</option>
+          // </select>
+        }
       </div>
     </div>
   );
