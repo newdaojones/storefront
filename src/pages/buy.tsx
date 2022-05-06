@@ -1,16 +1,21 @@
-import React, {useState} from 'react';
+import React from 'react';
 import QRIcon from '../assets/images/creditcard.svg';
 import ETHIcon from '../assets/images/eth.svg';
 import {useDispatch, useSelector} from "react-redux";
-import {selectAccountInfo, selectBuyTransaction, selectTickers, selectTransactionInProgress} from "../store/selector";
+import {selectAccountInfo, selectTickers, selectTransactionInProgress} from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress} from "../helpers";
 import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {AccountBalance, formatTestTransaction, getBalanceInUSD} from "../helpers/tx";
-import {ITransactionInfo} from "../models";
+import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
+import {convertUSDtoETH} from "../helpers/currency";
+
+function isStartOrInProgress(transactionInProgress: TransactionState) {
+  return transactionInProgress == TransactionState.INITIAL || transactionInProgress == TransactionState.IN_PROGRESS;
+}
 
 /**
  * Test code
@@ -26,6 +31,8 @@ export const BuyPage = () => {
   const { accounts, balances } = useWalletConnectClient();
   const accountBalance = getBalanceInUSD(accounts, balances);
 
+  const helpMessages = ['Tap the button above to submit the signing request', 'Switch to your wallet up and Sign the transaction']
+
   const {
     rpcResult,
     isRpcRequestPending,
@@ -33,8 +40,7 @@ export const BuyPage = () => {
   } = useJsonRpc();
 
   const onBuyClick = (): void => {
-    dispatch(userAction.setTransactionInProgress(true));
-    transactionInProgress = true;
+    dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     onSendTransaction(accountBalance).then(r => {})
   };
 
@@ -54,6 +60,7 @@ export const BuyPage = () => {
     await ethereumRpc.testSendTransaction(chainId, address, transaction)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
+          dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
           if (res?.valid) {
             console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
             const transactionInfo: ITransactionInfo = {
@@ -69,19 +76,24 @@ export const BuyPage = () => {
             console.info(`valid = false. transaction result ${res?.result}`)
             toast.error(res?.result || "Something went wrong, please try again. ");
           }
-          dispatch(userAction.setTransactionInProgress(false));
-
         })
         .catch((error) => {
           toast.error(error || "Something went wrong, please try again. ");
           console.log(`error on signing trx ${error} state: ${rpcResult}`)
-          dispatch(userAction.setTransactionInProgress(false));
+          dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
         })
     //with await
     // const result = await ethereumRpc.testSignTransaction(chainId, address)
     // console.info(`trxSignResult ${result}`)
   };
 
+
+  const paymentFeeUsd = 0.05;
+  const paymentValueUsd = 0.20;
+  const paymentTotalUSD = paymentFeeUsd + paymentValueUsd;
+
+  const paymentValueEth = convertUSDtoETH(paymentTotalUSD, tickers);
+  console.info(`payment value ${paymentTotalUSD} USD  = ${paymentValueEth} ETH`)
 
   return (
     <div className="w-full h-full flex justify-center">
@@ -105,27 +117,27 @@ export const BuyPage = () => {
           <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
             <div className="w-full flex justify-between p-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
-              <p className="text-white text-start text-xs mr-2 mt-2">$ 45.00</p>
+              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentValueUsd}`}</p>
             </div>
             <div className="w-full flex justify-between pl-4 pr-4">
-              <p className="text-white text-start text-xs mr-2">Transaction Fee</p>
-              <p className="text-white text-start text-xs mr-2">$ 5.00</p>
+              <p className="text-white text-start text-xs mr-2 mt-2">Transaction Fee</p>
+              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentFeeUsd}`}</p>
             </div>
             <div className="flex flex-col w-full text-secondary mt-4 justify-between" style={{ height: 1, backgroundColor: '#FFB01D', backgroundRepeat: "no-repeat"}}/>
             <div className="w-full flex justify-between p-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Subtotal</p>
-              <p className="text-white text-start text-xs mr-2 mt-2">$ 50.00</p>
+              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentTotalUSD}`}</p>
             </div>
             <div className="w-full flex justify-between pl-4 pr-4 pb-6">
               <p className="text-white text-start text-xs mr-2">Total Price</p>
-              <p className="text-start text-secondary text-xs mr-2">$ 50.00</p>
+              <p className="text-start text-secondary text-xs mr-2">{`$ ${paymentTotalUSD}`}</p>
             </div>
           </div>
         </div>
         </div>
 
         {/*Buy Button Section*/}
-        <div className="flex flex-col h-full bg-secondary text-white bg-opacity-50 justify-end ml-8 mr-8" style={{}}>
+        <div className="flex flex-col h-full text-white justify-end ml-8 mr-8" style={{}}>
           <button onClick={onBuyClick} style={{
             backgroundColor: '#615793',
             fontSize: '20px',
@@ -136,20 +148,21 @@ export const BuyPage = () => {
             justifySelf: "end",
             alignSelf: "end"
           }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-4">
-            {transactionInProgress ?
-                <div className="thecube w-10 h-10 m-1">
+            {transactionInProgress == TransactionState.IN_PROGRESS ?
+                <div className="thecube w-8 h-8 m-1">
                   <div className="cube c1"></div>
                   <div className="cube c2"></div>
                   <div className="cube c4"></div>
                   <div className="cube c3"></div>
                 </div> :
                 <div className="w-full flex flex-col items-center justify-center">
-                  <p className="text-white text-start mr-2">Pay $50.00</p>
-                  <p className="text-white text-start text-xs mr-2">0.0000148 ETH</p>
+                  <p className="text-white text-start mr-2">{`Pay $${paymentTotalUSD}`}</p>
+                  <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
                 </div>}
           </button>
-          <p style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
-             className="text-center text-secondary text-xs m-4 mb-8">Switch to your wallet up and Sign the transaction</p>
+          {<p style={{fontFamily: 'Righteous', fontStyle: 'normal', visibility: !isStartOrInProgress(transactionInProgress) ? 'hidden':'visible'}}
+              className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[transactionInProgress ? 1 : 0]}</p>
+          }
         </div>
       </div>
 
