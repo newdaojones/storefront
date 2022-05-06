@@ -149,3 +149,15 @@ code {
     }
   }
 }
+
+
+.select {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  font: normal 15px/28px Arial, Sans-Serif;
+  color: transparent;
+  background-image: url("../images/account-edit.svg");
+  background-size: cover;
+  border: 1px solid #ccc;
+}

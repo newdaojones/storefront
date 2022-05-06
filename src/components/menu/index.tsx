@@ -64,6 +64,15 @@ export const Menu = ({
     }
   }
 
+
+  const onPaymentsClick = () => {
+  }
+
+  const onDisconnectClicked = () => {
+    console.info(`disconnecting from wc`)
+    onDisconnect()
+  }
+
   return (
     <div>
       <div
@@ -75,45 +84,25 @@ export const Menu = ({
         }}
       >
         <img className="h-20 w-20 ml-4" src={meneIcon} alt="" draggable={false} />
-        <div className="flex flex-col items-end justify-end">
-          <p className="text-white mr-4">
-            {status}
-          </p>
-          {!disabled && name && <p className="text-white mr-4">{name}</p>}
-        </div>
-        {/*<MenuItem onFocused={() => setFocused(true)} zIndex={0} items={items} size={size + 50} disabled={disabled} focused={focused} />*/}
-      </div>
 
-      {/*{!disabled && (*/}
-      {/*  <div className="mt-20 flex flex-row items-center">*/}
-      {/*    <div>*/}
-      {/*      <div>*/}
-      {/*        <p className="text-white">*/}
-      {/*          use <span className="font-bold">{'<- -> ARROW'}</span>*/}
-      {/*        </p>*/}
-      {/*        <p className="text-white">to rotate collection menu</p>*/}
-      {/*      </div>*/}
-      {/*      <div className="mt-4">*/}
-      {/*        <p className="text-white">*/}
-      {/*          tap <span className="font-bold">ENTER</span>*/}
-      {/*        </p>*/}
-      {/*        <p className="text-white">to open a collection</p>*/}
-      {/*      </div>*/}
-      {/*      <div className="mt-4">*/}
-      {/*        <p className="text-white">*/}
-      {/*          hit <span className="font-bold">SHIFT + ENTER</span>*/}
-      {/*        </p>*/}
-      {/*        <p className="text-white">to return to the menu</p>*/}
-      {/*      </div>*/}
-      {/*      <div className="mt-4">*/}
-      {/*        <p className="text-white">*/}
-      {/*          hit <span className="font-bold">CTL + S</span>*/}
-      {/*        </p>*/}
-      {/*        <p className="text-white">to switch wallet</p>*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*)}*/}
+        {/*right*/}
+        <div className="flex">
+          <div className="flex flex-col items-end justify-end">
+            <p className="text-white mr-4">
+              {status}
+            </p>
+            {!disabled && name && <p className="text-white mr-4">{name}</p>}
+          </div>
+          {
+            !disabled && name &&
+            <select className="select w-10 h-10 mr-4" name="fff" value="f">
+              <option className="option pt-4 pb-4" value="payments" onClick={onPaymentsClick}>Payments</option>
+              <option className="option pa-4" onClick={onDisconnectClicked} value="disconnect">Disconnect</option>
+            </select>
+          }
+
+        </div>
+      </div>
     </div>
   );
 };
