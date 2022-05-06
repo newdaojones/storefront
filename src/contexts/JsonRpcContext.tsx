@@ -74,10 +74,8 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       }
       try {
         setPending(true);
-        console.info(`executing rpc request`)
         const result = await rpcRequest(chainId, address, trx);
         setResult(result);
-        console.info(`set successful rpc request result ${result.result} ${result.address}`)
         return result;
       } catch (err: any) {
         console.error("RPC request failed: ", err);
@@ -141,13 +139,9 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       const caipAccountAddress = `${chainId}:${address}`;
       const account = accounts.find((account: string) => account === caipAccountAddress);
       if (account === undefined) throw new Error(`Account for ${caipAccountAddress} not found`);
-      console.info(`there are ${accounts.length} registered accounts`)
-      accounts.forEach(value => {
-        const balance = BigNumber.from(balances[value][0].balance || "0");
-        console.info(`checking account: ${value} balance ${balance}`)
-      })
+
       const balance = BigNumber.from(balances[account][0].balance || "0");
-      console.info(`current balance is ${balance}`)
+      console.info(`current balance is ${balance}. gasPrice: ${trx.gasPrice} gasLimit: ${trx.gasLimit}`)
       if (balance.lt(BigNumber.from(trx.gasPrice).mul(trx.gasLimit))) {
         console.info(`Insufficient funds for intrinsic transaction cost`);
         return {

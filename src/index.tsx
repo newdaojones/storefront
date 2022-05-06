@@ -21,7 +21,7 @@ ReactDOM.render(
       <Router basename={'/walletconnect-v2'}>
         <Main />
         <ToastContainer className="p-4"
-          toastClassName="w-full m-w-45 flex bg-white bg-opacity-25 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
+          toastClassName="w-full m-w-45 flex bg-black bg-opacity-60 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
           bodyClassName={() => 'text-sm font-white font-med block p-1'}
           autoClose={false}
           position="bottom-center"
