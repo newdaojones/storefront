@@ -2,7 +2,7 @@ import { produce } from 'immer';
 
 import { createReducer } from '.';
 import { userActionTypes } from '../../consts';
-import {IAccountInfo, IAction, ITicker, ITransactionInfo, IUserState} from '../../models';
+import {IAccountInfo, IAction, ITicker, ITransactionInfo, IUserState, TransactionState} from '../../models';
 import { userState } from '../states/user.state';
 
 export const userReducer = createReducer<IUserState>(userState, {
@@ -33,7 +33,7 @@ function setTickersStatus(state: IUserState, { payload }: IAction<ITicker[]>) {
   });
 }
 
-function setTransactionInProgress(state: IUserState, { payload }: IAction<boolean>) {
+function setTransactionInProgress(state: IUserState, { payload }: IAction<TransactionState>) {
   return produce(state, draft => {
     draft.transactionInProgress = payload;
   });

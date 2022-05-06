@@ -10,6 +10,10 @@ export interface IAccountInfo {
   reference: string;
 }
 
+export enum TransactionState {
+  INITIAL,IN_PROGRESS,FINISHED
+}
+
 export interface IUserState {
   isLogged: boolean;
   loading: boolean;
@@ -21,7 +25,7 @@ export interface IUserState {
   accountInfo?: IAccountInfo;
   tickers: ITicker[];
   transactionInfo: ITransactionInfo | null;
-  transactionInProgress: boolean;
+  transactionInProgress: TransactionState;
 }
 
 

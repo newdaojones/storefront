@@ -73,7 +73,6 @@ export interface AccountBalance {
 }
 
 export function getBalanceInUSD(accounts: string[], balances: AccountBalances): AccountBalance {
-    console.info(`there are ${accounts.length} registered accounts`)
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];
     let accountBalance = BigNumber.from(0);
@@ -86,12 +85,11 @@ export function getBalanceInUSD(accounts: string[], balances: AccountBalances): 
         }
         let balanceElement = accountBalances[0];
         const balance = BigNumber.from(balanceElement.balance || "0");
-        console.info(`account: ${value} balance = ${balance}`)
         if (balance.gt(0)) {
-            console.info(`selecting account ${value} with balance ${balance}`)
-            firstNonZeroAccount = value;
             let formatEther = utils.formatEther(balance);
-            console.log(`formatted balance ${formatEther}`);
+            console.info(`selecting account ${value} with balance ${balance}. formatted balance ${formatEther}`)
+
+            firstNonZeroAccount = value;
             accountBalance = utils.parseUnits(balance.toString(), "ether")
             accountBalanceUSD = accountBalance;
             balanceString = formatEther;

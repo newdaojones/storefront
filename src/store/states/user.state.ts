@@ -1,4 +1,4 @@
-import { IUserState } from '../../models';
+import {IUserState, TransactionState} from '../../models';
 
 export const userState: IUserState = {
   isLogged: false,
@@ -9,6 +9,6 @@ export const userState: IUserState = {
   signature: '',
   tickers: [],
   transactionInfo: null,
-  transactionInProgress: false,
+  transactionInProgress: TransactionState.INITIAL,
   accountInfo: undefined,
 };

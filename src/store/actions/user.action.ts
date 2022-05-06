@@ -1,5 +1,5 @@
 import { EUserActionTypes } from '../../enums';
-import {IAccountInfo, ITicker, ITransactionInfo, IUserInfo} from '../../models';
+import {IAccountInfo, ITicker, ITransactionInfo, IUserInfo, TransactionState} from '../../models';
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -30,7 +30,7 @@ const getTickersSuccess = (payload: ITicker[]) => {
   };
 };
 
-const setTransactionInProgress = (payload: boolean) => {
+const setTransactionInProgress = (payload: TransactionState) => {
   console.info(`setTransactionInProgress as ${payload}`)
   return {
     type: EUserActionTypes.SET_TRANSACTION_IN_PROGRESS,
