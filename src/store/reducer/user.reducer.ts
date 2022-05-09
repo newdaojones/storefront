@@ -4,6 +4,7 @@ import { createReducer } from '.';
 import { userActionTypes } from '../../consts';
 import {IAccountInfo, IAction, ITicker, ITransactionInfo, IUserState, TransactionState} from '../../models';
 import { userState } from '../states/user.state';
+import {ITransaction} from "../../helpers/tx";
 
 export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.LOGIN_SUCCESS]: setLoginSuccessStatus,
@@ -11,6 +12,7 @@ export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.GET_PRICE_TICKERS_SUCCESS]: setTickersStatus,
   [userActionTypes.SET_TRANSACTION_IN_PROGRESS]: setTransactionInProgress,
   [userActionTypes.SET_TRANSACTION_INFO]: setTransactionInfo,
+  [userActionTypes.SET_TRANSACTION_SUCCESS]: setTransactionData,
 });
 
 function setLoginSuccessStatus(state: IUserState, { payload }: IAction<IAccountInfo>) {
@@ -42,5 +44,11 @@ function setTransactionInProgress(state: IUserState, { payload }: IAction<Transa
 function setTransactionInfo(state: IUserState, { payload }: IAction<ITransactionInfo>) {
   return produce(state, draft => {
     draft.transactionInfo = payload;
+  });
+}
+
+function setTransactionData(state: IUserState, { payload }: IAction<ITransaction>) {
+  return produce(state, draft => {
+    draft.transactionData = payload;
   });
 }

@@ -11,4 +11,5 @@ export const userState: IUserState = {
   transactionInfo: null,
   transactionInProgress: TransactionState.INITIAL,
   accountInfo: undefined,
+  transactionData: null,
 };

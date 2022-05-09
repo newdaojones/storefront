@@ -2,13 +2,18 @@ import React from 'react';
 import QRIcon from '../assets/images/creditcard.svg';
 import ETHIcon from '../assets/images/eth.svg';
 import {useDispatch, useSelector} from "react-redux";
-import {selectAccountInfo, selectTickers, selectTransactionInProgress} from "../store/selector";
+import {
+  selectAccountInfo,
+  selectCreateTransaction,
+  selectTickers,
+  selectTransactionInProgress
+} from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress} from "../helpers";
 import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
-import {AccountBalance, formatTestTransaction, getBalanceInUSD} from "../helpers/tx";
+import {AccountBalance, getBalanceInUSD} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertUSDtoETH} from "../helpers/currency";
@@ -31,6 +36,7 @@ export const BuyPage = () => {
   const { accounts, balances } = useWalletConnectClient();
   const accountBalance = getBalanceInUSD(accounts, balances);
 
+  const transaction = useSelector(selectCreateTransaction)
   const helpMessages = ['Tap the button above to submit the signing request', 'Switch to your wallet up and Sign the transaction']
 
   const {
@@ -61,7 +67,11 @@ export const BuyPage = () => {
     // https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
 
     //TODO this should be done before the pay event to be able to show trx fees.
-    const transaction = await formatTestTransaction(account)
+
+    if (!transaction) {
+      toast.error("Something went wrong while generating the transaction, please try again. ");
+      return;
+    }
 
     await ethereumRpc.testSendTransaction(chainId, address, transaction)
         .then((res) => {
@@ -93,10 +103,13 @@ export const BuyPage = () => {
 
   const paymentFeeUsd = 0.05;
   const paymentValueUsd = 0.20;
-  const paymentTotalUSD = paymentFeeUsd + paymentValueUsd;
 
+  const paymentTotalUSD = paymentFeeUsd + paymentValueUsd;
   const paymentValueEth = convertUSDtoETH(paymentTotalUSD, tickers);
-  console.info(`payment value ${paymentTotalUSD} USD  = ${paymentValueEth} ETH`)
+  console.info(`payment value ${paymentTotalUSD} USD  = ${paymentValueEth} ETH. `)
+  console.info(`transac value ${transaction?.value} gasPrice ${transaction?.gasPrice}  `)
+
+
 
   return (
     <div className="w-full h-full flex justify-center">

@@ -1,5 +1,6 @@
 import { EUserActionTypes } from '../../enums';
 import {IAccountInfo, ITicker, ITransactionInfo, IUserInfo, TransactionState} from '../../models';
+import {ITransaction} from "../../helpers/tx";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -46,11 +47,27 @@ const setTransactionInfoWallet = (payload: ITransactionInfo) => {
   };
 };
 
+const setCreateTransaction = (account: string) => {
+  return {
+    type: EUserActionTypes.SET_CREATE_TRANSACTION,
+    account,
+  };
+};
+
+const setCreateTransactionSuccess = (payload: ITransaction) => {
+  return {
+    type: EUserActionTypes.SET_TRANSACTION_SUCCESS,
+    payload,
+  };
+};
+
 export const userAction = {
   loginSuccess,
   getAccountInfoSuccess,
   getEnsNameSuccess,
   getTickersSuccess,
   setTransactionInProgress,
-  setTransactionInfoWallet
+  setTransactionInfoWallet,
+  setCreateTransaction,
+  setCreateTransactionSuccess
 };

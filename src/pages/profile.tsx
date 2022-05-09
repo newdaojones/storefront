@@ -3,13 +3,15 @@ import QRIcon from '../assets/images/qrCodeIcon.svg';
 import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getBalanceInUSD} from "../helpers/tx";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {selectTickers} from "../store/selector";
 import numeral from "numeral";
 import {convertETHtoUSD} from "../helpers/currency";
+import {userAction} from "../store/actions";
 
 export const ProfilePage = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const { accounts, balances } = useWalletConnectClient();
 
@@ -21,6 +23,7 @@ export const ProfilePage = () => {
     //TODO scan
     //dispatch(userAction.setSelectedWallet(wallet));
     //history.push("/scan");
+    dispatch(userAction.setCreateTransaction(accountBalance.account));
     history.push("/buy");
   };
 

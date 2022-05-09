@@ -2,10 +2,11 @@ import { all, put, takeLatest, call } from 'redux-saga/effects';
 import { AxiosResponse } from 'axios';
 import { EUserActionTypes } from '../../enums';
 import { UserService } from '../../services';
-import { userAction } from '../actions/user.action';
+import { userAction } from '../actions';
 import { toast } from 'react-toastify';
 import { ens } from '../../utils/walletConnect';
 import { ITicker } from '../../models';
+import {formatTestTransaction, ITransaction} from "../../helpers/tx";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -13,27 +14,16 @@ export function storageKey(storagePrefix: string): string {
 
 export default function* root() {
   yield all([
-    // takeLatest(EUserActionTypes.LOGIN_SUCCESS as any, watchGetAccountInfo),
     takeLatest(EUserActionTypes.LOGIN_REQUEST as any, watchGetEnsName),
     takeLatest(EUserActionTypes.LOGIN_SUCCESS as any, watchGetTickers),
 
-    //After login success api
-    //takeLatest(EUserActionTypes.GET_ACCOUNT_INFO_SUCCESS as any, watchGetFundBalances),
+    takeLatest(EUserActionTypes.SET_CREATE_TRANSACTION as any, watchCreateTransactions),
   ]);
 }
 
-// function* watchGetAccountInfo() {
-//   try {
-//     const res: AxiosResponse<IUserInfo> = yield call(UserService.getMeApi);
-//     yield put(userAction.getAccountInfoSuccess(res.data));
-//   } catch (err: any) {
-//     toast.error(err.message);
-//   }
-// }
-
 function* watchGetEnsName(action: { type: EUserActionTypes; payload: string }) {
   try {
-    let ensName = null;
+    let ensName;
     let address: string = '';
     ({ name: ensName } = yield ens.getName(action.payload));
 
@@ -55,6 +45,15 @@ function* watchGetTickers() {
   try {
     const res: AxiosResponse<ITicker[]> = yield call(() => UserService.getTickersApi());
     yield put(userAction.getTickersSuccess(res.data));
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+}
+
+function* watchCreateTransactions(action: { type: EUserActionTypes; account: string }) {
+  try {
+    const res: ITransaction = yield call(() => formatTestTransaction(action.account));
+    yield put(userAction.setCreateTransactionSuccess(res));
   } catch (err: any) {
     toast.error(err.message);
   }

@@ -38,6 +38,10 @@ export const selectTickers = createSelector([selectUserState], userState => {
   return userState.tickers;
 });
 
+export const selectCreateTransaction = createSelector([selectUserState], userState => {
+  return userState.transactionData;
+});
+
 export const selectTransactionInProgress = createSelector([selectUserState], userState => {
   return userState.transactionInProgress;
 });
