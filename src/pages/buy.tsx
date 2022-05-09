@@ -40,6 +40,11 @@ export const BuyPage = () => {
   } = useJsonRpc();
 
   const onBuyClick = (): void => {
+    if (transactionInProgress == TransactionState.IN_PROGRESS) {
+      console.debug("skipping click while there's an ongoing trx");
+      return;
+    }
+
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     onSendTransaction(accountBalance).then(r => {})
   };

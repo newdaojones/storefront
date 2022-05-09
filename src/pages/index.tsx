@@ -55,7 +55,7 @@ export const Main = () => {
     { route: '/profile', icon: ProfileIcon },
   ];
 
-  let ens = ensName;
+  let ens = ensName || null;
   // if (!ensName) {
   //   ens = accountInfo?.memberENSAddress;
   // }

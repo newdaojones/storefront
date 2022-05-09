@@ -4,6 +4,7 @@ import meneIcon from '../../assets/images/menu_icon.png';
 import {IMenuItem} from '../../models';
 import {chainData} from '../../consts';
 import {Dropdown} from "./dropdown";
+import {getDisplayName} from "../../utils";
 
 export const Menu = ({
                        size,
@@ -12,25 +13,12 @@ export const Menu = ({
                        items,
                        disabled = false,
                        status,
-                       ensName = '',
+                       ensName = null,
                        account = '',
                      }: Props) => {
       const [focused, setFocused] = useState(true);
 
-      let name = '';
-      if (ensName) {
-        name = ensName;
-      } else if (account) {
-        const [namespace, reference, address] = account.split(':');
-
-        if (chainData[namespace] && chainData[namespace][reference]) {
-          const chainMeta = chainData[namespace][reference];
-          const lenght = address.length
-          name = `${chainMeta.symbol.toLowerCase()}: ${address.slice(0, 6)}...${address.slice(lenght - 4, lenght)}`;
-        }
-      }
-
-
+      const name = getDisplayName(account, ensName)
       const onPaymentsClick = () => {
       }
 
@@ -57,10 +45,15 @@ export const Menu = ({
                   <p className="text-white mr-2">
                     {status}
                   </p>
-                  {!disabled && name && <p className="text-white mr-2">{name}</p>}
+                  {!disabled && !account && name && <p className="text-white mr-2">{name}</p>}
                 </div>
                   {
-                      !disabled && name && <Dropdown onDisconnect={onDisconnect}/>
+                      !disabled && name && <Dropdown
+                          onDisconnect={onDisconnect}
+                          connectionStatus={status}
+                          account={account}
+                          ensName={ensName}
+                      />
                   }
               </div>
 
@@ -79,6 +72,6 @@ interface Props {
   items: IMenuItem[];
   disabled?: boolean;
   status: string;
-  ensName?: string;
+  ensName: string | null;
   account?: string;
 }

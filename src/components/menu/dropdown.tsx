@@ -1,8 +1,16 @@
 import React, {useRef} from "react";
 import {createPopper} from "@popperjs/core";
 import menuIcon from '../../assets/images/profile.svg';
+import {getConnectionStatusDisplay, getDisplayName} from "../../utils";
 
-export const Dropdown = ({ onDisconnect = () => {}}) => {
+interface Props {
+    onDisconnect?: () => void;
+    connectionStatus: string;
+    account: string;
+    ensName: string | null;
+}
+
+export const Dropdown = ({ onDisconnect = () => {}, connectionStatus, account, ensName = null}: Props) => {
     const btnDropdownRef = useRef<HTMLImageElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
     const color = 'white';
@@ -19,6 +27,8 @@ export const Dropdown = ({ onDisconnect = () => {}}) => {
     const closeDropdownPopover = () => {
         setDropdownPopoverShow(false);
     };
+    const name = getDisplayName(account, ensName)
+
     return (
             <div className="flex flex-col">
                 <div className="w-full sm:w-6/12 md:w-4/12 px-4">
@@ -68,16 +78,22 @@ export const Dropdown = ({ onDisconnect = () => {}}) => {
                                 Disconnect
                             </a>
                             <div className="h-0 my-2 border border-solid border-t-0 border-slate-800 opacity-25" />
-                            <a
-                                href="#pablo"
+                            <div
                                 className={
-                                    "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
+                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
                                     (color === "white" ? " text-slate-700" : "text-white")
                                 }
-                                onClick={e => e.preventDefault()}
                             >
-                                About
-                            </a>
+                                {getConnectionStatusDisplay(account)}
+                            </div>
+                            <div
+                                className={
+                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
+                                    (color === "white" ? " text-slate-700" : "text-white")
+                                }
+                            >
+                                {name}
+                            </div>
                         </div>
                     </div>
                 </div>
