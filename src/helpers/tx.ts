@@ -4,6 +4,7 @@ import { BigNumber, utils } from "ethers";
 import { apiGetAccountNonce, apiGetGasPrices } from "./api";
 import {convertHexToNumber, toWad} from "./utilities";
 import {AccountBalances} from "./types";
+import {hexToNumber} from "@walletconnect/encoding";
 
 export async function getGasPrice(chainId: string): Promise<string> {
     if (chainId === "eip155:1") return toWad("20", 9).toHexString();
@@ -38,22 +39,32 @@ export async function formatTestTransaction(account: string): Promise<ITransacti
     const _gasPrice = await getGasPrice(chainId);
     const gasPrice = encoding.sanitizeHex(_gasPrice);
 
-    // gasLimit
+    // FIXME this should also be a param
+    //  gasLimit
     const _gasLimit = 21000;
     const gasLimit = encoding.sanitizeHex(encoding.numberToHex(_gasLimit));
 
-    // value
+    // FIXME value should be a param
     const _value = 123500000000000;
     const bigN = BigNumber.from(_value.toString())
     const formatted = utils.formatUnits(bigN, "ether")
     console.info(`transaction value: ${_value} WEI formatted: ${formatted} ETH`)
     //12340000000000 wei -> 0.0001234 ETH (18 decimals)
-
     const value = encoding.sanitizeHex(encoding.numberToHex(_value));
-
     const tx = { from: address, to: toAddress, data: "0x", nonce, gasPrice, gasLimit, value };
     return tx;
 }
+
+export const getHexValueAsBigNumber = (value: string): number => {
+    return hexToNumber(value)
+}
+
+export const getWeiToString = (value: string): string => {
+    const bigN = BigNumber.from(value)
+    const formatted = utils.formatUnits(bigN, "ether")
+    return formatted
+}
+
 
 export interface ITransaction {
     from: string;

@@ -13,7 +13,7 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress} from "../helpers";
 import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
-import {AccountBalance, getBalanceInUSD} from "../helpers/tx";
+import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber, getWeiToString} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertUSDtoETH} from "../helpers/currency";
@@ -107,7 +107,14 @@ export const BuyPage = () => {
   const paymentTotalUSD = paymentFeeUsd + paymentValueUsd;
   const paymentValueEth = convertUSDtoETH(paymentTotalUSD, tickers);
   console.info(`payment value ${paymentTotalUSD} USD  = ${paymentValueEth} ETH. `)
-  console.info(`transac value ${transaction?.value} gasPrice ${transaction?.gasPrice}  `)
+  let gasPriceString = null;
+  if (transaction?.gasPrice) {
+    const number = getHexValueAsBigNumber(transaction?.gasPrice);
+    const gasPriceDecimal = getWeiToString(number.toString())
+    console.info(`transac value ${transaction?.value} 
+  gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? number : ''}  decimal: ${gasPriceDecimal}`)
+  }
+
 
 
 
