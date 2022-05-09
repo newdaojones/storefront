@@ -24,9 +24,6 @@ export const ProfilePage = () => {
     history.push("/buy");
   };
 
-  console.info(`account balance ${accountBalance.balance} ${accountBalance.balanceString}`)
-  console.info(`tickers ${tickers} size: ${tickers.length}`)
-
   const balanceN = Number(accountBalance.balanceString);
   const balanceUSD = convertETHtoUSD(balanceN, tickers);
 

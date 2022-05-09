@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 
 import meneIcon from '../../assets/images/menu_icon.png';
 import {IMenuItem} from '../../models';
-import {chainData} from '../../consts';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
 

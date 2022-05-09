@@ -59,6 +59,8 @@ export const BuyPage = () => {
     // Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
     // https://kovan.etherscan.io/address/0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
     // https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
+
+    //TODO this should be done before the pay event to be able to show trx fees.
     const transaction = await formatTestTransaction(account)
 
     await ethereumRpc.testSendTransaction(chainId, address, transaction)
