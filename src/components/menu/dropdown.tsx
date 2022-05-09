@@ -1,20 +1,16 @@
 import React, {useRef} from "react";
-import {createPopper, flip, preventOverflow} from "@popperjs/core";
+import {createPopper} from "@popperjs/core";
+import menuIcon from '../../assets/images/profile.svg';
 
 const Dropdown = () => {
-    const btnDropdownRef = useRef<HTMLButtonElement>(null);
-    const popoverDropdownRef = useRef<HTMLButtonElement>(null);
+    const btnDropdownRef = useRef<HTMLImageElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
     const color = 'white';
-    // dropdown props
     const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
-    // const btnDropdownRef = React.createRef();
-    // const popoverDropdownRef = React.createRef();
     const openDropdownPopover = () => {
-        if (btnDropdownRef.current) {
-            createPopper(btnDropdownRef.current, popoverDropdownRef.current!!, {
-                modifiers: [preventOverflow],
+        if (btnDropdownRef.current && popoverRef.current) {
+            createPopper(btnDropdownRef.current, popoverRef.current, {
                 placement: "bottom",
-                strategy: "fixed",
             });
             setDropdownPopoverShow(true);
         }
@@ -23,22 +19,15 @@ const Dropdown = () => {
     const closeDropdownPopover = () => {
         setDropdownPopoverShow(false);
     };
-    // bg colors
-    let bgColor;
-    color === "white"
-        ? (bgColor = "bg-slate-700")
-        : (bgColor = "bg-" + color + "-500");
     return (
-        <>
-            <div className="flex flex-wrap">
+            <div className="flex flex-col">
                 <div className="w-full sm:w-6/12 md:w-4/12 px-4">
-                    <div className="relative inline-flex align-middle w-full">
-                        <button
+                    <div className="relative flex align-middle w-full">
+                        <img
                             className={
-                                "text-white h-20 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 " +
-                                bgColor
+                                "text-white w-10 h-10 font-bold uppercase text-sm rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 cursor-pointer"
                             }
-                            type="button"
+                            src={menuIcon} alt="bla"
                             ref={btnDropdownRef}
                             onClick={() => {
                                 dropdownPopoverShow
@@ -46,18 +35,20 @@ const Dropdown = () => {
                                     : openDropdownPopover();
                             }}
                         >
-                            {color === "white" ? "White Dropdown" : color + " Dropdown"}
-                        </button>
+
+                        </img>
+                        {/*<img className="w-10 h-10 z-10" src={menuIcon} alt="bla"/>*/}
                         <div
+                            ref={popoverRef}
                             className={
                                 (dropdownPopoverShow ? "block " : "hidden ") +
-                                (color === "white" ? "bg-white " : bgColor + " ") +
-                                "text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                                (color === "white" ? "bg-white " : "" + " ") +
+                                "text-base z-10 py-2 list-none rounded shadow-lg mt-1"
                             }
                             style={{ minWidth: "12rem" }}
                         >
                             <a
-                                href="#action1"
+                                href="#"
                                 className={
                                     "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
                                     (color === "white" ? " text-slate-700" : "text-white")
@@ -91,7 +82,6 @@ const Dropdown = () => {
                     </div>
                 </div>
             </div>
-        </>
     );
 };
 

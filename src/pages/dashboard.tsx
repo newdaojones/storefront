@@ -8,8 +8,6 @@ import {BuyPage} from "./buy";
 import {ConfirmationPage} from "./confirmation";
 
 export const Dashboard = () => {
-    //const accountInfo = useSelector(selectAccountInfo);
-
     let mainPage = ProfilePage;
     return (
       <div className="w-full h-full flex-1">
