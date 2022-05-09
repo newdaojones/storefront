@@ -1,4 +1,5 @@
 import {chainData} from "../consts";
+import {ellipseAddress} from "../helpers";
 
 export const sleep = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -31,8 +32,7 @@ export const getDisplayName = (account: string, ensName: string | null) : string
     if (chainData[namespace] && chainData[namespace][reference]) {
       const chainMeta = chainData[namespace][reference];
       console.info(`chainMeta ${chainMeta.symbol} ${chainMeta.currency} ${chainMeta.name}`);
-      const length = address.length
-      name = `${address.slice(0, 6)}...${address.slice(length - 4, length)}`;
+      name = ellipseAddress(address);
     }
   }
   return name;
