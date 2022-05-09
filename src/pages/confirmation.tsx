@@ -1,26 +1,20 @@
 import React from 'react';
-import { BigNumber, utils } from "ethers";
+import {BigNumber, utils} from "ethers";
 import QRIcon from '../assets/images/qrCodeIcon.svg';
-import SearchIcon from "../assets/images/bxs_search-alt-2.svg";
-import {useDispatch, useSelector} from "react-redux";
-import {selectAccountInfo, selectBuyTransaction} from "../store/selector";
-import {useWalletConnectClient} from "../contexts/walletConnect";
-import {getBalanceInUSD} from "../helpers/tx";
+import {useSelector} from "react-redux";
+import {selectBuyTransaction} from "../store/selector";
 import {useHistory} from "react-router-dom";
-import {convertHexToNumber, ellipseAddress, sanitizeDecimals} from "../helpers";
+import {convertHexToNumber, ellipseAddress} from "../helpers";
 
 export const ConfirmationPage = () => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const accountInfo = useSelector(selectAccountInfo)
-  const { accounts, balances } = useWalletConnectClient();
-  const accountBalance = getBalanceInUSD(accounts, balances);
+  //const { accounts, balances } = useWalletConnectClient();
 
   let transactionInfo = useSelector(selectBuyTransaction)
 
   const onHomeClick = (): void => {
-    //history.push("/profile")
-      history.go(-2)
+      history.replace("/profile")
+      //history.go(-2)
   }
 
   const onQRCodeClick = (): void => {
