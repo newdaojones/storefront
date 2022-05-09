@@ -18,7 +18,7 @@ ReactDOM.render(
   <Provider store={store}>
     <WalletConnectProvider>
         <JsonRpcContextProvider>
-      <Router basename={'/walletconnect-v2'}>
+        <Router basename={'/storefront'}>
         <Main />
         <ToastContainer className="p-4"
           toastClassName="w-full m-w-45 flex bg-black bg-opacity-60 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
