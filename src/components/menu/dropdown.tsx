@@ -2,7 +2,7 @@ import React, {useRef} from "react";
 import {createPopper} from "@popperjs/core";
 import menuIcon from '../../assets/images/profile.svg';
 
-const Dropdown = () => {
+export const Dropdown = ({ onDisconnect = () => {}}) => {
     const btnDropdownRef = useRef<HTMLImageElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
     const color = 'white';
@@ -63,7 +63,7 @@ const Dropdown = () => {
                                     "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
                                     (color === "white" ? " text-slate-700" : "text-white")
                                 }
-                                onClick={e => e.preventDefault()}
+                                onClick={onDisconnect}
                             >
                                 Disconnect
                             </a>
@@ -85,8 +85,8 @@ const Dropdown = () => {
     );
 };
 
-export default function DropdownRender() {
-    return (
-            <Dropdown />
-    );
-}
+// export const DropdownRender = ({onDisconnect: any}) => {
+//     return (
+//             <Dropdown onDisconnect={onDisconnect}/>
+//     );
+// }

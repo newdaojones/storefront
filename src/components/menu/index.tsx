@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import meneIcon from '../../assets/images/menu_icon.png';
 import {IMenuItem} from '../../models';
 import {chainData} from '../../consts';
-import DropdownRender from "./dropdown";
+import {Dropdown} from "./dropdown";
 
 export const Menu = ({
                        size,
@@ -60,7 +60,7 @@ export const Menu = ({
                   {!disabled && name && <p className="text-white mr-2">{name}</p>}
                 </div>
                   {
-                      !disabled && name && <DropdownRender/>
+                      !disabled && name && <Dropdown onDisconnect={onDisconnect}/>
                   }
               </div>
 
