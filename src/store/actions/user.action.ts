@@ -47,19 +47,26 @@ const setTransactionInfoWallet = (payload: ITransactionInfo) => {
   };
 };
 
-const setCreateTransaction = (payload: {account: string, amount: number}) => {
+const setCreateTransaction = (payload: { amount: number;  account: string}) => {
   return {
     type: EUserActionTypes.SET_CREATE_TRANSACTION,
     payload
   };
 };
 
-const setCreateTransactionSuccess = (payload: ITransaction) => {
+const unsetTransaction = () => {
+  return {
+    type: EUserActionTypes.UNSET_TRANSACTION,
+  };
+};
+
+const setCreateTransactionSuccess = (payload: ITransaction | null) => {
   return {
     type: EUserActionTypes.SET_TRANSACTION_SUCCESS,
     payload,
   };
 };
+
 
 export const userAction = {
   loginSuccess,
@@ -69,5 +76,6 @@ export const userAction = {
   setTransactionInProgress,
   setTransactionInfoWallet,
   setCreateTransaction,
+  unsetTransaction,
   setCreateTransactionSuccess
 };

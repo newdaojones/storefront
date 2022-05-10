@@ -18,6 +18,7 @@ export default function* root() {
     takeLatest(EUserActionTypes.LOGIN_SUCCESS as any, watchGetTickers),
 
     takeLatest(EUserActionTypes.SET_CREATE_TRANSACTION as any, watchCreateTransactions),
+    takeLatest(EUserActionTypes.UNSET_TRANSACTION as any, watchUnsetTransaction),
   ]);
 }
 
@@ -58,3 +59,12 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
     toast.error(err.message);
   }
 }
+
+function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
+  try {
+    yield put(userAction.setCreateTransactionSuccess(null));
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+}
+

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import QRIcon from '../assets/images/qrCodeIcon.svg';
 import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getBalanceInUSD} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
-import {selectTickers} from "../store/selector";
+import {selectCreateTransaction, selectTickers} from "../store/selector";
 import numeral from "numeral";
 import {convertETHtoUSD, convertUSDtoETH} from "../helpers/currency";
 import {userAction} from "../store/actions";
@@ -13,11 +13,20 @@ import {toast} from "react-toastify";
 export const ProfilePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const [ locationKeys, setLocationKeys ] = useState(false)
   const { accounts, balances } = useWalletConnectClient();
 
   const accountBalance = getBalanceInUSD(accounts, balances);
   const tickers = useSelector(selectTickers)
+
+  const trxCreated = useSelector(selectCreateTransaction)
+
+  useEffect(() => {
+    if (trxCreated && trxCreated.value && !locationKeys) {
+      setLocationKeys(true);
+      history.push("/buy");
+    }
+  }, [trxCreated?.value, locationKeys, setLocationKeys, history]);
 
   const moveToWallet = (): void => {
     console.log(`navigating to scan page `)
@@ -32,7 +41,6 @@ export const ProfilePage = () => {
       return;
     }
     dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount:ethTotal}));
-    history.push("/buy");
   };
 
   const balanceN = Number(accountBalance.balanceString);

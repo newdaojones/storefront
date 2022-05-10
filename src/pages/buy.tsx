@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import QRIcon from '../assets/images/creditcard.svg';
 import ETHIcon from '../assets/images/eth.svg';
 import {useDispatch, useSelector} from "react-redux";
@@ -44,6 +44,24 @@ export const BuyPage = () => {
     isRpcRequestPending,
     ethereumRpc,
   } = useJsonRpc();
+
+  const [ locationKeys, setLocationKeys ] = useState("")
+
+  useEffect(() => {
+    return history.listen(location => {
+      if (history.action === 'PUSH') {
+      }
+      if (history.action === 'POP') {
+        if (locationKeys[1] === location.key) {
+          // Handle forward event
+        } else {
+          console.info(`back event, clearing trx. `)
+          dispatch(userAction.unsetTransaction());
+          history.goBack();
+        }
+      }
+    })
+  }, [ locationKeys, ])
 
   const onBuyClick = (): void => {
     if (transactionInProgress == TransactionState.IN_PROGRESS) {
@@ -131,6 +149,9 @@ export const BuyPage = () => {
 
     console.info(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
     console.info(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
+  } else {
+    console.info(`transaction value not available. maybe should go back?`)
+    //history.goBack();
   }
   return (
     <div className="w-full h-full flex justify-center">
