@@ -50,9 +50,9 @@ function* watchGetTickers() {
   }
 }
 
-function* watchCreateTransactions(action: { type: EUserActionTypes; account: string }) {
+function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; amount: number }}) {
   try {
-    const res: ITransaction = yield call(() => formatTestTransaction(action.account));
+    const res: ITransaction = yield call(() => formatTestTransaction(action.payload.account, action.payload.amount));
     yield put(userAction.setCreateTransactionSuccess(res));
   } catch (err: any) {
     toast.error(err.message);

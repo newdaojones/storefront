@@ -28,7 +28,7 @@ export async function getGasPrice(chainId: string): Promise<string> {
  *
  * @param account
  */
-export async function formatTestTransaction(account: string): Promise<ITransaction> {
+export async function formatTestTransaction(account: string, sendAmount: number): Promise<ITransaction> {
     const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
 
     const [namespace, reference, address] = account.split(":");
@@ -45,36 +45,42 @@ export async function formatTestTransaction(account: string): Promise<ITransacti
 
     // gasPrice
     const _gasPrice = await getGasPrice(chainId);
-    const gasPrice = encoding.sanitizeHex(_gasPrice);
+    const gasPrice = encodeNumberAsHex(Number(_gasPrice));
+    //const gasPrice = encoding.sanitizeHex(_gasPrice);
 
     // FIXME this should also be a param
     //  gasLimit
     const _gasLimit = 21000;
-    const gasLimit = encoding.sanitizeHex(encoding.numberToHex(_gasLimit));
+    //const gasLimit = encoding.sanitizeHex(encoding.numberToHex(_gasLimit));
+    const gasLimit = encodeNumberAsHex(_gasLimit)
 
-    // FIXME value should be a param
-    const _value = 123500000000000;
+
+    const _value = toWad(sendAmount.toString());
+    console.info(`send amount ${sendAmount} toWat -> ${_value} `)
+    //const _value = web3.utils.toWei(sendAmount);
+    // const _value = 123500000000000; //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
     // const _value = 42000;
-    //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
 
 
     //12340000000000 wei -> 0.0001234 ETH (18 decimals)
     // let hex = encoding.numberToHex(_value);
     // const value = encoding.sanitizeHex(hex);
-    const value = encodeNumberAsHex(_value)
+    //const value = encodeNumberAsHex(_value.)
+    const value = encoding.sanitizeHex(_value.toHexString());
 
+    //TODO this is only debug code
     const bigN = BigNumber.from(_value.toString())
     const formatted = utils.formatUnits(bigN, "ether")
     console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
 
-
-    // const val2  = web3.utils.toDecimal(value)
-    // const val3 = encoding.hexToNumber(value)
+    const val1  = web3.utils.hexToNumber(value);
+    const val2  = web3.utils.toDecimal(value);
+    const val3 = encoding.hexToNumber(value);
     // const val4 = BigNumber.from(value);
     // const val5 = utils.formatUnits(value, "ether")
     // const val6 = web3.utils.toBN(value)
     // const val7 = web3.utils.toWei(value, 'ether')
-    // console.info(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
+    console.info(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
     const tx = { from: address, to: toAddress, data: "0x", nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
     return tx;
 }

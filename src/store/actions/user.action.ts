@@ -47,10 +47,10 @@ const setTransactionInfoWallet = (payload: ITransactionInfo) => {
   };
 };
 
-const setCreateTransaction = (account: string) => {
+const setCreateTransaction = (payload: {account: string, amount: number}) => {
   return {
     type: EUserActionTypes.SET_CREATE_TRANSACTION,
-    account,
+    payload
   };
 };
 

@@ -6,8 +6,9 @@ import {getBalanceInUSD} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
 import {selectTickers} from "../store/selector";
 import numeral from "numeral";
-import {convertETHtoUSD} from "../helpers/currency";
+import {convertETHtoUSD, convertUSDtoETH} from "../helpers/currency";
 import {userAction} from "../store/actions";
+import {toast} from "react-toastify";
 
 export const ProfilePage = () => {
   const history = useHistory();
@@ -20,10 +21,17 @@ export const ProfilePage = () => {
 
   const moveToWallet = (): void => {
     console.log(`navigating to scan page `)
-    //TODO scan
-    //dispatch(userAction.setSelectedWallet(wallet));
+    //TODO scan to determine price to pay, before going to buy
     //history.push("/scan");
-    dispatch(userAction.setCreateTransaction(accountBalance.account));
+
+    //FIXME hardcoded price
+    const paymentSubtotalUsd = 0.55;
+    const ethTotal = convertUSDtoETH(paymentSubtotalUsd, tickers);
+    if (!ethTotal) {
+      toast.error(`Could not convert value to crypto. Invalid tickers ${tickers.length}`);
+      return;
+    }
+    dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount:ethTotal}));
     history.push("/buy");
   };
 

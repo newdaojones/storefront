@@ -7,7 +7,7 @@ import { useWalletConnectClient } from "./walletConnect";
 import {
   DEFAULT_EIP155_METHODS,
 } from '../consts';
-import {formatTestTransaction, ITransaction} from "../helpers/tx";
+import {ITransaction} from "../helpers/tx";
 
 /**
  * Types

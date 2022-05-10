@@ -101,23 +101,36 @@ export const BuyPage = () => {
   };
 
 
-  const paymentFeeUsd = 0.05;
-  const paymentValueUsd = 0.20;
+  let paymentFeeUsd = 0;
+  let paymentValueUsd = 0;
 
-  const paymentTotalUSD = paymentFeeUsd + paymentValueUsd;
-  const paymentValueEth = convertUSDtoETH(paymentTotalUSD, tickers);
-  console.info(`payment value ${paymentTotalUSD} USD  = ${paymentValueEth} ETH. `)
+  let paymentTotalUSD = 0;
+  let paymentValueEth = 0;
   let gasPriceString = null;
-  if (transaction?.gasPrice) {
+  if (transaction?.value) {
+    paymentValueEth = Number(getHexValueAsBigNumber(transaction?.value));
+
     const gasPriceNumber = getHexValueAsBigNumber(transaction?.gasPrice);
     const gasPriceUsd = convertETHtoUSD(Number(gasPriceNumber), tickers);
     console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
+    const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
+    const gasLimitUsd = convertETHtoUSD(Number(gasLimitNumber), tickers);
+    console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
+
     const trxValueAsNumber = getHexValueAsBigNumber(transaction?.value);
     const trxPriceUsd = convertETHtoUSD(Number(trxValueAsNumber), tickers);
 
-    console.info(`trxValue ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
+    if (trxPriceUsd && gasPriceUsd) {
+      paymentValueUsd = trxPriceUsd;
+      paymentFeeUsd = gasPriceUsd;
+      paymentTotalUSD = trxPriceUsd + gasPriceUsd;
+    } else {
+      console.info(`unable to calculate total trx price in USD`);
+    }
 
+    console.info(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
+    console.info(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
   }
   return (
     <div className="w-full h-full flex justify-center">
@@ -141,20 +154,20 @@ export const BuyPage = () => {
           <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
             <div className="w-full flex justify-between p-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
-              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentValueUsd}`}</p>
+              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentValueUsd.toFixed(2)}`}</p>
             </div>
             <div className="w-full flex justify-between pl-4 pr-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Transaction Fee</p>
-              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentFeeUsd}`}</p>
+              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentFeeUsd.toFixed(6)}`}</p>
             </div>
             <div className="flex flex-col w-full text-secondary mt-4 justify-between" style={{ height: 1, backgroundColor: '#FFB01D', backgroundRepeat: "no-repeat"}}/>
             <div className="w-full flex justify-between p-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Subtotal</p>
-              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentTotalUSD}`}</p>
+              <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentTotalUSD.toFixed(2)}`}</p>
             </div>
             <div className="w-full flex justify-between pl-4 pr-4 pb-6">
               <p className="text-white text-start text-xs mr-2">Total Price</p>
-              <p className="text-start text-secondary text-xs mr-2">{`$ ${paymentTotalUSD}`}</p>
+              <p className="text-start text-secondary text-xs mr-2">{`$ ${paymentTotalUSD.toFixed(2)}`}</p>
             </div>
           </div>
         </div>
@@ -180,7 +193,7 @@ export const BuyPage = () => {
                   <div className="cube c3"></div>
                 </div> :
                 <div className="w-full flex flex-col items-center justify-center">
-                  <p className="text-white text-start mr-2">{`Pay $${paymentTotalUSD}`}</p>
+                  <p className="text-white text-start mr-2">{`Pay $${paymentTotalUSD.toFixed(2)}`}</p>
                   <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
                 </div>}
           </button>
