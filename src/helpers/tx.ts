@@ -2,9 +2,10 @@ import * as encoding from "@walletconnect/encoding";
 import { BigNumber, utils } from "ethers";
 
 import { apiGetAccountNonce, apiGetGasPrices } from "./api";
-import {convertHexToNumber, toWad} from "./utilities";
+import {convertHexToNumber, convertHexToUtf8, toWad} from "./utilities";
 import {AccountBalances} from "./types";
-import {hexToNumber} from "@walletconnect/encoding";
+import {hexToNumber, sanitizeBytes, utf8ToNumber} from "@walletconnect/encoding";
+import {web3} from "../utils/walletConnect";
 
 export async function getGasPrice(chainId: string): Promise<string> {
     if (chainId === "eip155:1") return toWad("20", 9).toHexString();
@@ -16,6 +17,13 @@ export async function getGasPrice(chainId: string): Promise<string> {
 /**
  * See transaction https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
  * by hash
+ *
+ * FIXME
+ * transaction value: 123500000000000 WEI formatted: 0.0001235 ETH produces problems when converting to hex
+ * make tests for it. The hex below doesn't contain the full value but only a small part
+ * transaction value: 123500000000000 number bigN: 123500000000000 formatted: 0.0001235 - hex: 95a13800 sanitized: 0x95a13800 tx.ts:64
+ * transaction value hex2: 0x705295a13800 hex3: 0x705295a13800 sanitized: 0x705295a13800
+ * TRANS decodvalue:2510370816000000000000000000 WEI decimal:2510370816 decoded:2510370816 ETH - f: 0.000000002510370816
  *
  *
  * @param account
@@ -46,22 +54,45 @@ export async function formatTestTransaction(account: string): Promise<ITransacti
 
     // FIXME value should be a param
     const _value = 123500000000000;
+    // const _value = 42000;
+    //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
+
+
+    //12340000000000 wei -> 0.0001234 ETH (18 decimals)
+    // let hex = encoding.numberToHex(_value);
+    // const value = encoding.sanitizeHex(hex);
+    const value = encodeNumberAsHex(_value)
+
     const bigN = BigNumber.from(_value.toString())
     const formatted = utils.formatUnits(bigN, "ether")
-    console.info(`transaction value: ${_value} WEI formatted: ${formatted} ETH`)
-    //12340000000000 wei -> 0.0001234 ETH (18 decimals)
-    const value = encoding.sanitizeHex(encoding.numberToHex(_value));
-    const tx = { from: address, to: toAddress, data: "0x", nonce, gasPrice, gasLimit, value };
+    console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
+
+
+    // const val2  = web3.utils.toDecimal(value)
+    // const val3 = encoding.hexToNumber(value)
+    // const val4 = BigNumber.from(value);
+    // const val5 = utils.formatUnits(value, "ether")
+    // const val6 = web3.utils.toBN(value)
+    // const val7 = web3.utils.toWei(value, 'ether')
+    // console.info(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
+    const tx = { from: address, to: toAddress, data: "0x", nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
     return tx;
 }
 
-export const getHexValueAsBigNumber = (value: string): number => {
-    return hexToNumber(value)
+export const encodeNumberAsHex = (value: number): string => {
+    const hex3 = web3.utils.numberToHex(value);
+    const sanitized = encoding.sanitizeHex(hex3);
+    return sanitized;
+}
+
+export const getHexValueAsBigNumber = (value: string): string => {
+    const decoded = web3.utils.hexToNumber(value);
+    return utils.formatUnits(decoded, "ether")
 }
 
 export const getWeiToString = (value: string): string => {
     const bigN = BigNumber.from(value)
-    const formatted = utils.formatUnits(bigN, "ether")
+    const formatted = utils.formatUnits(value, "ether")
     return formatted
 }
 

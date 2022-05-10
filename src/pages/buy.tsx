@@ -16,7 +16,7 @@ import {toast} from "react-toastify";
 import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber, getWeiToString} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
-import {convertUSDtoETH} from "../helpers/currency";
+import {convertETHtoUSD, convertUSDtoETH} from "../helpers/currency";
 
 function isStartOrInProgress(transactionInProgress: TransactionState) {
   return transactionInProgress == TransactionState.INITIAL || transactionInProgress == TransactionState.IN_PROGRESS;
@@ -109,15 +109,16 @@ export const BuyPage = () => {
   console.info(`payment value ${paymentTotalUSD} USD  = ${paymentValueEth} ETH. `)
   let gasPriceString = null;
   if (transaction?.gasPrice) {
-    const number = getHexValueAsBigNumber(transaction?.gasPrice);
-    const gasPriceDecimal = getWeiToString(number.toString())
-    console.info(`transac value ${transaction?.value} 
-  gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? number : ''}  decimal: ${gasPriceDecimal}`)
+    const gasPriceNumber = getHexValueAsBigNumber(transaction?.gasPrice);
+    const gasPriceUsd = convertETHtoUSD(Number(gasPriceNumber), tickers);
+    console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
+
+    const trxValueAsNumber = getHexValueAsBigNumber(transaction?.value);
+    const trxPriceUsd = convertETHtoUSD(Number(trxValueAsNumber), tickers);
+
+    console.info(`trxValue ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
+
   }
-
-
-
-
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-full flex flex-col justify-center">
