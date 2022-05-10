@@ -152,7 +152,8 @@ export const BuyPage = () => {
     console.info(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
   } else {
     console.info(`transaction value not available. maybe should go back?`)
-    history.goBack();
+    history.length = 1;
+    history.replace("/profile");
   }
   return (
     <div className="w-full h-full flex justify-center">
