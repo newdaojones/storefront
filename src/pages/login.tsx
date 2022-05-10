@@ -43,13 +43,14 @@ export const Login = () => {
     }, [qrCodeUri]);
     return (
         <div className="w-full h-full flex items-center justify-center flex-col">
-            <h4 className="text-white">Welcome to the StoreFront DApp</h4>
+            <h4 className="font-righteous text-white">Welcome to the StoreFront DApp</h4>
             <a href={qrCodeUri} className="">
                 <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden mt-8 qrcode">
                     <img className="w-16 h-16 absolute z-20" src={logoIcon} alt=""/>
                 </div>
             </a>
-            <p className="text-white mt-4 mb-4">scan the qRCode or tap the button below to connect a wallet</p>
+            <p className="font-montserrat text-white mt-8 mb-4 mr-8 ml-8">Scan the qrCode or tap the button below <br/>to connect a wallet</p>
+
             <a href={qrCodeUri}>
                 <button style={{
                     backgroundColor: '#615793',
@@ -57,7 +58,7 @@ export const Login = () => {
                     borderRadius: '25px',
                     margin: '10px 0px',
                     cursor: 'pointer'
-                }} className="text-white mt-4 mb-4">Connect with WalletConnect v2</button>
+                }} className="font-righteous text-white mt-8 mb-8">Connect with WalletConnect v2</button>
             </a>
         </div>
     );

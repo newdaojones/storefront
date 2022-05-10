@@ -52,7 +52,7 @@ export const ProfilePage = () => {
         <img className="w-full p-10" src={QRIcon} alt="" onClick={moveToWallet} />
         <p className="text-white text-center font-bold">Scan QR Code</p>
         <div className="mt-4">
-          <p className="text-center text-white text-sm" style={{fontFamily: 'Righteous', fontStyle: 'normal',}}>
+          <p className="font-Righteous text-center text-white text-sm" style={{fontFamily: 'Righteous', fontStyle: 'normal',}}>
               Scan the qRCode provided by the store to checkout</p>
 
         </div>
@@ -64,13 +64,23 @@ export const ProfilePage = () => {
               <div className="text-white text-center font-bold">
                 <p style={{fontSize: "xx-large", fontFamily: 'Montserrat', fontStyle: 'normal',}} >
                   {
-                    balanceUSD ? numeral(balanceUSD).format('0,0.00')
+                    balanceUSD ? `$ ${numeral(balanceUSD).format('0,0.00')}`
+                        : ''
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center mb-2">
+              <div className="font-righteous text-white text-center font-bold">
+                <p>
+                  {
+                    balanceN ? numeral(balanceN).format('0.000000')
                         :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)
                   }
                 </p>
               </div>
-              <p style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="text-white text-center font-bold text-sm pt-2 ml-1">
-                {balanceUSD ? "USD" : "ETH"}
+              <p className="font-righteous text-white text-center font-bold text-sm ml-1">
+                {"ETH"}
               </p>
             </div>
           </div>

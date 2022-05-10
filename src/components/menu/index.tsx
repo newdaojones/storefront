@@ -4,6 +4,7 @@ import meneIcon from '../../assets/images/menu_icon.png';
 import {IMenuItem} from '../../models';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
+import {useHistory} from "react-router-dom";
 
 export const Menu = ({
                        size,
@@ -16,9 +17,12 @@ export const Menu = ({
                        account = '',
                      }: Props) => {
       const [focused, setFocused] = useState(true);
-
+      const history = useHistory()
       const name = getDisplayName(account, ensName)
       const onPaymentsClick = () => {
+      }
+      const onHomeClicked = () => {
+          history.replace("/profile")
       }
 
       const onDisconnectClicked = () => {
@@ -36,14 +40,14 @@ export const Menu = ({
                   position: 'relative',
                 }}
             >
-              <img className="h-20 w-20 ml-4" src={meneIcon} alt="" draggable={false} />
+              <img className="h-16 w-16 ml-4 mt-2" src={meneIcon} alt="" draggable={false} onClick={onHomeClicked} />
 
               {/*right*/}
               <div className="flex items-center">
                 <div className="flex flex-col items-end justify-end">
-                  <p className="text-white mr-2">
-                    {status}
-                  </p>
+                    {!disabled && !account && <p className="text-white text-sm mr-4">
+                        {status}
+                    </p>}
                   {!disabled && !account && name && <p className="text-white mr-2">{name}</p>}
                 </div>
                   {
