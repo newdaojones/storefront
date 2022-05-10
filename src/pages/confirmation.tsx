@@ -13,8 +13,8 @@ export const ConfirmationPage = () => {
   let transactionInfo = useSelector(selectBuyTransaction)
 
   const onHomeClick = (): void => {
+      history.goBack();
       history.replace("/profile")
-      //history.go(-2)
   }
 
   const onQRCodeClick = (): void => {
@@ -34,7 +34,7 @@ export const ConfirmationPage = () => {
             <img style={{alignSelf: "center", justifySelf:"center"}} className="w-30 h-30 min-w-max items-center justify-center p-4" src={QRIcon} alt="" onClick={onQRCodeClick} />
           </div>
       {/*Invoice*/}
-          <div className="w-full flex items-center justify-center mt-2 ml-8 mr-8">
+          <div className="w-full flex items-center justify-center mt-2">
               <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
                   <div className="w-full flex justify-between p-4">
                       <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
@@ -77,7 +77,7 @@ export const ConfirmationPage = () => {
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4 pb-6">
                       <p className="text-white text-start text-xs mr-2">Amount</p>
-                      <p className="text-start text-secondary text-xs mr-2">{formatted}</p>
+                      <p className="text-start text-secondary text-xs mr-2">{`${formatted.substring(0,8)} ETH`}</p>
                   </div>
               </div>
           </div>
