@@ -47,7 +47,7 @@ code {
 }
 
 :root {
-  --toastify-color-error: #da21b0;
+  --toastify-color-error: #FFFFFF;
   --toastify-icon-color-error: var(--toastify-color-error);
   --toastify-text-color-light: #FFFFFF;
   --toastify-toast-width: 350px;
@@ -55,7 +55,7 @@ code {
 }
 .Toastify__close-button {
   color: #fff;
-  margin-right: 10px;
+  margin-right: 5px;
 }
 .ReactModal__Overlay {
   z-index: 1000;
