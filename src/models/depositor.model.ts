@@ -56,4 +56,7 @@ export interface ITransactionInfo {
   fromAddress: string;
   toAddress: string;
   value: string;
+  paymentValueUsd: number;
+  paymentFeeUsd: number;
+  paymentTotalUSD: number;
 }
