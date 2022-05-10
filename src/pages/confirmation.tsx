@@ -34,21 +34,26 @@ export const ConfirmationPage = () => {
             <img style={{alignSelf: "center", justifySelf:"center"}} className="w-30 h-30 min-w-max items-center justify-center p-4" src={QRIcon} alt="" onClick={onQRCodeClick} />
           </div>
       {/*Invoice*/}
-          <div className="flex items-center justify-center mt-1">
-            <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
-              <div className="w-full flex justify-between p-4">
-                <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
-                <p className="text-white text-start text-xs mr-2 mt-2">$ 45.00</p>
+          <div className="w-full flex items-center justify-center mt-2 ml-8 mr-8">
+              <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
+                  <div className="w-full flex justify-between p-4">
+                      <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
+                      <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentValueUsd.toFixed(2)}`}</p>
+                  </div>
+                  <div className="w-full flex justify-between pl-4 pr-4">
+                      <p className="text-white text-start text-xs mr-2 mt-2">Transaction Fee</p>
+                      <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentFeeUsd.toFixed(6)}`}</p>
+                  </div>
+                  <div className="flex flex-col w-full text-secondary mt-4 justify-between" style={{ height: 1, backgroundColor: '#FFB01D', backgroundRepeat: "no-repeat"}}/>
+                  <div className="w-full flex justify-between p-4">
+                      <p className="text-white text-start text-xs mr-2 mt-2">Subtotal</p>
+                      <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
+                  </div>
+                  <div className="w-full flex justify-between pl-4 pr-4 pb-6">
+                      <p className="text-white text-start text-xs mr-2">Total Price</p>
+                      <p className="text-start text-secondary text-xs mr-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
+                  </div>
               </div>
-              <div className="w-full flex justify-between pl-4 pr-4">
-                <p className="text-white text-start text-xs mr-2">Transaction Fee</p>
-                <p className="text-white text-start text-xs mr-2">$ 5.00</p>
-              </div>
-              <div className="w-full flex justify-between mt-4 pl-4 pr-4 pb-6">
-                <p className="text-white text-start text-xs mr-2">Total Price</p>
-                <p className="text-start text-secondary text-xs mr-2">$ 50.00</p>
-              </div>
-            </div>
           </div>
       {/*Transaction Info*/}
           <div className="flex items-center justify-center mt-4">

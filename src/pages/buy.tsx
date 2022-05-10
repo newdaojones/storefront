@@ -101,8 +101,10 @@ export const BuyPage = () => {
               fromAddress: res.address!!,
               toAddress: res.toAddress || "",
               value: res.value  || "n/a",
-              transactionHash: res.result
-
+              transactionHash: res.result,
+              paymentValueUsd: paymentValueUsd,
+              paymentFeeUsd: paymentFeeUsd,
+              paymentTotalUSD: paymentTotalUSD,
             }
             dispatch(userAction.setTransactionInfoWallet(transactionInfo));
             history.push("/confirmation");
@@ -124,7 +126,6 @@ export const BuyPage = () => {
 
   let paymentTotalUSD = 0;
   let paymentValueEth = 0;
-  let gasPriceString = null;
   if (transaction?.value) {
     paymentValueEth = Number(getHexValueAsBigNumber(transaction?.value));
 
@@ -151,7 +152,7 @@ export const BuyPage = () => {
     console.info(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
   } else {
     console.info(`transaction value not available. maybe should go back?`)
-    //history.goBack();
+    history.goBack();
   }
   return (
     <div className="w-full h-full flex justify-center">
