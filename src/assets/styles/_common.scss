@@ -17,9 +17,7 @@ creditcard {
 
 button {
   background-color: #00ff00;
-  font_size: '20px';
   padding: 10px 20px;
-  border_radius: '25px';
   margin: 10px 0px;
   cursor: pointer;
 }
@@ -51,7 +49,6 @@ code {
   --toastify-color-error: #FFFFFF;
   --toastify-icon-color-error: var(--toastify-color-error);
   --toastify-text-color-light: #FFFFFF;
-  --toastify-toast-width: 350px;
   --toastify-color-dark: #FFF;
 }
 .Toastify__close-button {

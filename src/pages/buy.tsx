@@ -160,9 +160,10 @@ export const BuyPage = () => {
       <div className="w-full flex flex-col justify-center">
         <div className="m-10 flex flex-col text-white items-center">
           <p className="text-white text-secondary font-bold" style={{alignSelf: 'start'}}>Payment Method</p>
+
           {/*Credit Card*/}
-          <div className="w-full flex flex-col text-black justify-between"
-               style={{ paddingTop: '1rem', paddingBottom: '1.5rem', paddingLeft: '3.5rem', minHeight: '10rem', maxWidth: '20rem', paddingRight: '3.5rem', backgroundImage: `url(${QRIcon})`, backgroundSize: "contain", backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
+          <div className="w-full flex flex-col text-black justify-between pt-5 pb-5 px-14"
+               style={{minHeight: '10rem', maxWidth: '20rem', backgroundImage: `url(${QRIcon})`, backgroundSize: "contain", backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
             <img  style={{alignSelf: 'end'}} className="w-10 h-10" src={ETHIcon} alt=""/>
             <p style={{fontFamily: 'Montserrat', fontStyle: 'normal', color: '#8E8EA9'}} className="pt-2 text-sm">
               {`${ellipseAddress(accountInfo?.address)}`}</p>

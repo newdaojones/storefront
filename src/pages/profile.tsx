@@ -49,12 +49,11 @@ export const ProfilePage = () => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-1/2 min-w-max shadow-md p-10">
-        <img className="w-full p-10" src={QRIcon} alt="" onClick={moveToWallet} />
+        <img className="w-full p-10 cursor-pointer" src={QRIcon} alt="" onClick={moveToWallet} />
         <p className="text-white text-center font-bold">Scan QR Code</p>
         <div className="mt-4">
-          <p className="font-Righteous text-center text-white text-sm" style={{fontFamily: 'Righteous', fontStyle: 'normal',}}>
+          <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
               Scan the qRCode provided by the store to checkout</p>
-
         </div>
         <div className="flex items-center justify-center mt-10">
           <div className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">

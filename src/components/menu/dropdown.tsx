@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
 import {createPopper} from "@popperjs/core";
-import menuIcon from '../../assets/images/profile.svg';
+import menuIcon from '../../assets/images/menu.svg';
 import {getConnectionStatusDisplay, getDisplayName} from "../../utils";
 
 interface Props {
@@ -35,9 +35,9 @@ export const Dropdown = ({ onDisconnect = () => {}, connectionStatus, account, e
                     <div className="relative flex align-middle w-full">
                         <img
                             className={
-                                "text-white w-10 h-10 font-bold uppercase text-sm rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 cursor-pointer"
+                                "text-white w-10 h-10 font-bold uppercase text-sm shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 cursor-pointer"
                             }
-                            src={menuIcon} alt="bla"
+                            src={menuIcon} alt=""
                             ref={btnDropdownRef}
                             onClick={() => {
                                 dropdownPopoverShow
