@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import meneIcon from '../../assets/images/menu_icon.png';
+import menuIcon from '../../assets/images/menu_icon.svg';
 import {IMenuItem} from '../../models';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
@@ -40,8 +40,13 @@ export const Menu = ({
                   position: 'relative',
                 }}
             >
-              <img className="h-16 w-16 ml-4 mt-2" src={meneIcon} alt="" draggable={false} onClick={onHomeClicked} />
-
+            <div className="flex items-center justify-between mh-4 mt-2">
+              <img className="h-16 w-16 ml-4" src={menuIcon} alt="" draggable={false} onClick={onHomeClicked} />
+              <div className="flex flex-col justify-between ml-2">
+                <p className="text-white text-sm">Ruth’s Alternative Caring</p>
+                <p className="font-righteous text-white text-xl">Storefront</p>
+              </div>
+            </div>
               {/*right*/}
               <div className="flex items-center">
                 <div className="flex flex-col items-end justify-end">

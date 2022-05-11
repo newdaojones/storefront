@@ -159,7 +159,7 @@ export const BuyPage = () => {
     <div className="w-full h-full flex justify-center">
       <div className="w-full flex flex-col justify-center">
         <div className="m-10 flex flex-col text-white items-center">
-          <p className="text-white text-secondary font-bold" style={{alignSelf: 'start'}}>Payment Method</p>
+          <p className="text-white text-secondary font-bold my-4" style={{alignSelf: 'start'}}>Payment Method</p>
 
           {/*Credit Card*/}
           <div className="w-full flex flex-col text-black justify-between pt-5 pb-5 px-14"
@@ -217,7 +217,7 @@ export const BuyPage = () => {
                   <div className="cube c3"></div>
                 </div> :
                 <div className="w-full flex flex-col items-center justify-center">
-                  <p className="text-white text-start mr-2">{`Pay $${paymentTotalUSD.toFixed(2)}`}</p>
+                  <p className="text-white text-start text-bold mr-2">{`Pay $ ${paymentTotalUSD.toFixed(2)}`}</p>
                   <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
                 </div>}
           </button>
