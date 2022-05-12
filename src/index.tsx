@@ -21,9 +21,10 @@ ReactDOM.render(
         <Router basename={'/storefront'}>
         <Main />
         <ToastContainer className="p-4"
-          toastClassName="w-full m-w-45 flex bg-black bg-opacity-80 shadow-md p-2 text-sm mb-10"
-          bodyClassName={() => 'text-sm font-white font-med block p-4'}
+          toastClassName="w-full m-w-45 flex bg-black bg-opacity-90 shadow-md p-4 text-sm"
+          bodyClassName="text-sm font-white font-med block p-4"
           autoClose={false}
+          icon={true}
           position="bottom-center"
           hideProgressBar={true}
           closeOnClick={false}

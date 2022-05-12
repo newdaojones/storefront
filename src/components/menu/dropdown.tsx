@@ -5,12 +5,13 @@ import {getConnectionStatusDisplay, getDisplayName} from "../../utils";
 
 interface Props {
     onDisconnect?: () => void;
+    onPayments?: () => void;
     connectionStatus: string;
     account: string;
     ensName: string | null;
 }
 
-export const Dropdown = ({ onDisconnect = () => {}, connectionStatus, account, ensName = null}: Props) => {
+export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, connectionStatus, account, ensName = null}: Props) => {
     const btnDropdownRef = useRef<HTMLImageElement>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
     const color = 'white';
@@ -47,28 +48,27 @@ export const Dropdown = ({ onDisconnect = () => {}, connectionStatus, account, e
                         >
 
                         </img>
-                        {/*<img className="w-10 h-10 z-10" src={menuIcon} alt="bla"/>*/}
                         <div
                             ref={popoverRef}
                             className={
                                 (dropdownPopoverShow ? "block " : "hidden ") +
-                                (color === "white" ? "bg-white " : "" + " ") +
+                                (color === "white" ? "bg-white " : "") +
                                 "text-base z-10 py-2 list-none rounded shadow-lg mt-1"
                             }
                             style={{ minWidth: "12rem" }}
                         >
                             <a
-                                href="#"
+                                href="/orders"
                                 className={
                                     "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
                                     (color === "white" ? " text-slate-700" : "text-white")
                                 }
-                                onClick={e => e.preventDefault()}
+                                onClick={onPayments}
                             >
                                 List Orders
                             </a>
                             <a
-                                href="#disconnect"
+                                href="/disconnect"
                                 className={
                                     "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
                                     (color === "white" ? " text-slate-700" : "text-white")

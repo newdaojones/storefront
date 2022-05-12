@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
 import {useWalletConnectClient} from '../contexts/walletConnect';

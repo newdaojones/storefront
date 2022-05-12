@@ -13,13 +13,13 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress} from "../helpers";
 import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
-import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber, getWeiToString} from "../helpers/tx";
+import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
-import {convertETHtoUSD, convertUSDtoETH} from "../helpers/currency";
+import {convertETHtoUSD} from "../helpers/currency";
 
 function isStartOrInProgress(transactionInProgress: TransactionState) {
-  return transactionInProgress == TransactionState.INITIAL || transactionInProgress == TransactionState.IN_PROGRESS;
+  return transactionInProgress === TransactionState.INITIAL || transactionInProgress === TransactionState.IN_PROGRESS;
 }
 
 /**
@@ -41,11 +41,10 @@ export const BuyPage = () => {
 
   const {
     rpcResult,
-    isRpcRequestPending,
     ethereumRpc,
   } = useJsonRpc();
 
-  const [ locationKeys, setLocationKeys ] = useState("")
+  const [ locationKeys ] = useState("")
 
   useEffect(() => {
     return history.listen(location => {
@@ -61,10 +60,10 @@ export const BuyPage = () => {
         }
       }
     })
-  }, [ locationKeys, ])
+  }, [ locationKeys, dispatch, history])
 
   const onBuyClick = (): void => {
-    if (transactionInProgress == TransactionState.IN_PROGRESS) {
+    if (transactionInProgress === TransactionState.IN_PROGRESS) {
       console.debug("skipping click while there's an ongoing trx");
       return;
     }
@@ -208,8 +207,8 @@ export const BuyPage = () => {
             cursor: 'pointer',
             justifySelf: "end",
             alignSelf: "end"
-          }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-4">
-            {transactionInProgress == TransactionState.IN_PROGRESS ?
+          }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-4 ">
+            {transactionInProgress === TransactionState.IN_PROGRESS ?
                 <div className="thecube w-8 h-8 m-1">
                   <div className="cube c1"></div>
                   <div className="cube c2"></div>
@@ -217,7 +216,7 @@ export const BuyPage = () => {
                   <div className="cube c3"></div>
                 </div> :
                 <div className="w-full flex flex-col items-center justify-center">
-                  <p className="text-white text-start text-bold mr-2">{`Pay $ ${paymentTotalUSD.toFixed(2)}`}</p>
+                  <p className="text-white text-start font-righteous font-bold mr-2">{`Pay $${paymentTotalUSD.toFixed(2)}`}</p>
                   <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
                 </div>}
           </button>

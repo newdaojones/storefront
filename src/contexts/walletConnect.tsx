@@ -365,7 +365,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       setIsInitializing(true);
 
       const _client = await Client.init({
-        logger: DEFAULT_LOGGER,
+        // logger: DEFAULT_LOGGER,
         relayUrl: DEFAULT_RELAY_URL,
         projectId: DEFAULT_PROJECT_ID,
         metadata: DEFAULT_APP_METADATA,

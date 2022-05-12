@@ -1,13 +1,9 @@
-import { BigNumber, BigNumberish, providers, utils } from 'ethers';
+import {BigNumber, BigNumberish, utils} from 'ethers';
 import * as encoding from '@walletconnect/encoding';
-import { TypedDataUtils } from 'eth-sig-util';
+import {TypedDataUtils} from 'eth-sig-util';
 import * as ethUtil from 'ethereumjs-util';
 
-import {DEFAULT_CHAINS, DEFAULT_EIP155_METHODS} from '../consts';
-import {web3} from "../utils/walletConnect";
-import {useState} from "react";
-import Client from "@walletconnect/client";
-import {RLPEncodedTransaction} from "web3-core";
+import {DEFAULT_CHAINS} from '../consts';
 
 export function capitalize(string: string): string {
   return string

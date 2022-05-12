@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 
 import menuIcon from '../../assets/images/menu_icon.svg';
 import {IMenuItem} from '../../models';
@@ -16,18 +16,14 @@ export const Menu = ({
                        ensName = null,
                        account = '',
                      }: Props) => {
-      const [focused, setFocused] = useState(true);
       const history = useHistory()
       const name = getDisplayName(account, ensName)
+
       const onPaymentsClick = () => {
+          console.info(`not implemented`)
       }
       const onHomeClicked = () => {
           history.replace("/profile")
-      }
-
-      const onDisconnectClicked = () => {
-        console.info(`disconnecting from wc`)
-        onDisconnect()
       }
 
       return (
@@ -58,6 +54,7 @@ export const Menu = ({
                   {
                       !disabled && name && <Dropdown
                           onDisconnect={onDisconnect}
+                          onPayments={onPaymentsClick}
                           connectionStatus={status}
                           account={account}
                           ensName={ensName}

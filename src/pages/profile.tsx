@@ -26,7 +26,7 @@ export const ProfilePage = () => {
       setLocationKeys(true);
       history.push("/buy");
     }
-  }, [trxCreated?.value, locationKeys, setLocationKeys, history]);
+  }, [trxCreated, locationKeys, setLocationKeys, history]);
 
   const moveToWallet = (): void => {
     console.log(`navigating to scan page `)

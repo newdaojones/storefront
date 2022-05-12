@@ -14,7 +14,7 @@ export const getConnectionStatusDisplay = (account: string) : string => {
 }
 
 const getConnectionNetwork = (account: string) : string => {
-  const [namespace, reference, address] = account.split(':');
+  const [namespace, reference] = account.split(':');
   if (chainData[namespace] && chainData[namespace][reference]) {
     const chainMeta = chainData[namespace][reference];
     return chainMeta.name;

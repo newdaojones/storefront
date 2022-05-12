@@ -1,10 +1,9 @@
 import * as encoding from "@walletconnect/encoding";
-import { BigNumber, utils } from "ethers";
+import {BigNumber, utils} from "ethers";
 
-import { apiGetAccountNonce, apiGetGasPrices } from "./api";
-import {convertHexToNumber, convertHexToUtf8, toWad} from "./utilities";
+import {apiGetAccountNonce, apiGetGasPrices} from "./api";
+import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
-import {hexToNumber, sanitizeBytes, utf8ToNumber} from "@walletconnect/encoding";
 import {web3} from "../utils/walletConnect";
 
 export async function getGasPrice(chainId: string): Promise<string> {
@@ -97,7 +96,6 @@ export const getHexValueAsBigNumber = (value: string): string => {
 }
 
 export const getWeiToString = (value: string): string => {
-    const bigN = BigNumber.from(value)
     const formatted = utils.formatUnits(value, "ether")
     return formatted
 }

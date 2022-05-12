@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, {useState} from 'react';
+import {useSelector} from 'react-redux';
 
-import { AccountModal, Menu } from '../components';
+import {AccountModal, Menu} from '../components';
 
-import { Dashboard } from './dashboard';
-import { Login } from './login';
-import { Landing } from './landing';
+import {Dashboard} from './dashboard';
+import {Login} from './login';
+import {Landing} from './landing';
 
 import BookIcon from '../assets/images/book.svg';
 import PlayIcon from '../assets/images/play.svg';
 import ProfileIcon from '../assets/images/profile.svg';
 import VaultIcon from '../assets/images/vault.svg';
 
-import { selectAccountInfo, selectEnsName } from '../store/selector';
-import { useWalletConnectClient } from '../contexts/walletConnect';
+import {selectEnsName} from '../store/selector';
+import {useWalletConnectClient} from '../contexts/walletConnect';
 
 export const Main = () => {
   const ensName = useSelector(selectEnsName);
-  const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
 
   // Initialize the WalletConnect client.
