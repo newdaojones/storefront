@@ -47,10 +47,10 @@ export const ProfilePage = () => {
   const balanceUSD = convertETHtoUSD(balanceN, tickers);
 
   return (
-    <div className="w-full h-full flex justify-center">
-      <div className="w-1/2 min-w-max shadow-md p-10">
-        <img className="w-full p-10 cursor-pointer" src={QRIcon} alt="" onClick={moveToWallet} />
-        <p className="text-white text-center font-bold">Scan QR Code</p>
+    <div className="w-full h-full flex justify-center items-center">
+      <div className="p-10 flex flex-col justify-between">
+        <img className="w-1/2 h-1/3 my-4 cursor-pointer" style={{alignSelf: 'center'}} src={QRIcon} alt="" onClick={moveToWallet} />
+        <p className="text-white mt-8 text-center font-bold">Scan QR Code</p>
         <div className="mt-4">
           <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
               Scan the qRCode provided by the store to checkout</p>
