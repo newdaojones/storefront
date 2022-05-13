@@ -38,6 +38,7 @@ interface IContext {
   session: SessionTypes.Created | undefined;
   connect: (pairing?: { topic: string }) => Promise<void>;
   disconnect: () => Promise<void>;
+  refreshBalances: (accounts: string[]) => Promise<void>;
   switchAccount: (account: string) => Promise<void>;
   isInitializing: boolean;
   chains: string[];
@@ -298,6 +299,23 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       toast.error(err.message);
     }
   }, [client, session]);
+  const refreshBalances = useCallback(
+      async (_accounts: string[]) => {
+        try {
+          if (!client) {
+            throw new Error('WalletConnect is not initialized');
+          }
+          if (!session) {
+            throw new Error('Session is not connected');
+          }
+          console.log(`**** refreshBalances accounts ${_accounts}`);
+          await getAccountBalances(accounts)
+        } catch (err: any) {
+          toast.error(err.message);
+        }
+      },
+      [client, session]
+  );
 
   const switchAccount = useCallback(
     async (_account: string) => {
@@ -344,6 +362,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     },
     [onSessionConnected]
   );
+
 
   const _checkPersistedState = useCallback(
     async (_client: Client) => {
@@ -406,6 +425,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       session,
       connect,
       disconnect,
+      refreshBalances,
       setChains,
       switchAccount,
     }),
@@ -424,6 +444,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       session,
       connect,
       disconnect,
+      refreshBalances,
       setChains,
       switchAccount,
     ]

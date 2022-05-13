@@ -5,16 +5,24 @@ import {useSelector} from "react-redux";
 import {selectBuyTransaction} from "../store/selector";
 import {useHistory} from "react-router-dom";
 import {convertHexToNumber, ellipseAddress} from "../helpers";
+import {useWalletConnectClient} from "../contexts/walletConnect";
 
 export const ConfirmationPage = () => {
   const history = useHistory();
-  //const { accounts, balances } = useWalletConnectClient();
+    const {
+        refreshBalances,
+        accounts,
+    } = useWalletConnectClient();
 
   let transactionInfo = useSelector(selectBuyTransaction)
 
-  const onHomeClick = (): void => {
-      history.goBack();
-      history.replace("/profile")
+  const onHomeClick = async () => {
+      console.info(`refreshing balances `)
+      await refreshBalances(accounts).then(r => {
+          history.go(-2)
+          history.replace("/profile");
+      });
+
   }
 
   const onQRCodeClick = (): void => {

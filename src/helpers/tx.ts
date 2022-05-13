@@ -128,7 +128,7 @@ export function getBalanceInUSD(accounts: string[], balances: AccountBalances): 
     accounts.forEach(value => {
         let accountBalances = balances[value];
         if (!accountBalances) {
-            console.error(`account balances not defined for account: ${value}`)
+            console.error(`getBalanceInUSD: account balances not defined for account: ${value}`)
             return;
         }
         let balanceElement = accountBalances[0];
