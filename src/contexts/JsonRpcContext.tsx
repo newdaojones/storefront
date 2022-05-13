@@ -31,6 +31,7 @@ interface IContext {
     testSignTransaction: TRpcRequestCallback;
     testEthSign: TRpcRequestCallback;
     testSignPersonalMessage: TRpcRequestCallback;
+    testEthBalance: TRpcRequestCallback;
   };
   // cosmosRpc: {
   //   testSignDirect: TRpcRequestCallback;
@@ -133,7 +134,6 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
   // -------- ETHEREUM/EIP155 RPC METHODS --------
 
   const ethereumRpc = {
-
     testSendTransaction: _createJsonRpcRequestHandler(async (chainId: string, address: string, trx: ITransaction) => {
       console.info(`testSendTransaction for trx chainId: ${chainId} address: ${address}`)
       const caipAccountAddress = `${chainId}:${address}`;
@@ -298,7 +298,32 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         result: signature,
       };
     }),
+    testEthBalance: _createJsonRpcRequestHandler(async (chainId: string, address: string) => {
+      const params = [address];
+
+      // get balance
+      // https://docs.infura.io/infura/networks/ethereum/json-rpc-methods/eth_getbalance
+      const balanceResponse: string = await client!.request({
+        topic: session!.topic,
+        chainId,
+        request: {
+          method: DEFAULT_EIP155_METHODS.ETH_GET_BALANCE,
+          params,
+        },
+      });
+
+      const valid = balanceResponse;
+
+      return {
+        method: DEFAULT_EIP155_METHODS.ETH_GET_BALANCE,
+        address,
+        valid: true,
+        result: balanceResponse,
+        value: valid,
+      };
+    }),
   };
+
 
   // -------- COSMOS RPC METHODS --------
 

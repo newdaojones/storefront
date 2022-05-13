@@ -5,6 +5,7 @@ import {apiGetAccountNonce, apiGetGasPrices} from "./api";
 import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
+import {infuraGetAccountNonce} from "./infura-api";
 
 export async function getGasPrice(chainId: string): Promise<string> {
     if (chainId === "eip155:1") return toWad("20", 9).toHexString();
@@ -35,9 +36,10 @@ export async function formatTestTransaction(account: string, sendAmount: number)
 
     let _nonce;
     try {
-        _nonce = await apiGetAccountNonce(address, chainId);
+        _nonce = await infuraGetAccountNonce(address, chainId);
+        //_nonce = await apiGetAccountNonce(address, chainId);
     } catch (error) {
-        throw new Error(`Failed to fetch nonce for address ${address} on chain ${chainId}`);
+        throw new Error(`failed to fetch nonce for address ${address} on chain ${chainId}`);
     }
 
     const nonce = encoding.sanitizeHex(encoding.numberToHex(_nonce));

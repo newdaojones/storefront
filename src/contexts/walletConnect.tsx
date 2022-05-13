@@ -22,6 +22,7 @@ import { sleep } from '../utils';
 import { toast } from 'react-toastify';
 import {AccountBalances} from "../helpers";
 import {apiGetAccountBalance} from "../helpers/api";
+import {infuraGetAccountBalance} from "../helpers/infura-api";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -101,7 +102,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           _accounts.map(async account => {
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
-            const assets = await apiGetAccountBalance(address, chainId);
+            const assets = await infuraGetAccountBalance(address, chainId);
+            //const assets = await apiGetAccountBalance(address, chainId);
             console.info(`fetching account for chainId ${chainId} : ${address} balance = ${assets.symbol} ${assets.balance}`)
             return { account, assets: [assets] };
           }),
