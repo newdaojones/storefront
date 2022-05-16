@@ -24,18 +24,17 @@ export const chainData: any = {
     },
   },
   eip155: {
-    '42': {
-      name: 'Ethereum Kovan',
-      id: 'eip155:42',
-      // rpc: ['https://api.mycryptoapi.com/eth'],
-      rpc: ['https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09'],
+    '1': {
+      name: 'Ethereum Mainnet',
+      id: 'eip155:1',
+      rpc: ['https://api.mycryptoapi.com/eth'],
       slip44: 60,
-      testnet: true,
+      testnet: false,
       logo: 'https://blockchain-api.xyz/logos/eip155:1.png',
       rgb: '99, 125, 234',
       symbol: 'ETH',
     },
-    '142': {
+    '42': {
       name: 'Ethereum Kovan',
       id: 'eip155:42',
       rpc: ['https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09'],
