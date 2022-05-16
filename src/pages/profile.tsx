@@ -15,7 +15,7 @@ export const ProfilePage = () => {
   const dispatch = useDispatch();
   const [ loading, setLoading ] = useState(false)
   const [ locationKeys, setLocationKeys ] = useState(false)
-  const { accounts, balances } = useWalletConnectClient();
+  const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
   const accountBalance = getBalanceInUSD(accounts, balances);
   const tickers = useSelector(selectTickers)
@@ -26,8 +26,12 @@ export const ProfilePage = () => {
     console.info(`useEffect locationKeys: ${locationKeys} trxCreated: ${trxCreated}`)
     if (trxCreated && trxCreated.value && !locationKeys) {
       console.log(`pushing /buy to history. loading: ${loading} this should be only done when true`);
-      setLocationKeys(true);
-      history.push("/buy");
+      if (loading) {
+        setLocationKeys(true);
+        history.push("/buy");
+      } else {
+        console.info(`not pushing bug since loading is false`);
+      }
     }
   }, [trxCreated, locationKeys, setLocationKeys, history]);
 
@@ -45,6 +49,12 @@ export const ProfilePage = () => {
     setLoading(true);
     dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount:ethTotal}));
   };
+
+  const onHomeClick = async () => {
+    console.info(`refreshing balances `)
+    const bla = await refreshBalances(accounts);
+
+  }
 
   const balanceN = Number(accountBalance.balanceString);
   const balanceUSD = convertETHtoUSD(balanceN, tickers);
@@ -70,7 +80,7 @@ export const ProfilePage = () => {
               Scan the qRCode provided by the store to checkout</p>
         </div>
         <div className="flex items-center justify-center mt-10">
-          <div className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
+          <div className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl" onClick={onHomeClick}>
             <p style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
                className="text-white text-start text-xs mr-2 mt-2">Current Balance</p>
             <div className="flex items-center">

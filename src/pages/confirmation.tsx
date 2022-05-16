@@ -21,9 +21,8 @@ export const ConfirmationPage = () => {
   const onHomeClick = async () => {
       console.info(`refreshing balances `)
       await refreshBalances(accounts).then(r => {
-          history.go(-2)
-          //TODO need to clear the transaction
           dispatch(userAction.unsetTransaction());
+          history.go(-2)
           history.replace("/profile");
       });
 

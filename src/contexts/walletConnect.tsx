@@ -79,6 +79,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [balances, setBalances] = useState<AccountBalances>({});
 
   const reset = () => {
+    console.info(`resetting balances`);
     setPairings([]);
     setQRCodeUri(undefined);
     setBalances({});
@@ -97,15 +98,18 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   };
 
   const getAccountBalances = async (_accounts: string[]) => {
+    console.info(`getting account balances`)
     setIsFetchingBalances(true);
     try {
+
       const arr = await Promise.all(
           _accounts.map(async account => {
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
+            console.info(`fetching account balance for chainId:${chainId} address:${address}`);
             const assets = await infuraGetAccountBalance(address, chainId);
             //const assets = await apiGetAccountBalance(address, chainId);
-            console.info(`fetching account for chainId ${chainId} : ${address} balance = ${assets.symbol} ${assets.balance}`)
+            console.info(`--> balance = ${assets.symbol} ${assets.balance}`)
             return { account, assets: [assets] };
           }),
       );
@@ -116,7 +120,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       });
       setBalances(balances);
     } catch (e) {
-      console.error(e);
+      console.error(`caught error while refreshing balances: ${e}`);
     } finally {
       setIsFetchingBalances(false);
     }
@@ -308,10 +312,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           if (!session) {
             throw new Error('Session is not connected');
           }
-          console.log(`**** refreshBalances accounts ${_accounts}`);
-          await getAccountBalances(accounts)
+          await getAccountBalances(_accounts);
         } catch (err: any) {
-          toast.error(err.message);
+          toast.error(`caught error while refreshing balances: ${err.message}`);
         }
       },
       [client, session]
@@ -359,6 +362,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       _client.on(CLIENT_EVENTS.session.deleted, () => {
         reset();
       });
+
+      _client.on(CLIENT_EVENTS.session.notification, (s: string) => {
+        console.info(`notification ${s}`)
+      });
     },
     [onSessionConnected]
   );
@@ -405,7 +412,15 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   useEffect(() => {
     if (!client) {
-      createClient();
+      try {
+        createClient().then(value => {
+          console.debug(`client created ok: ${value}`)
+        }).catch(reason => {
+          console.error(`client creation failed: reason: ${reason}`)
+        });
+      } catch (e) {
+        console.error(`client creation failed: ${e}`)
+      }
     }
   }, [client, createClient]);
 
