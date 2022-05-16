@@ -55,8 +55,8 @@ export const BuyPage = () => {
           // Handle forward event
         } else {
           console.info(`back event, clearing trx. `)
-          dispatch(userAction.unsetTransaction());
           history.goBack();
+          dispatch(userAction.unsetTransaction());
         }
       }
     })
@@ -147,10 +147,10 @@ export const BuyPage = () => {
       console.info(`unable to calculate total trx price in USD`);
     }
 
-    console.info(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
-    console.info(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
+    console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
+    console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
   } else {
-    console.info(`transaction value not available. maybe should go back?`)
+    console.info(`transaction value not available. maybe should go back?. redirecting to /profile page`)
     history.length = 1;
     history.replace("/profile");
   }

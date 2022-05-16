@@ -15,7 +15,7 @@ export const convertETHtoUSD = (value: number, tickers: ITicker[]): number | nul
     let balanceUsd: number | null;
     if (ethTicker) {
         balanceUsd = value * ethTicker.price;
-        console.info(`${value} ETH -> ${balanceUsd} USD. price eth: ${ethTicker?.price}`)
+        console.debug(`${value} ETH -> ${balanceUsd} USD. price eth: ${ethTicker?.price}`)
     } else {
         console.info(`tickers are not available`)
         balanceUsd = null;
@@ -28,7 +28,7 @@ export const convertUSDtoETH = (value: number, tickers: ITicker[]): number | nul
     let balanceUsd: number | null;
     if (ethTicker) {
         balanceUsd = value / ethTicker.price;
-        console.info(`${value} USD -> ${balanceUsd} ETH. price eth: ${ethTicker?.price}`)
+        console.debug(`${value} USD -> ${balanceUsd} ETH. price eth: ${ethTicker?.price}`)
     } else {
         console.info(`ticker are not available for ETH`)
         balanceUsd = null;

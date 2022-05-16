@@ -22,7 +22,9 @@ export const ProfilePage = () => {
   const trxCreated = useSelector(selectCreateTransaction)
 
   useEffect(() => {
+    console.info(`useEffect locationKeys: ${locationKeys} trxCreated: ${trxCreated}`)
     if (trxCreated && trxCreated.value && !locationKeys) {
+      console.log(`pushing /buy to history`);
       setLocationKeys(true);
       history.push("/buy");
     }
