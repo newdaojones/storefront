@@ -1,18 +1,20 @@
 import React from 'react';
 import {BigNumber, utils} from "ethers";
 import QRIcon from '../assets/images/qrCodeIcon.svg';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {selectBuyTransaction} from "../store/selector";
 import {useHistory} from "react-router-dom";
 import {convertHexToNumber, ellipseAddress} from "../helpers";
 import {useWalletConnectClient} from "../contexts/walletConnect";
+import {userAction} from "../store/actions";
 
 export const ConfirmationPage = () => {
   const history = useHistory();
-    const {
+  const dispatch = useDispatch();
+  const {
         refreshBalances,
         accounts,
-    } = useWalletConnectClient();
+  } = useWalletConnectClient();
 
   let transactionInfo = useSelector(selectBuyTransaction)
 
@@ -20,6 +22,8 @@ export const ConfirmationPage = () => {
       console.info(`refreshing balances `)
       await refreshBalances(accounts).then(r => {
           history.go(-2)
+          //TODO need to clear the transaction
+          dispatch(userAction.unsetTransaction());
           history.replace("/profile");
       });
 
