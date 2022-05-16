@@ -55,8 +55,8 @@ export const BuyPage = () => {
           // Handle forward event
         } else {
           console.info(`back event, clearing trx. `)
-          history.goBack();
           dispatch(userAction.unsetTransaction());
+          history.goBack();
         }
       }
     })
@@ -151,8 +151,8 @@ export const BuyPage = () => {
     console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
   } else {
     console.info(`transaction value not available. maybe should go back?. redirecting to /profile page`)
-    history.length = 1;
-    history.replace("/profile");
+    //history.length = 1;
+    //history.replace("/profile");
   }
   return (
     <div className="w-full h-full flex justify-center">

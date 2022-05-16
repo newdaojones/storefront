@@ -13,6 +13,7 @@ import {toast} from "react-toastify";
 export const ProfilePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const [ loading, setLoading ] = useState(false)
   const [ locationKeys, setLocationKeys ] = useState(false)
   const { accounts, balances } = useWalletConnectClient();
 
@@ -24,7 +25,7 @@ export const ProfilePage = () => {
   useEffect(() => {
     console.info(`useEffect locationKeys: ${locationKeys} trxCreated: ${trxCreated}`)
     if (trxCreated && trxCreated.value && !locationKeys) {
-      console.log(`pushing /buy to history`);
+      console.log(`pushing /buy to history. loading: ${loading} this should be only done when true`);
       setLocationKeys(true);
       history.push("/buy");
     }
@@ -32,7 +33,6 @@ export const ProfilePage = () => {
 
   const moveToWallet = (): void => {
     console.log(`navigating to scan page `)
-    //TODO scan to determine price to pay, before going to buy
     //history.push("/scan");
 
     //FIXME hardcoded price
@@ -42,6 +42,7 @@ export const ProfilePage = () => {
       toast.error(`Could not convert value to crypto. Invalid tickers ${tickers.length}`);
       return;
     }
+    setLoading(true);
     dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount:ethTotal}));
   };
 
@@ -51,7 +52,18 @@ export const ProfilePage = () => {
   return (
     <div className="w-full h-full flex justify-center items-center">
       <div className="p-10 flex flex-col justify-between">
-        <img className="w-1/2 h-1/3 my-4 cursor-pointer" style={{alignSelf: 'center'}} src={QRIcon} alt="" onClick={moveToWallet} />
+        { (loading) ?
+          <div className="w-20 h-16 mt-20 mb-20" style={{alignSelf: 'center'}}>
+            <div className="thecube w-20 h-20" style={{alignSelf: 'center'}}>
+              <div className="cube c1"></div>
+              <div className="cube c2"></div>
+              <div className="cube c4"></div>
+              <div className="cube c3"></div>
+            </div>
+          </div>
+          : <img className="w-1/2 h-1/3 my-4 cursor-pointer" style={{alignSelf: 'center'}}
+          src={QRIcon} alt="" onClick={moveToWallet} />
+        }
         <p className="text-white mt-8 text-center font-bold">Scan QR Code</p>
         <div className="mt-4">
           <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
