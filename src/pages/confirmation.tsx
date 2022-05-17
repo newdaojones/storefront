@@ -19,7 +19,6 @@ export const ConfirmationPage = () => {
   let transactionInfo = useSelector(selectBuyTransaction)
 
   const onHomeClick = async () => {
-      console.info(`refreshing balances `)
       await refreshBalances(accounts).then(r => {
           dispatch(userAction.unsetTransaction());
           history.go(-2)

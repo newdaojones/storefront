@@ -37,7 +37,7 @@ export const BuyPage = () => {
   const accountBalance = getBalanceInUSD(accounts, balances);
 
   const transaction = useSelector(selectCreateTransaction)
-  const helpMessages = ['Tap the button above to submit the signing request', 'Switch to your wallet up and Sign the transaction']
+  const helpMessages = ['1/2 - Tap the button above to submit the signing request', '2/2 - Switch to your wallet up and Sign the transaction']
 
   const {
     rpcResult,
@@ -55,8 +55,11 @@ export const BuyPage = () => {
           // Handle forward event
         } else {
           console.info(`back event, clearing trx. `)
+          dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           dispatch(userAction.unsetTransaction());
-          history.goBack();
+          history.length = 1;
+          history.replace("/profile");
+          //history.goBack();
         }
       }
     })
@@ -220,6 +223,7 @@ export const BuyPage = () => {
                   <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
                 </div>}
           </button>
+
           {<p style={{fontFamily: 'Righteous', fontStyle: 'normal', visibility: !isStartOrInProgress(transactionInProgress) ? 'hidden':'visible'}}
               className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[transactionInProgress ? 1 : 0]}</p>
           }

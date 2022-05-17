@@ -1,5 +1,5 @@
 {
-  "name": "new-dao-jones",
+  "name": "NDJ-Storefront",
   "version": "0.1.0",
   "private": true,
   "homepage": "/storefront",
@@ -25,7 +25,6 @@
     "eth-sig-util": "^3.0.1",
     "gsap": "^3.8.0",
     "immer": "^9.0.1",
-    "install": "^0.13.0",
     "install": "^0.13.0",
     "moment": "^2.29.1",
     "node-sass": "^6.0.1",
