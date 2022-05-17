@@ -13,6 +13,7 @@ module.exports = {
       borderRadius: {
         '16xl': '64px',
         '10xl': '40px',
+        '8xl': '40px 40px 0px 0px',
       },
       borderWidth: {
         1: '1px',
@@ -20,6 +21,7 @@ module.exports = {
       colors: {
         primary: '#13053D',
         secondary: '#FFB01D',
+        footer: '#212134',
       },
       boxShadow: {
         primary: '0px 1px 20px #FF00C7',

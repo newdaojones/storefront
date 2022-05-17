@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import QRIcon from '../assets/images/creditcard.svg';
 import ETHIcon from '../assets/images/eth.svg';
+import ProgressBase from '../assets/images/progress_base.svg';
+import ProgressIcon from '../assets/images/progress_color_1.svg';
+import ProgressFull from '../assets/images/progress_color.svg';
 import {useDispatch, useSelector} from "react-redux";
 import {
   selectAccountInfo,
@@ -37,7 +40,7 @@ export const BuyPage = () => {
   const accountBalance = getBalanceInUSD(accounts, balances);
 
   const transaction = useSelector(selectCreateTransaction)
-  const helpMessages = ['1/2 - Tap the button above to submit the signing request', '2/2 - Switch to your wallet up and Sign the transaction']
+  const helpMessages = ['Tap the button above to submit the signing request', 'Switch to your wallet app and sign the transaction', 'Sending transaction...']
 
   const {
     rpcResult,
@@ -108,11 +111,14 @@ export const BuyPage = () => {
               paymentFeeUsd: paymentFeeUsd,
               paymentTotalUSD: paymentTotalUSD,
             }
+
+
             dispatch(userAction.setTransactionInfoWallet(transactionInfo));
             history.push("/confirmation");
           } else {
             console.info(`valid = false. transaction result ${res?.result}`)
             toast.error(res?.result || "Something went wrong, please try again. ");
+            dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           }
         })
         .catch((error) => {
@@ -155,11 +161,15 @@ export const BuyPage = () => {
   } else {
     console.info(`transaction value not available. maybe should go back?. redirecting to /profile page`)
     //history.length = 1;
-    //history.replace("/profile");
+    history.replace("/profile");
   }
+
+  const buyProgress = transactionInProgress.valueOf();
+
   return (
     <div className="w-full h-full flex justify-center">
-      <div className="w-full flex flex-col justify-center">
+      <div className="w-full flex flex-col justify-between">
+
         <div className="m-10 flex flex-col text-white items-center">
           <p className="text-white text-secondary font-bold my-4" style={{alignSelf: 'start'}}>Payment Method</p>
 
@@ -177,7 +187,8 @@ export const BuyPage = () => {
 
         {/*Invoice*/}
         <div className="w-full flex items-center justify-center mt-2 ml-8 mr-8">
-          <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
+          <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
+                className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
             <div className="w-full flex justify-between p-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
               <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentValueUsd.toFixed(2)}`}</p>
@@ -200,7 +211,7 @@ export const BuyPage = () => {
         </div>
 
         {/*Buy Button Section*/}
-        <div className="flex flex-col h-full text-white justify-end ml-8 mr-8" style={{}}>
+        <div className="flex flex-col bg-footer text-white justify-end pt-8 px-14 bg-opacity-90 rounded-8xl" style={{}}>
           <button onClick={onBuyClick} style={{
             backgroundColor: '#615793',
             fontSize: '20px',
@@ -224,8 +235,17 @@ export const BuyPage = () => {
                 </div>}
           </button>
 
-          {<p style={{fontFamily: 'Righteous', fontStyle: 'normal', visibility: !isStartOrInProgress(transactionInProgress) ? 'hidden':'visible'}}
-              className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[transactionInProgress ? 1 : 0]}</p>
+          {
+              <div className="flex flex-col text-center text-secondary text-xs">
+                <div className="w-1/3 absolute" style={{alignSelf: 'center'}} >
+                  <img className="w-full absolute mr-8" style={{alignSelf: 'center'}} src={ProgressBase}/>
+                  {transactionInProgress === TransactionState.IN_PROGRESS && <img className="w-full absolute mr-8" src={ProgressIcon}/>}
+                  {transactionInProgress === TransactionState.FINISHED && <img className="w-full absolute mr-8" src={ProgressFull}/>}
+                </div>
+                <p className="mt-4">{`${buyProgress + 1}/3`}</p>
+                <p style={{fontFamily: 'Righteous', fontStyle: 'normal', visibility: !isStartOrInProgress(transactionInProgress) ? 'hidden':'visible'}}
+                  className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+              </div>
           }
         </div>
       </div>
