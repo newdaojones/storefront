@@ -112,9 +112,12 @@ export const BuyPage = () => {
               paymentTotalUSD: paymentTotalUSD,
             }
 
-
             dispatch(userAction.setTransactionInfoWallet(transactionInfo));
-            history.push("/confirmation");
+            setTimeout(() => {
+              history.push("/confirmation")
+              dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
+            }, 1000);
+
           } else {
             console.info(`valid = false. transaction result ${res?.result}`)
             toast.error(res?.result || "Something went wrong, please try again. ");
@@ -243,7 +246,7 @@ export const BuyPage = () => {
                   {transactionInProgress === TransactionState.FINISHED && <img className="w-full absolute mr-8" src={ProgressFull}/>}
                 </div>
                 <p className="mt-4">{`${buyProgress + 1}/3`}</p>
-                <p style={{fontFamily: 'Righteous', fontStyle: 'normal', visibility: !isStartOrInProgress(transactionInProgress) ? 'hidden':'visible'}}
+                <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
                   className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
               </div>
           }
