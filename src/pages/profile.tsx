@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import QRIcon from '../assets/images/qrCodeIcon.svg';
+import QRTarget from '../assets/images/qrCodeScanning.svg';
+import QRLine from '../assets/images/qrCodeBar.svg';
 import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getBalanceInUSD} from "../helpers/tx";
@@ -96,8 +98,16 @@ export const ProfilePage = () => {
                       <div className="cube c3"></div>
                     </div>
                   </div>
-                  : <img className="w-1/2 h-1/3 mb-4 cursor-pointer" style={{alignSelf: 'center'}}
+                  :
+                      !scanning ?
+                        <img className="w-1/2 h-1/3 mb-4 cursor-pointer" style={{alignSelf: 'center'}}
                          src={QRIcon} alt="" onClick={startScanning} />
+                        :
+                        <div className="grid w-1/2 h-1/3 mb-4" onClick={startScanning}
+                             style={{alignSelf: 'center', backgroundImage: `url(${QRTarget})`, backgroundSize: 'cover'}}>
+                          <img className="scan w-full"
+                               src={QRLine} alt="" />
+                        </div>
               }
               <p className="text-white mt-8 text-center font-bold">Scan QR Code</p>
               <div className="mt-4">

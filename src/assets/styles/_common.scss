@@ -159,3 +159,16 @@ code {
   background-size: cover;
   border: 1px solid #ccc;
 }
+
+.scan {
+  animation: moveDown 1.5s ease-in-out alternate-reverse infinite;
+}
+
+@keyframes moveDown {
+  from {
+    transform: translateY(-2rem);
+  }
+  to {
+    transform: translateY(6rem);
+  }
+}
