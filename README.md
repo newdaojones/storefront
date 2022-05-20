@@ -39,6 +39,16 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+
+## QR Code library
+### How to use local copy that needs overflow:visible change
+    git checkout or copy the node_modules/lib directory, and build it. 
+
+### Link library's react to the main project react
+go into the library folder (deps/lib), and link react libary to the projects, like in https://reactjs.org/warnings/invalid-hook-call-warning.html
+    cd node_modules/react; yarn link
+    cd deps/lib; yarn link react
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).

@@ -1,5 +1,5 @@
 import React, {Component, useState} from 'react';
-import { QrReader } from 'react-qr-reader';
+import { QrReader } from "react-qr-reader";
 import {useHistory} from "react-router-dom";
 /*
 
@@ -16,7 +16,7 @@ export const ScanPage = () => {
     };
 
     return (
-        <div className="h-full overflow-hidden">
+        <div className="h-full">
             <QrReader
                 onResult={(result, error) => {
                     if (result && data.length <= 0) {
@@ -31,13 +31,12 @@ export const ScanPage = () => {
                     }
                 }}
                 constraints={{ facingMode : "environment" }}
-                // constraints={getConstraints()}
-                containerStyle={{height: '100%'}}
                 //scanDelay={000}
-                videoStyle={{height: '100%', objectFit: 'contain'}}
+                containerStyle={{}}
+                videoStyle={{height: '100vh', width: '100vw', objectFit: 'cover'}}
                 className=""
             />
-            {/*<p>{data}</p>*/}
+            <p>{data}</p>
         </div>
     );
 }
