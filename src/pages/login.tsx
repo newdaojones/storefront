@@ -60,6 +60,7 @@ export const Login = () => {
                     cursor: 'pointer'
                 }} className="font-righteous text-white mt-8 mb-8">Connect with WalletConnect v2</button>
             </a>
+            <p onClick={() => {navigator.clipboard.writeText(qrCodeUri || "")}} className="text-white text-xs mb-8">Copy link</p>
         </div>
     );
 };
