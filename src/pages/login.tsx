@@ -2,6 +2,7 @@ import React from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
 import {useWalletConnectClient} from '../contexts/walletConnect';
+import {toast} from "react-toastify";
 
 export const Login = () => {
     const {qrCodeUri} = useWalletConnectClient();
@@ -41,6 +42,14 @@ export const Login = () => {
             qrCode.append(qrCodeElement);
         }
     }, [qrCodeUri]);
+
+    function onCopyLinkClicked() {
+        navigator.clipboard.writeText(qrCodeUri || "");
+        toast.info("Copied", {
+            autoClose: 1200,
+        })
+    }
+
     return (
         <div className="w-full h-full flex items-center justify-center flex-col">
             <h4 className="font-righteous text-white">Welcome to the StoreFront DApp</h4>
@@ -60,7 +69,8 @@ export const Login = () => {
                     cursor: 'pointer'
                 }} className="font-righteous text-white mt-8 mb-8">Connect with WalletConnect v2</button>
             </a>
-            <p onClick={() => {navigator.clipboard.writeText(qrCodeUri || "")}} className="text-white text-xs mb-8">Copy link</p>
+            <p onClick={onCopyLinkClicked}
+               className="text-white text-xs mb-8 cursor-pointer">Copy link</p>
         </div>
     );
 };

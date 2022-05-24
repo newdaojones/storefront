@@ -6,7 +6,7 @@ import moment from 'moment';
 import * as encoding from '@walletconnect/encoding';
 
 import {
-  DEFAULT_APP_METADATA,
+  DEFAULT_APP_METADATA, DEFAULT_BIP122_METHODS,
   DEFAULT_CHAINS,
   DEFAULT_COSMOS_METHODS,
   DEFAULT_EIP155_METHODS, DEFAULT_LOGGER,
@@ -150,6 +150,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             return Object.values(DEFAULT_COSMOS_METHODS);
           case 'solana':
             return Object.values(DEFAULT_SOLANA_METHODS);
+          case 'bip122':
+            return Object.values(DEFAULT_BIP122_METHODS);
           default:
             toast.error(`No default methods for namespace: ${namespace}`);
             return [];

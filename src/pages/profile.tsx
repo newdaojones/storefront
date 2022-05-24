@@ -55,8 +55,7 @@ export const ProfilePage = () => {
 
   const onHomeClick = async () => {
     console.info(`refreshing balances `)
-    const bla = await refreshBalances(accounts);
-
+    await refreshBalances(accounts);
   }
 
   const balanceN = Number(accountBalance.balanceString);
