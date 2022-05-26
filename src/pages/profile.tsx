@@ -89,7 +89,7 @@ export const ProfilePage = () => {
           <div className="h-full flex justify-center items-center">
             <div className="p-10 flex flex-col justify-between">
               { (loading) ?
-                  <div className="w-20 h-16 mt-20 mb-20" style={{alignSelf: 'center'}}>
+                  <div className="w-20 h-20 mt-10 mb-10" style={{alignSelf: 'center'}}>
                     <div className="thecube w-20 h-20" style={{alignSelf: 'center'}}>
                       <div className="cube c1"></div>
                       <div className="cube c2"></div>

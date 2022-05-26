@@ -66,8 +66,7 @@ export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, conne
                             >
                                 List Orders
                             </a>
-                            <a
-                                href="/disconnect"
+                            <p
                                 className={
                                     "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
                                     (color === "white" ? " text-slate-700" : "text-white")
@@ -75,7 +74,7 @@ export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, conne
                                 onClick={onDisconnect}
                             >
                                 Disconnect
-                            </a>
+                            </p>
                             <div className="h-0 my-2 border border-solid border-t-0 border-slate-800 opacity-25" />
                             <div
                                 className={

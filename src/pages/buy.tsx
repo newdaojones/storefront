@@ -172,9 +172,8 @@ export const BuyPage = () => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-full flex flex-col justify-between">
-
-        <div className="m-10 flex flex-col text-white items-center">
-          <p className="text-white text-secondary font-bold my-4" style={{alignSelf: 'start'}}>Payment Method</p>
+        <div className="mt-4 flex flex-col text-white items-center">
+          <p className="mx-4 text-white text-secondary font-bold" style={{alignSelf: 'start'}}>Payment Method</p>
 
           {/*Credit Card*/}
           <div className="w-full flex flex-col text-black justify-between pt-5 pb-5 px-14"
@@ -189,9 +188,9 @@ export const BuyPage = () => {
         </div>
 
         {/*Invoice*/}
-        <div className="w-full flex items-center justify-center mt-2 ml-8 mr-8">
+        <div className="w-full flex items-center justify-center mb-4">
           <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
-                className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
+                className="w-full flex flex-col items-center justify-center ml-10 mr-10 bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
             <div className="w-full flex justify-between p-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
               <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentValueUsd.toFixed(2)}`}</p>
@@ -211,10 +210,10 @@ export const BuyPage = () => {
             </div>
           </div>
         </div>
-        </div>
+
 
         {/*Buy Button Section*/}
-        <div className="flex flex-col bg-footer text-white justify-end pt-8 px-14 bg-opacity-90 rounded-8xl" style={{}}>
+        <div className="flex w-full flex-col bg-footer text-white justify-end pt-4 px-14 bg-opacity-90 rounded-8xl" style={{}}>
           <button onClick={onBuyClick} style={{
             backgroundColor: '#615793',
             fontSize: '20px',
@@ -224,7 +223,7 @@ export const BuyPage = () => {
             cursor: 'pointer',
             justifySelf: "end",
             alignSelf: "end"
-          }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-4 ">
+          }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-2 ">
             {transactionInProgress === TransactionState.IN_PROGRESS ?
                 <div className="thecube w-8 h-8 m-1">
                   <div className="cube c1"></div>
@@ -252,6 +251,7 @@ export const BuyPage = () => {
           }
         </div>
       </div>
+    </div>
 
     </div>
   );
