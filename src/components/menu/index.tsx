@@ -39,7 +39,7 @@ export const Menu = ({
             <div className="flex items-center justify-between mh-4 mt-2">
               <img className="h-12 w-12 ml-4" src={menuIcon} alt="" draggable={false} onClick={onHomeClicked} />
               <div className="flex flex-col justify-between ml-2">
-                <p className="text-white text-xs">Ruth’s Alternative Caring</p>
+                {/*<p className="text-white text-xs">Ruth’s Alternative Caring</p>*/}
                 <p className="font-righteous text-white text-xl">Storefront</p>
               </div>
             </div>

@@ -18,11 +18,18 @@ import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
-import {useHistory} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {convertETHtoUSD} from "../helpers/currency";
 
 function isStartOrInProgress(transactionInProgress: TransactionState) {
   return transactionInProgress === TransactionState.INITIAL || transactionInProgress === TransactionState.IN_PROGRESS;
+}
+
+function open(url: string) {
+  const win = window.open(url, '_blank');
+  if (win != null) {
+    win.focus();
+  }
 }
 
 /**
@@ -40,7 +47,9 @@ export const BuyPage = () => {
   const accountBalance = getBalanceInUSD(accounts, balances);
 
   const transaction = useSelector(selectCreateTransaction)
-  const helpMessages = ['Tap the button above to submit the signing request', 'Switch to your wallet app and sign the transaction', 'Sending transaction...']
+  const helpMessages = ['Tap the button above to submit the signing request',
+    'Switch to your wallet app and sign the transaction',
+    'Sending transaction...']
 
   const {
     rpcResult,
@@ -73,23 +82,19 @@ export const BuyPage = () => {
       console.debug("skipping click while there's an ongoing trx");
       return;
     }
-
+    // setTimeout(() => {
+    //   open("wc:wallets");
+    //   history.push("wc://wallets");
+    // }, 1200);
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     onSendTransaction(accountBalance).then(r => {})
+
   };
 
   const onSendTransaction = async (accountBalance: AccountBalance) => {
     const account = accountBalance.account;
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
-
-    console.log(`onSendTransaction trx from account: ${account} address: ${address}`)
-
-    // Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
-    // https://kovan.etherscan.io/address/0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
-    // https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
-
-    //TODO this should be done before the pay event to be able to show trx fees.
 
     if (!transaction) {
       toast.error("Something went wrong while generating the transaction, please try again. ");
@@ -214,6 +219,7 @@ export const BuyPage = () => {
 
         {/*Buy Button Section*/}
         <div className="flex w-full flex-col bg-footer text-white justify-end pt-4 px-14 bg-opacity-90 rounded-8xl" style={{}}>
+          <a href={"wc://wallets"} className="">
           <button onClick={onBuyClick} style={{
             backgroundColor: '#615793',
             fontSize: '20px',
@@ -236,7 +242,7 @@ export const BuyPage = () => {
                   <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
                 </div>}
           </button>
-
+          </a>
           {
               <div className="flex flex-col text-center text-secondary text-xs">
                 <div className="w-1/3 absolute" style={{alignSelf: 'center'}} >

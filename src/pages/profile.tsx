@@ -39,6 +39,14 @@ export const ProfilePage = () => {
   const startScanning = (): void => {
     console.info(`starting scanning....`)
     setScanning(!scanning);
+
+    //FIXME fake scan
+    setqrCodeUrl("resultText");
+    //FIXME parse qr code value and feed it as param
+
+    setTimeout(() => {
+      createTransaction();
+    }, 1000);
   }
 
   const createTransaction = (): void => {
