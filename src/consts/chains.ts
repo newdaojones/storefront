@@ -73,7 +73,7 @@ export const chainData: any = {
       id: 'eip155:80001',
       rpc: ['https://rpc-mumbai.matic.today'],
       slip44: 60,
-      testnet: false,
+      testnet: true,
       logo: 'https://blockchain-api.xyz/logos/eip155:137.png',
       rgb: '130, 71, 229',
       symbol: 'MATIC',
