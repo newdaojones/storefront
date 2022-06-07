@@ -249,19 +249,17 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
         // Open QRCode modal if a URI was returned (i.e. we're not connecting an existing pairing).
         if (uri) {
-          QRCodeModal.open(uri, () => {
-            console.log("EVENT", "QR Code Modal closed");
-          });
+          setQRCodeUri(uri);
         }
 
         const session = await approval();
         console.log("Established session:", session);
-        await onSessionConnected(session);
+        //setPairings(session.)
+        onSessionConnected(session);
       } catch (e: any) {
         toast.error(e.message);
       } finally {
         // close modal in case it was open
-        QRCodeModal.close();
       }
     },
     [chains, client, onSessionConnected]
@@ -330,6 +328,18 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       }
       _client.on("session_ping", args => {
         console.log("EVENT", "session_ping", args);
+      });
+
+      // _client.on("pairing_ping", async (proposal) => {
+      //   //const { uri } = proposal.id
+      //   //setQRCodeUri(uri);
+      // });
+
+      _client.on("pairing_ping", args => {
+        console.warn(`**** pairing event. args: ${args}`);
+        //FIXME should set pairing
+        //setPairings(p)
+        setPairings(_client.pairing.values);
       });
 
       _client.on("session_event", args => {

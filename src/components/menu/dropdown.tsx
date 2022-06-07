@@ -68,7 +68,7 @@ export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, conne
                             </a>
                             <p
                                 className={
-                                    "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
+                                    "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent cursor-pointer" +
                                     (color === "white" ? " text-slate-700" : "text-white")
                                 }
                                 onClick={onDisconnect}
@@ -98,9 +98,3 @@ export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, conne
             </div>
     );
 };
-
-// export const DropdownRender = ({onDisconnect: any}) => {
-//     return (
-//             <Dropdown onDisconnect={onDisconnect}/>
-//     );
-// }
