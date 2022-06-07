@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 import { AssetData, GasPrices } from "./types";
 
-//FIXME the url should be read from the config, as everywhere else
+//FIXME the url should be read from the config, as everywhere else,
+// not hardcoded here
 const ethereumApi: AxiosInstance = axios.create({
     baseURL: "https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09",
     timeout: 30000, // 30 secs
@@ -65,7 +66,7 @@ export const infuraGetAccountNonce = async (address: string, chainId: string): P
     return result;
 };
 
-export const apiGetGasPrices = async (): Promise<GasPrices> => {
+export const infuraGetGasPrices = async (): Promise<GasPrices> => {
     const response = await ethereumApi.get(`/gas-prices`);
     const { result } = response.data;
     return result;

@@ -68,5 +68,15 @@ export const chainData: any = {
       rgb: '130, 71, 229',
       symbol: 'MATIC',
     },
+    '80001': {
+      name: 'Polygon Mumbai',
+      id: 'eip155:80001',
+      rpc: ['https://rpc-mumbai.matic.today'],
+      slip44: 60,
+      testnet: false,
+      logo: 'https://blockchain-api.xyz/logos/eip155:137.png',
+      rgb: '130, 71, 229',
+      symbol: 'MATIC',
+    },
   },
 };

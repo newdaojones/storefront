@@ -1,18 +1,33 @@
 import * as encoding from "@walletconnect/encoding";
 import {BigNumber, utils} from "ethers";
 
-import {apiGetAccountNonce, apiGetGasPrices} from "./api";
 import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
-import {infuraGetAccountNonce} from "./infura-api";
+import {EthereumXyzApi, InfuraApi, RpcApi} from "./rpc-api";
+
+
+// const currentRpcApi: RpcApi = new InfuraApi();
+export const currentRpcApi: RpcApi = new EthereumXyzApi();
 
 export async function getGasPrice(chainId: string): Promise<string> {
+    //TODO wtf hardcoded gas price for ethereum mainnet?
     if (chainId === "eip155:1") return toWad("20", 9).toHexString();
-    const gasPrices = await apiGetGasPrices();
+    const gasPrices = await currentRpcApi.getGasPrices(chainId);
     return toWad(`${gasPrices.slow.price}`, 9).toHexString();
 }
 
+
+function debugTransactionEncodingDecoding(_value: any, value: string) {
+    //TODO this is only debug code
+    const bigN = BigNumber.from(_value.toString())
+    const formatted = utils.formatUnits(bigN, "ether")
+    console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
+    const val1 = web3.utils.hexToNumber(value);
+    const val2 = web3.utils.toDecimal(value);
+    const val3 = encoding.hexToNumber(value);
+    console.debug(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
+}
 
 /**
  * See transaction https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
@@ -36,8 +51,7 @@ export async function formatTestTransaction(account: string, sendAmount: number)
 
     let _nonce;
     try {
-        _nonce = await infuraGetAccountNonce(address, chainId);
-        //_nonce = await apiGetAccountNonce(address, chainId);
+        _nonce = await currentRpcApi.getAccountNonce(address, chainId);
     } catch (error) {
         throw new Error(`failed to fetch nonce for address ${address} on chain ${chainId}`);
     }
@@ -52,25 +66,18 @@ export async function formatTestTransaction(account: string, sendAmount: number)
     const _gasLimit = 21000;
     const gasLimit = encodeNumberAsHex(_gasLimit)
 
-
     const _value = toWad(sendAmount.toString());
     console.info(`send amount ${sendAmount} toWat -> ${_value} `)
     // const _value = 123500000000000; //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
 
     const value = encoding.sanitizeHex(_value.toHexString());
+    //debugTransactionEncodingDecoding(_value, value);
 
-    //TODO this is only debug code
-    const bigN = BigNumber.from(_value.toString())
-    const formatted = utils.formatUnits(bigN, "ether")
-    console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
-    const val1  = web3.utils.hexToNumber(value);
-    const val2  = web3.utils.toDecimal(value);
-    const val3 = encoding.hexToNumber(value);
-    console.debug(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
-
+    // TODO add transaction id here, maybe a hash function of the qrcode & timestamp could be good
     const tx = { from: address, to: toAddress, data: "0x", nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
     return tx;
 }
+
 
 export const encodeNumberAsHex = (value: number): string => {
     const hex3 = web3.utils.numberToHex(value);
@@ -106,6 +113,7 @@ export interface AccountBalance {
     balanceString: string;
 }
 
+//TODO this returns the latest account in the list with non-zero amount
 export function getBalanceInUSD(accounts: string[], balances: AccountBalances): AccountBalance {
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];

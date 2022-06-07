@@ -18,19 +18,8 @@ import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
-import {Link, useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 import {convertETHtoUSD} from "../helpers/currency";
-
-function isStartOrInProgress(transactionInProgress: TransactionState) {
-  return transactionInProgress === TransactionState.INITIAL || transactionInProgress === TransactionState.IN_PROGRESS;
-}
-
-function open(url: string) {
-  const win = window.open(url, '_blank');
-  if (win != null) {
-    win.focus();
-  }
-}
 
 /**
  * Test code
@@ -71,7 +60,6 @@ export const BuyPage = () => {
           dispatch(userAction.unsetTransaction());
           history.length = 1;
           history.replace("/profile");
-          //history.goBack();
         }
       }
     })
@@ -82,10 +70,6 @@ export const BuyPage = () => {
       console.debug("skipping click while there's an ongoing trx");
       return;
     }
-    // setTimeout(() => {
-    //   open("wc:wallets");
-    //   history.push("wc://wallets");
-    // }, 1200);
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     onSendTransaction(accountBalance).then(r => {})
 
@@ -101,6 +85,7 @@ export const BuyPage = () => {
       return;
     }
 
+    //TODO this should be moved to a redux action, with a dispatcher & reducer
     await ethereumRpc.testSendTransaction(chainId, address, transaction)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
@@ -136,7 +121,7 @@ export const BuyPage = () => {
         })
   };
 
-
+//TODO all this block should be a hook or effect, and run before the view is rendered.
   let paymentFeeUsd = 0;
   let paymentValueUsd = 0;
 
@@ -168,7 +153,6 @@ export const BuyPage = () => {
     console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
   } else {
     console.info(`transaction value not available. maybe should go back?. redirecting to /profile page`)
-    //history.length = 1;
     history.replace("/profile");
   }
 
@@ -261,11 +245,11 @@ export const BuyPage = () => {
               // transaction progress bar / text
               <div className="flex flex-col text-center text-secondary text-xs">
                 <div className="w-1/3 absolute" style={{alignSelf: 'center'}}>
-                  <img className="w-full absolute mr-8" style={{alignSelf: 'center'}} src={ProgressBase}/>
+                  <img className="w-full absolute mr-8" style={{alignSelf: 'center'}} src={ProgressBase} alt=""/>
                   {transactionInProgress === TransactionState.IN_PROGRESS &&
-                  <img className="w-full absolute mr-8" src={ProgressIcon}/>}
+                  <img className="w-full absolute mr-8" src={ProgressIcon} alt=""/>}
                   {transactionInProgress === TransactionState.FINISHED &&
-                  <img className="w-full absolute mr-8" src={ProgressFull}/>}
+                  <img className="w-full absolute mr-8" src={ProgressFull} alt=""/>}
                 </div>
                 <p className="mt-4">{`${buyProgress + 1}/3`}</p>
                 <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}

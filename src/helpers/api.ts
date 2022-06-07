@@ -1,8 +1,9 @@
 import axios, { AxiosInstance } from "axios";
 import { AssetData, GasPrices, ParsedTx } from "./types";
 
-//FIXME this should be done via the rpc provider to avoid using this hard-coded nodes, that result in 429 errors
+// FIXME this should be done via the rpc provider to avoid using this hard-coded nodes, that result in 429 errors
 // https://github.com/pedrouid/ethereum-api
+// It doesn't support Ethereum KOVAN
 const ethereumApi: AxiosInstance = axios.create({
     baseURL: "https://ethereum-api.xyz",
     timeout: 30000, // 30 secs
@@ -49,7 +50,8 @@ export const apiGetAccountNonce = async (address: string, chainId: string): Prom
     return result;
 };
 
-export const apiGetGasPrices = async (): Promise<GasPrices> => {
+//FIXME no chain id, only for ethereum ??
+export const apiGetGasPrices = async (chainId: string): Promise<GasPrices> => {
     const response = await ethereumApi.get(`/gas-prices`);
     const { result } = response.data;
     return result;

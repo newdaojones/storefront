@@ -1,7 +1,6 @@
 import Client from '@walletconnect/sign-client';
 import { PairingTypes, SessionTypes } from '@walletconnect/types';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import QRCodeModal from "@walletconnect/legacy-modal";
 import { PublicKey } from '@solana/web3.js';
 import moment from 'moment';
 import * as encoding from '@walletconnect/encoding';
@@ -23,9 +22,8 @@ import { userAction } from '../store/actions';
 import { sleep } from '../utils';
 import { toast } from 'react-toastify';
 import {AccountBalances} from "../helpers";
-import {apiGetAccountBalance} from "../helpers/api";
-import {infuraGetAccountBalance} from "../helpers/infura-api";
 import {getRequiredNamespaces} from "../helpers/namespaces";
+import {currentRpcApi} from "../helpers/tx";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -110,7 +108,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
             console.info(`fetching account balance for chainId:${chainId} address:${address}`);
-            const assets = await infuraGetAccountBalance(address, chainId);
+
+            const assets = await currentRpcApi.getAccountBalance(address, chainId);
+            // const assets = await infuraGetAccountBalance(address, chainId);
             //const assets = await apiGetAccountBalance(address, chainId);
             console.info(`--> balance = ${assets.symbol} ${assets.balance}`)
             return { account, assets: [assets] };

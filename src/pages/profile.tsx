@@ -46,7 +46,7 @@ export const ProfilePage = () => {
 
     setTimeout(() => {
       createTransaction();
-    }, 1000);
+    }, 3000);
   }
 
   const createTransaction = (): void => {
@@ -99,10 +99,10 @@ export const ProfilePage = () => {
               { (loading) ?
                   <div className="w-20 h-20 mt-10 mb-10" style={{alignSelf: 'center'}}>
                     <div className="thecube w-20 h-20" style={{alignSelf: 'center'}}>
-                      <div className="cube c1"></div>
-                      <div className="cube c2"></div>
-                      <div className="cube c4"></div>
-                      <div className="cube c3"></div>
+                      <div className="cube c1"/>
+                      <div className="cube c2"/>
+                      <div className="cube c4"/>
+                      <div className="cube c3"/>
                     </div>
                   </div>
                   :
