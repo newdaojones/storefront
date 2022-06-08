@@ -18,11 +18,18 @@ import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
-import {useHistory} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {convertETHtoUSD} from "../helpers/currency";
 
 function isStartOrInProgress(transactionInProgress: TransactionState) {
   return transactionInProgress === TransactionState.INITIAL || transactionInProgress === TransactionState.IN_PROGRESS;
+}
+
+function open(url: string) {
+  const win = window.open(url, '_blank');
+  if (win != null) {
+    win.focus();
+  }
 }
 
 /**
@@ -40,7 +47,9 @@ export const BuyPage = () => {
   const accountBalance = getBalanceInUSD(accounts, balances);
 
   const transaction = useSelector(selectCreateTransaction)
-  const helpMessages = ['Tap the button above to submit the signing request', 'Switch to your wallet app and sign the transaction', 'Sending transaction...']
+  const helpMessages = ['Tap the button above to submit the signing request',
+    'Switch to your wallet app and sign the transaction',
+    'Sending transaction...']
 
   const {
     rpcResult,
@@ -73,23 +82,19 @@ export const BuyPage = () => {
       console.debug("skipping click while there's an ongoing trx");
       return;
     }
-
+    // setTimeout(() => {
+    //   open("wc:wallets");
+    //   history.push("wc://wallets");
+    // }, 1200);
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     onSendTransaction(accountBalance).then(r => {})
+
   };
 
   const onSendTransaction = async (accountBalance: AccountBalance) => {
     const account = accountBalance.account;
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
-
-    console.log(`onSendTransaction trx from account: ${account} address: ${address}`)
-
-    // Funded account 0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
-    // https://kovan.etherscan.io/address/0xb0e49345BD214238681D593a1aE49CF6Bf85D8D0
-    // https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
-
-    //TODO this should be done before the pay event to be able to show trx fees.
 
     if (!transaction) {
       toast.error("Something went wrong while generating the transaction, please try again. ");
@@ -172,9 +177,8 @@ export const BuyPage = () => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-full flex flex-col justify-between">
-
-        <div className="m-10 flex flex-col text-white items-center">
-          <p className="text-white text-secondary font-bold my-4" style={{alignSelf: 'start'}}>Payment Method</p>
+        <div className="mt-4 flex flex-col text-white items-center">
+          <p className="mx-4 text-white text-secondary font-bold" style={{alignSelf: 'start'}}>Payment Method</p>
 
           {/*Credit Card*/}
           <div className="w-full flex flex-col text-black justify-between pt-5 pb-5 px-14"
@@ -189,9 +193,9 @@ export const BuyPage = () => {
         </div>
 
         {/*Invoice*/}
-        <div className="w-full flex items-center justify-center mt-2 ml-8 mr-8">
+        <div className="w-full flex items-center justify-center mb-4">
           <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
-                className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
+                className="w-full flex flex-col items-center justify-center ml-10 mr-10 bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
             <div className="w-full flex justify-between p-4">
               <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
               <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentValueUsd.toFixed(2)}`}</p>
@@ -211,10 +215,11 @@ export const BuyPage = () => {
             </div>
           </div>
         </div>
-        </div>
+
 
         {/*Buy Button Section*/}
-        <div className="flex flex-col bg-footer text-white justify-end pt-8 px-14 bg-opacity-90 rounded-8xl" style={{}}>
+        <div className="flex w-full flex-col bg-footer text-white justify-end pt-4 px-14 bg-opacity-90 rounded-8xl" style={{}}>
+          <a href={"wc://wallets"} className="">
           <button onClick={onBuyClick} style={{
             backgroundColor: '#615793',
             fontSize: '20px',
@@ -224,7 +229,7 @@ export const BuyPage = () => {
             cursor: 'pointer',
             justifySelf: "end",
             alignSelf: "end"
-          }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-4 ">
+          }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-2 ">
             {transactionInProgress === TransactionState.IN_PROGRESS ?
                 <div className="thecube w-8 h-8 m-1">
                   <div className="cube c1"></div>
@@ -237,7 +242,7 @@ export const BuyPage = () => {
                   <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
                 </div>}
           </button>
-
+          </a>
           {
               <div className="flex flex-col text-center text-secondary text-xs">
                 <div className="w-1/3 absolute" style={{alignSelf: 'center'}} >
@@ -252,6 +257,7 @@ export const BuyPage = () => {
           }
         </div>
       </div>
+    </div>
 
     </div>
   );

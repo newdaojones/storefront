@@ -1,36 +1,42 @@
 import React, {Component, useState} from 'react';
-import QrReader from "react-qr-scanner";
-
+import { QrReader } from "react-qr-reader";
+import {useHistory} from "react-router-dom";
 /*
 
 QR CODE EXAMPLE USE
 https://codesandbox.io/s/r3tyk
  */
 export const ScanPage = () => {
-    let [result, delay] = useState(false);
-    const handleScan = (data:any) => {
-        result = data
-        // this.setState({
-        //     result: data,
-        // })
-    }
-    const handleError = (err: any) => {
-        console.error(`error in qr scan ${err}`)
-    }
-        const previewStyle = {
-            height: 240,
-            width: 320,
-        }
+    const [data, setData] = useState('');
+    const history = useHistory();
 
-        return(
-            <div>
-                <QrReader
-                    delay={100}
-                    style={previewStyle}
-                    onError={handleError}
-                    onScan={handleScan}
-                />
-                <p>{result}</p>
-            </div>
-        )
+    const goToBuy = () => {
+        console.log(`navigating to scan page `)
+        history.push("/buy");
+    };
+
+    return (
+        <div className="h-full">
+            <QrReader
+                onResult={(result, error) => {
+                    if (result && data.length <= 0) {
+                        const resultText = result.getText()
+                        console.info(`scanned qr result: ${result} text: ${resultText}`)
+                        setData(resultText);
+                        goToBuy();
+                    }
+
+                    if (error && error.message) {
+                        console.info(`error while scanning: ${error.message}`);
+                    }
+                }}
+                constraints={{ facingMode : "environment" }}
+                //scanDelay={000}
+                containerStyle={{}}
+                videoStyle={{height: '100vh', width: '100vw', objectFit: 'cover'}}
+                className=""
+            />
+            <p>{data}</p>
+        </div>
+    );
 }

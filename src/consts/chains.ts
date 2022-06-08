@@ -11,6 +11,18 @@ export const chainData: any = {
       symbol: 'BSC',
     },
   },
+  bip122: {
+    '000000000019d6689c085ae165831e93': {
+      id: 'bip122:000000000019d6689c085ae165831e93',
+      name: 'Bitcoin Mainnet',
+      rpc: ['https://bsc-dataseed.binance.org'],
+      slip44: 60,
+      testnet: false,
+      logo: '/btc.png',
+      rgb: '243, 186, 44',
+      symbol: 'BTC',
+    },
+  },
   solana: {
     '4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ': {
       id: 'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',

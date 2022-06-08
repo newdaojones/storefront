@@ -34,7 +34,7 @@
     "react-chartjs-2": "^4.0.0",
     "react-dom": "^17.0.2",
     "react-modal": "^3.14.4",
-    "react-qr-scanner": "^1.0.0-alpha.8",
+    "react-qr-reader": "file:deps/react-qr-reader",
     "react-redux": "^7.2.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
@@ -47,6 +47,11 @@
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1",
     "web3": "^1.6.1"
+  },
+  "resolutions": {
+    "react-qr-reader/react": "^17.0.2",
+    "react-qr-reader/react-dom": "^17.0.2",
+    "react-qr-reader/**/react": "^17.0.2"
   },
   "scripts": {
     "start": "craco start",
