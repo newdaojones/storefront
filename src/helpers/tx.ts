@@ -4,17 +4,18 @@ import {BigNumber, utils} from "ethers";
 import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
-import {EthereumXyzApi, InfuraApi, RpcApi} from "./rpc-api";
+import {EthereumXyzApi, InfuraApi, RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 
 
 // const currentRpcApi: RpcApi = new InfuraApi();
-export const currentRpcApi: RpcApi = new EthereumXyzApi();
+// export const currentRpcApi: RpcApi = new EthereumXyzApi();
+export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
 export async function getGasPrice(chainId: string): Promise<string> {
     //TODO wtf hardcoded gas price for ethereum mainnet?
-    if (chainId === "eip155:1") return toWad("20", 9).toHexString();
+    //if (chainId === "eip155:1") return toWad("20", 9).toHexString();
     const gasPrices = await currentRpcApi.getGasPrices(chainId);
-    return toWad(`${gasPrices.slow.price}`, 9).toHexString();
+    return gasPrices
 }
 
 
@@ -42,6 +43,7 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  *
  *
  * @param account
+ * @param sendAmount
  */
 export async function formatTestTransaction(account: string, sendAmount: number): Promise<ITransaction> {
     const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
@@ -59,6 +61,8 @@ export async function formatTestTransaction(account: string, sendAmount: number)
     const nonce = encoding.sanitizeHex(encoding.numberToHex(_nonce));
 
     const _gasPrice = await getGasPrice(chainId);
+    console.info(`gas price number: ${_gasPrice}`);
+
     const gasPrice = encodeNumberAsHex(Number(_gasPrice));
 
     // FIXME this should also be a param
@@ -67,7 +71,7 @@ export async function formatTestTransaction(account: string, sendAmount: number)
     const gasLimit = encodeNumberAsHex(_gasLimit)
 
     const _value = toWad(sendAmount.toString());
-    console.info(`send amount ${sendAmount} toWat -> ${_value} `)
+    console.info(`send amount ${sendAmount} toWad -> ${_value} `)
     // const _value = 123500000000000; //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
 
     const value = encoding.sanitizeHex(_value.toHexString());

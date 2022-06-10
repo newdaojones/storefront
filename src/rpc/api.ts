@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { AssetData, GasPrices, ParsedTx } from "./types";
+import { AssetData, GasPrices, ParsedTx } from "../helpers/types";
 
 // FIXME this should be done via the rpc provider to avoid using this hard-coded nodes, that result in 429 errors
 // https://github.com/pedrouid/ethereum-api
@@ -13,7 +13,7 @@ const ethereumApi: AxiosInstance = axios.create({
     },
 });
 
-export async function apiGetAccountAssets(address: string, chainId: string): Promise<AssetData[]> {
+async function apiGetAccountAssets(address: string, chainId: string): Promise<AssetData[]> {
     const ethChainId = chainId.split(":")[1];
     const response = await ethereumApi.get(
         `/account-assets?address=${address}&chainId=${ethChainId}`,
@@ -52,7 +52,8 @@ export const apiGetAccountNonce = async (address: string, chainId: string): Prom
 
 //FIXME no chain id, only for ethereum ??
 export const apiGetGasPrices = async (chainId: string): Promise<GasPrices> => {
-    const response = await ethereumApi.get(`/gas-prices`);
+    const ethChainId = chainId.split(":")[1];
+    const response = await ethereumApi.get(`/gas-prices?chainId=${ethChainId}`);
     const { result } = response.data;
     return result;
 };

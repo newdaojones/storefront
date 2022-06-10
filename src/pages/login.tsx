@@ -62,7 +62,7 @@ export const Login = () => {
                className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
 
 
-            <p className="font-montserrat text-center text-white mt-2 mb-4">Scan or Tap the qrCode <br/>to connect with WalletConnect v2</p>
+            <p className="font-montserrat text-center text-white mt-2 mb-4">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
         </div>
     );
 };
