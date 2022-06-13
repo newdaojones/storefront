@@ -4,7 +4,7 @@ import {BigNumber, utils} from "ethers";
 import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
-import {EthereumXyzApi, InfuraApi, RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
+import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 
 
 // const currentRpcApi: RpcApi = new InfuraApi();

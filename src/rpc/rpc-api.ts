@@ -1,8 +1,7 @@
-import {AssetData, GasPrices} from "../helpers/types";
+import {AssetData} from "../helpers/types";
 import {apiGetAccountBalance, apiGetAccountNonce, apiGetGasPrices} from "./api";
 import {infuraGetAccountBalance, infuraGetAccountNonce, infuraGetGasPrices} from "./infura-api";
 import {toWad} from "../helpers";
-import {getHexValueAsBigNumber} from "../helpers/tx";
 
 export interface RpcApi {
     getAccountBalance(address: string, chainId: string): Promise<AssetData>;

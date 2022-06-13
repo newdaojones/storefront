@@ -1,9 +1,10 @@
-import axios, { AxiosInstance } from "axios";
-import { AssetData, GasPrices } from "../helpers/types";
-import {getHexValueAsBigNumber} from "../helpers/tx";
+import axios, {AxiosInstance} from "axios";
+import {AssetData} from "../helpers/types";
 
-//FIXME the url should be read from the config, as everywhere else,
+// Infura-Api only used for kovan at the moment
+// FIXME the url should be read from the config, as everywhere else,
 // not hardcoded here
+
 const rpcUrl = "https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
 
 const axiosInstance: AxiosInstance = axios.create({
@@ -16,7 +17,6 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 export async function infuraGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
-    const ethChainId = chainId.split(":")[1];
     const data = {
         "jsonrpc": "2.0",
         "method": "eth_getBalance",
@@ -45,7 +45,6 @@ export async function infuraGetAccountBalance(address: string, chainId: string):
  * @param chainId
  */
 export const infuraGetAccountNonce = async (address: string, chainId: string): Promise<number> => {
-    const ethChainId = chainId.split(":")[1];
     const data = {
         "jsonrpc": "2.0",
         "method": "parity_nextNonce",
@@ -57,20 +56,11 @@ export const infuraGetAccountNonce = async (address: string, chainId: string): P
         data
     );
     const { result } = response.data;
-
-    const assetData = {
-        symbol: "ETH",
-        name: "Ether",
-        decimals: "18",
-        contractAddress: "",
-        balance: result
-    }
     console.info(`got nonce: ${result}`)
     return result;
 };
 
 export const infuraGetGasPrices = async (chainId: string): Promise<string> => {
-    const ethChainId = chainId.split(":")[1];
     const data = {
         "jsonrpc": "2.0",
         "method": "eth_gasPrice",
@@ -79,6 +69,6 @@ export const infuraGetGasPrices = async (chainId: string): Promise<string> => {
     };
     const response = await axiosInstance.post('', data);
     const { result } = response.data;
-    console.debug(`gas price response ${result}`);
+    console.debug(`gas price for chainId ${chainId} response ${result}`);
     return result;
 };
