@@ -8,10 +8,10 @@ import {getNonZeroAccountBalance} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCreateTransaction, selectTickers} from "../store/selector";
 import numeral from "numeral";
-import {convertETHtoUSD, convertUSDtoETH} from "../helpers/currency";
 import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
 import {QrReader} from "react-qr-reader";
+import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 
 export const ProfilePage = () => {
   const history = useHistory();
@@ -23,7 +23,7 @@ export const ProfilePage = () => {
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
   const accountBalance = getNonZeroAccountBalance(accounts, balances);
-  console.info(`selected account ${accountBalance} ${accountBalance.balanceString} ${accountBalance.balanceString}`)
+  console.info(`selected account ${accountBalance.account} ${accountBalance.balanceString} ${accountBalance.token}`)
 
   const tickers = useSelector(selectTickers)
 
@@ -54,7 +54,8 @@ export const ProfilePage = () => {
   const createTransaction = (): void => {
     //FIXME hardcoded price
     const paymentSubtotalUsd = 0.55;
-    const ethTotal = convertUSDtoETH(paymentSubtotalUsd, tickers);
+    const currencySymbol = accountBalance.token;
+    const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
     if (!ethTotal) {
       toast.error(`  Could not convert value to crypto. Invalid tickers ${tickers.length}`);
       return;
@@ -69,7 +70,8 @@ export const ProfilePage = () => {
   }
 
   const balanceN = Number(accountBalance.balanceString);
-  const balanceUSD = convertETHtoUSD(balanceN, tickers);
+  const currencySymbol = accountBalance.token;
+  const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);
 
   const qrCode = <QrReader
       onResult={(result, error) => {
@@ -91,7 +93,6 @@ export const ProfilePage = () => {
       videoStyle={{height: '100vh', width: '100vw', objectFit: 'cover'}}
       className=""
   />
-  let currencySymbol = "ETH";
 
   return (
       <div className="grid">

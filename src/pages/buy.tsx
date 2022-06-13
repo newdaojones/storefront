@@ -19,7 +19,7 @@ import {toast} from "react-toastify";
 import {AccountBalance, getNonZeroAccountBalance, getHexValueAsBigNumber} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
-import {convertETHtoUSD} from "../helpers/currency";
+import {convertTokenToUSD} from "../helpers/currency";
 
 /**
  * Test code
@@ -127,19 +127,20 @@ export const BuyPage = () => {
 
   let paymentTotalUSD = 0;
   let paymentValueEth = 0;
+  const token = 'ETH';
   if (transaction?.value) {
     paymentValueEth = Number(getHexValueAsBigNumber(transaction?.value));
 
     const gasPriceNumber = getHexValueAsBigNumber(transaction?.gasPrice);
-    const gasPriceUsd = convertETHtoUSD(Number(gasPriceNumber), tickers);
+    const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
     console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
     const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
-    const gasLimitUsd = convertETHtoUSD(Number(gasLimitNumber), tickers);
+    const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
     console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
     const trxValueAsNumber = getHexValueAsBigNumber(transaction?.value);
-    const trxPriceUsd = convertETHtoUSD(Number(trxValueAsNumber), tickers);
+    const trxPriceUsd = convertTokenToUSD(Number(trxValueAsNumber), token, tickers);
 
     if (trxPriceUsd && gasPriceUsd) {
       paymentValueUsd = trxPriceUsd;

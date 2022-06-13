@@ -115,6 +115,7 @@ export interface AccountBalance {
     balance: BigNumber;
     balanceUsd: BigNumber;
     balanceString: string;
+    token: string;
 }
 
 //TODO this returns the latest account in the list with non-zero amount
@@ -123,6 +124,7 @@ export function getNonZeroAccountBalance(accounts: string[], balances: AccountBa
     let firstNonZeroAccount = accounts[0];
     let accountBalance = BigNumber.from(0);
     let accountBalanceUSD = BigNumber.from(0);
+    let balanceToken: string | null = null;
     accounts.forEach(value => {
         let accountBalances = balances[value];
         if (!accountBalances) {
@@ -139,9 +141,11 @@ export function getNonZeroAccountBalance(accounts: string[], balances: AccountBa
             accountBalance = utils.parseUnits(balance.toString(), "ether")
             accountBalanceUSD = accountBalance;
             balanceString = formatEther;
+            balanceToken = balanceElement.symbol;
         }
     })
     return {
+        token: balanceToken || 'ETH',
         account: firstNonZeroAccount,
         balance: accountBalance,
         balanceUsd: accountBalanceUSD,
