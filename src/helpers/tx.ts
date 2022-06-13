@@ -118,7 +118,7 @@ export interface AccountBalance {
 }
 
 //TODO this returns the latest account in the list with non-zero amount
-export function getBalanceInUSD(accounts: string[], balances: AccountBalances): AccountBalance {
+export function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];
     let accountBalance = BigNumber.from(0);

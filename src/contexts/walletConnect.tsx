@@ -107,12 +107,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           _accounts.map(async account => {
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
-            console.info(`fetching account balance for chainId:${chainId} address:${address}`);
-
             const assets = await currentRpcApi.getAccountBalance(address, chainId);
-            // const assets = await infuraGetAccountBalance(address, chainId);
-            //const assets = await apiGetAccountBalance(address, chainId);
-            console.info(`--> balance = ${assets.symbol} ${assets.balance}`)
+            console.info(`account balance for chainId:${chainId} address:${address} \n
+              --> balance = ${assets.symbol} ${assets.balance}`);
             return { account, assets: [assets] };
           }),
       );
@@ -158,7 +155,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     } else if (availableAccounts[0]) {
       login(availableAccounts[0]);
     } else {
-      toast.error('Not available accounts');
+      toast.error('No available accounts');
       disconnect();
     }
   }, [accounts]);

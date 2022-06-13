@@ -1,21 +1,21 @@
 import {ITicker} from "../models";
 
-function findETHTicker(tickers: ITicker[]) {
+function findTicker(currencySymbol: string, tickers: ITicker[]) {
     let ethTicker = null;
     try {
-        ethTicker = tickers ? tickers.find(value => value.currency === 'ETH') : null;
+        ethTicker = tickers ? tickers.find(value => value.currency === currencySymbol) : null;
     } catch (e) {
-        console.info(`error searching for ticker ETH: ${e}`)
+        console.info(`error searching for ticker ${currencySymbol}: ${e}`)
     }
     return ethTicker;
 }
 
-export const convertETHtoUSD = (value: number, tickers: ITicker[]): number | null => {
-    let ethTicker = findETHTicker(tickers);
+export const convertTokenToUSD = (value: number, tokenSymbol: string, tickers: ITicker[]): number | null => {
+    let ethTicker = findTicker(tokenSymbol, tickers);
     let balanceUsd: number | null;
     if (ethTicker) {
         balanceUsd = value * ethTicker.price;
-        console.debug(`${value} ETH -> ${balanceUsd} USD. price eth: ${ethTicker?.price}`)
+        console.info(`${value} ${tokenSymbol} = ${balanceUsd} USD -  Price 1 ${tokenSymbol} = ${ethTicker?.price} USD`)
     } else {
         console.info(`tickers are not available`)
         balanceUsd = null;
@@ -23,12 +23,12 @@ export const convertETHtoUSD = (value: number, tickers: ITicker[]): number | nul
     return balanceUsd;
 };
 
-export const convertUSDtoETH = (value: number, tickers: ITicker[]): number | null => {
-    let ethTicker = findETHTicker(tickers);
+export const convertUSDtoToken = (value: number, token: string, tickers: ITicker[]): number | null => {
+    let ethTicker = findTicker(token, tickers);
     let balanceUsd: number | null;
     if (ethTicker) {
         balanceUsd = value / ethTicker.price;
-        console.debug(`${value} USD -> ${balanceUsd} ETH. price eth: ${ethTicker?.price}`)
+        console.info(`${value} ${token} = ${balanceUsd} USD - Price 1 ${token} = ${ethTicker?.price} USD`)
     } else {
         console.info(`ticker are not available for ETH`)
         balanceUsd = null;

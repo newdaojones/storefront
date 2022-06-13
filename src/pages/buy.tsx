@@ -16,7 +16,7 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress, isMobile} from "../helpers";
 import {useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
-import {AccountBalance, getBalanceInUSD, getHexValueAsBigNumber} from "../helpers/tx";
+import {AccountBalance, getNonZeroAccountBalance, getHexValueAsBigNumber} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertETHtoUSD} from "../helpers/currency";
@@ -33,7 +33,7 @@ export const BuyPage = () => {
   let transactionInProgress = useSelector(selectTransactionInProgress)
   const tickers = useSelector(selectTickers)
   const { accounts, balances } = useWalletConnectClient();
-  const accountBalance = getBalanceInUSD(accounts, balances);
+  const accountBalance = getNonZeroAccountBalance(accounts, balances);
 
   const transaction = useSelector(selectCreateTransaction)
   const helpMessages = ['Tap the button above to submit the signing request',

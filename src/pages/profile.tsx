@@ -4,7 +4,7 @@ import QRTarget from '../assets/images/qrCodeScanning.svg';
 import QRLine from '../assets/images/qrCodeBar.svg';
 import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {getBalanceInUSD} from "../helpers/tx";
+import {getNonZeroAccountBalance} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCreateTransaction, selectTickers} from "../store/selector";
 import numeral from "numeral";
@@ -22,7 +22,9 @@ export const ProfilePage = () => {
   const [ locationKeys, setLocationKeys ] = useState(false)
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
-  const accountBalance = getBalanceInUSD(accounts, balances);
+  const accountBalance = getNonZeroAccountBalance(accounts, balances);
+  console.info(`selected account ${accountBalance} ${accountBalance.balanceString} ${accountBalance.balanceString}`)
+
   const tickers = useSelector(selectTickers)
 
   const trxCreated = useSelector(selectCreateTransaction)
@@ -89,6 +91,7 @@ export const ProfilePage = () => {
       videoStyle={{height: '100vh', width: '100vw', objectFit: 'cover'}}
       className=""
   />
+  let currencySymbol = "ETH";
 
   return (
       <div className="grid">
@@ -145,7 +148,7 @@ export const ProfilePage = () => {
                       </p>
                     </div>
                     <p className="font-righteous text-white text-center font-bold text-sm ml-1">
-                      {"ETH"}
+                      {currencySymbol}
                     </p>
                   </div>
                 </div>

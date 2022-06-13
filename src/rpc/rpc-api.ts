@@ -37,6 +37,7 @@ export class EthereumXyzApi implements RpcApi {
 
     async getGasPrices(chainId: string): Promise<string> {
         const gasPrices = await apiGetGasPrices(chainId);
+        console.info(`got gas prices ${gasPrices}`);
         return toWad(`${gasPrices.slow.price}`, 9).toHexString();
     }
 }

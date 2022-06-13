@@ -13,14 +13,14 @@ const ethereumApi: AxiosInstance = axios.create({
     },
 });
 
-async function apiGetAccountAssets(address: string, chainId: string): Promise<AssetData[]> {
-    const ethChainId = chainId.split(":")[1];
-    const response = await ethereumApi.get(
-        `/account-assets?address=${address}&chainId=${ethChainId}`,
-    );
-    const { result } = response.data;
-    return result;
-}
+// async function apiGetAccountAssets(address: string, chainId: string): Promise<AssetData[]> {
+//     const ethChainId = chainId.split(":")[1];
+//     const response = await ethereumApi.get(
+//         `/account-assets?address=${address}&chainId=${ethChainId}`,
+//     );
+//     const { result } = response.data;
+//     return result;
+// }
 
 export async function apiGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
     const ethChainId = chainId.split(":")[1];
@@ -53,6 +53,7 @@ export const apiGetAccountNonce = async (address: string, chainId: string): Prom
 //FIXME no chain id, only for ethereum ??
 export const apiGetGasPrices = async (chainId: string): Promise<GasPrices> => {
     const ethChainId = chainId.split(":")[1];
+    console.info(`apiGetGasPrices for chainId: ${chainId} ethChainId: ${ethChainId}`);
     const response = await ethereumApi.get(`/gas-prices?chainId=${ethChainId}`);
     const { result } = response.data;
     return result;

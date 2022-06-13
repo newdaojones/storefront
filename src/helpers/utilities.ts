@@ -171,11 +171,12 @@ export function getLocalStorageTestnetFlag(): boolean {
   let value = INITIAL_STATE_TESTNET_DEFAULT;
   const persisted = window.localStorage.getItem(LOCALSTORAGE_KEY_TESTNET);
   if (!persisted) {
+    console.debug(`saving TESTNET ${value} flag to local storage`)
     setLocaleStorageTestnetFlag(value);
   } else {
-    value = persisted === 'true' ? true : false;
+    value = persisted === 'true';
   }
-  console.info(`is it TESTNET ${value}`)
+
   return value;
 }
 
