@@ -3,9 +3,11 @@ import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
+import {Link, useHistory} from "react-router-dom";
 
 export const Login = () => {
     const {qrCodeUri} = useWalletConnectClient();
+    const history = useHistory();
 
     React.useEffect(() => {
         if (qrCodeUri) {
@@ -43,6 +45,13 @@ export const Login = () => {
         }
     }, [qrCodeUri]);
 
+    const storefrontPayButton = (orderId: String, amount: Number) => {
+        const baseUrl = 'https://test.jxndao.com';
+        // const baseUrl = 'http://localhost:3000';
+        const url = `${baseUrl}/storefront/pay?orderId=${orderId}&amount=${amount}`
+        return <a href={url}><button className="bg-white justify-center rounded-10xl overflow-hidden mt-4" >Pay with Storefront Pay</button></a>
+    }
+
     function onCopyLinkClicked() {
         navigator.clipboard.writeText(qrCodeUri || "");
         toast.info("Copied", {
@@ -50,6 +59,7 @@ export const Login = () => {
         })
     }
 
+    const payButton = storefrontPayButton("12323", 0.60);
     return (
         <div className="w-full h-full flex items-center justify-center flex-col">
             <h4 className="font-righteous text-white mt-4">Welcome to the StoreFront DApp</h4>
@@ -60,9 +70,8 @@ export const Login = () => {
             </a>
             <p onClick={onCopyLinkClicked}
                className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
-
-
             <p className="font-montserrat text-center text-white mt-2 mb-4">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
+            {payButton}
         </div>
     );
 };

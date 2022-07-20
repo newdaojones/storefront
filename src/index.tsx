@@ -19,24 +19,24 @@ import {ErrorPage} from "./pages/storefrontpay/error";
 ReactDOM.render(
   <Provider store={store}>
     <WalletConnectProvider>
-        <JsonRpcContextProvider>
-      <Router basename={'/storefront'}>
-          <Switch>
-              <Route path={'/pay'} component={Pay}></Route>
-              <Route path={'/error'} component={ErrorPage}></Route>
-              <Route path={'/'} component={Main}></Route>
-          </Switch>
-        <ToastContainer
-          toastClassName="w-full m-w-45 flex bg-white bg-opacity-25 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
-          bodyClassName={() => 'text-sm font-white font-med block p-1'}
-          autoClose={false}
-          icon={true}
-          position="bottom-center"
-          hideProgressBar={true}
-          closeOnClick={false}
-        />
-      </Router>
-    </JsonRpcContextProvider>
+      <JsonRpcContextProvider>
+          <Router basename={'/storefront'}>
+              <Switch>
+                  <Route path={'/pay'} component={Pay}></Route>
+                  <Route path={'/error'} component={ErrorPage}></Route>
+                  <Route path={'/'} component={Main}></Route>
+              </Switch>
+            <ToastContainer
+              toastClassName="w-full m-w-45 flex bg-white bg-opacity-25 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
+              bodyClassName={() => 'text-sm font-white font-med block p-1'}
+              autoClose={false}
+              icon={true}
+              position="bottom-center"
+              hideProgressBar={true}
+              closeOnClick={false}
+            />
+          </Router>
+        </JsonRpcContextProvider>
     </WalletConnectProvider>
   </Provider>,
   document.getElementById('root')

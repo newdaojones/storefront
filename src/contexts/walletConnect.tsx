@@ -251,10 +251,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
         const session = await approval();
         console.log("Established session:", session);
-        //setPairings(session.)
         onSessionConnected(session);
       } catch (e: any) {
-        toast.error(e.message);
+        toast.error(`connect error: ${e?.message || ""}`);
       } finally {
         // close modal in case it was open
       }
