@@ -46,7 +46,7 @@ export const Pay = () => {
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
             {/*Left Column*/}
-            <div className="w-full h-full flex items-center justify-center flex-col bg-white shadow-md  py-10">
+            <div className="w-full overflow-scroll flex items-center justify-center flex-col bg-white shadow-md  py-10">
                 <div className="flex items-center justify-center ">
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
@@ -56,7 +56,7 @@ export const Pay = () => {
                 </div>
 
 
-                <div className="w-3/4 flex justify-around mt-10 py-4">
+                <div className="w-3/4 flex justify-around py-4">
                     <div className="w-full flex flex-col items-center p-4">
                         <p className="text-sm">Send payment to</p>
                         <div className="flex">
@@ -71,7 +71,7 @@ export const Pay = () => {
                 </div>
 
                 <div className="flex flex-col p-4">
-                    <p className="mt-4 text-sm">Amount</p>
+                    <p className="text-sm">Amount</p>
                     <p className="font-bold text-xl">USD $19.90</p>
                 </div>
 
