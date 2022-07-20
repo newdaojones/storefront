@@ -4,9 +4,23 @@ import logoIcon from '../assets/images/logo.svg';
 import promo1 from '../assets/images/promo_image_1.svg';
 import promo2 from '../assets/images/promo_image_2.svg';
 import promo3 from '../assets/images/promo_image_3.svg';
+import {useLocation} from "react-use";
 
+
+/**
+ * Example URL
+ * http://localhost:3000/storefront/pay?orderId=1&amount=22.50
+ *
+ * @constructor
+ */
 export const Pay = () => {
-    const qrCodeUri = "http://localhost";
+    let query = useLocation().search;
+    const parsed = new URLSearchParams(query);
+    console.log(`query ${query} parsed:${parsed}`);
+    const amount = parsed.get("amount");
+    const orderId = parsed.get("orderId");
+    console.log(`orderId: ${parsed.get("orderId")} amount: ${amount} `);
+    const qrCodeUri = `https://test.jxndao.com/storefront/buy?${query}`;
 
     React.useEffect(() => {
         if (qrCodeUri) {
@@ -72,7 +86,7 @@ export const Pay = () => {
 
                 <div className="flex flex-col p-4">
                     <p className="text-sm">Amount</p>
-                    <p className="font-bold text-xl">USD $19.90</p>
+                    <p className="font-bold text-xl">{`USD $${amount}`}</p>
                 </div>
 
                 <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden mt-10 qrcode">
