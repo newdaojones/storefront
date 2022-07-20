@@ -4,7 +4,7 @@ import menuIcon from '../../assets/images/menu_icon.svg';
 import {IMenuItem} from '../../models';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 export const Menu = ({
                        size,
@@ -16,14 +16,14 @@ export const Menu = ({
                        ensName = null,
                        account = '',
                      }: Props) => {
-      const history = useHistory()
+      const history = useNavigate()
       const name = getDisplayName(account, ensName)
 
       const onPaymentsClick = () => {
           console.info(`not implemented`)
       }
       const onHomeClicked = () => {
-          history.replace("/profile")
+          history("/profile")
       }
 
       return (

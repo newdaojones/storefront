@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import QRIcon from '../assets/images/qrCodeIcon.svg';
 import QRTarget from '../assets/images/qrCodeScanning.svg';
 import QRLine from '../assets/images/qrCodeBar.svg';
-import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getNonZeroAccountBalance} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
@@ -12,9 +11,10 @@ import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
 import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
+import {useNavigate} from "react-router-dom";
 
 export const ProfilePage = () => {
-  const history = useHistory();
+  const history = useNavigate();
   const dispatch = useDispatch();
   const [ loading, setLoading ] = useState(false)
   const [ scanning, setScanning ] = useState(false)

@@ -1,6 +1,6 @@
 import React, {Component, useState} from 'react';
 import { QrReader } from "react-qr-reader";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 /*
 
 QR CODE EXAMPLE USE
@@ -8,11 +8,11 @@ https://codesandbox.io/s/r3tyk
  */
 export const ScanPage = () => {
     const [data, setData] = useState('');
-    const history = useHistory();
+    const history = useNavigate();
 
     const goToBuy = () => {
         console.log(`navigating to scan page `)
-        history.push("/buy");
+        history("/buy");
     };
 
     return (

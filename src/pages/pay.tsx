@@ -4,9 +4,15 @@ import logoIcon from '../assets/images/logo.svg';
 import promo1 from '../assets/images/promo_image_1.svg';
 import promo2 from '../assets/images/promo_image_2.svg';
 import promo3 from '../assets/images/promo_image_3.svg';
+import { useSearchParams } from "react-router-dom";
 
 export const Pay = () => {
-    const qrCodeUri = "http://localhost";
+    const [searchParams] = useSearchParams();
+    const orderId = searchParams.get("orderId");
+    const payAmount = searchParams.get("amount");
+
+    console.log(`orderId: ${orderId} amount: ${payAmount}`)
+    const qrCodeUri = `https://test.jxndao.com/storefront/pay?amount=${payAmount}&orderId=${orderId}`;
 
     React.useEffect(() => {
         if (qrCodeUri) {

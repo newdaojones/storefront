@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Routes, Switch} from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,10 +20,10 @@ ReactDOM.render(
     <WalletConnectProvider>
         <JsonRpcContextProvider>
       <Router basename={'/storefront'}>
-          <Switch>
-              <Route path={'/pay'} component={Pay}></Route>
-              <Route path={'/'} component={Main}></Route>
-          </Switch>
+          <Routes>
+              <Route path={'/pay'} element={Pay}></Route>
+              <Route path={'/'} element={Main}></Route>
+          </Routes>
         <ToastContainer
           toastClassName="w-full m-w-45 flex bg-white bg-opacity-25 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
           bodyClassName={() => 'text-sm font-white font-med block p-1'}
