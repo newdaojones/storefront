@@ -43,7 +43,7 @@ export const ProfilePage = () => {
     setScanning(!scanning);
 
     //FIXME fake scan
-    setqrCodeUrl("resultText");
+    //setqrCodeUrl("resultText");
     //FIXME parse qr code value and feed it as param
 
     setTimeout(() => {

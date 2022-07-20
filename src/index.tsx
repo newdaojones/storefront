@@ -14,6 +14,7 @@ import { store } from './store';
 import {JsonRpcContextProvider} from "./contexts/JsonRpcContext";
 import {Pay} from "./pages/pay";
 import {WalletConnectProvider} from "./contexts/walletConnect";
+import {ErrorPage} from "./pages/storefrontpay/error";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -22,6 +23,7 @@ ReactDOM.render(
       <Router basename={'/storefront'}>
           <Switch>
               <Route path={'/pay'} component={Pay}></Route>
+              <Route path={'/error'} component={ErrorPage}></Route>
               <Route path={'/'} component={Main}></Route>
           </Switch>
         <ToastContainer
