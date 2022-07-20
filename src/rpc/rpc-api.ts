@@ -47,8 +47,8 @@ export class RpcSourceAdapter implements RpcApi {
     ethereumXyzRpcApi = new EthereumXyzApi();
 
     getAccountBalance(address: string, chainId: string): Promise<AssetData> {
-        if (chainId.includes('eip155:42')) {
-            //EthereumXYZ does not support kovan
+        if (chainId.includes('eip155:80001')) {
+            //EthereumXYZ does not support polygon! ()
             return this.infuraRpcApi.getAccountBalance(address, chainId);
         }
         return this.ethereumXyzRpcApi.getAccountBalance(address, chainId);

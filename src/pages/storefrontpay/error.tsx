@@ -1,4 +1,3 @@
-import React, {useState} from 'react';
 import logoIcon from '../../assets/images/logo.svg';
 import promo1 from '../../assets/images/promo_image_1.svg';
 import promo2 from '../../assets/images/promo_image_2.svg';

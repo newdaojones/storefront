@@ -132,7 +132,14 @@ export function getNonZeroAccountBalance(accounts: string[], balances: AccountBa
             return;
         }
         let balanceElement = accountBalances[0];
-        const balance = BigNumber.from(balanceElement.balance || "0");
+        let balance = BigNumber.from(0);
+        try {
+            balance = BigNumber.from(balanceElement.balance || "0");
+        }
+        catch (e) {
+            console.log(`balance parse error ${e}`);
+        }
+
         if (balance.gt(0)) {
             let formatEther = utils.formatEther(balance);
             console.debug(`getBalanceInUSD account ${value} with balance ${balance}. formatted balance ${formatEther}`)
