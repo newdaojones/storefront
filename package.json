@@ -1,8 +1,8 @@
 {
-  "name": "new-dao-jones",
+  "name": "Storefront-Pay",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/walletconnect-v2",
+  "homepage": "/storefront",
   "dependencies": {
     "@craco/craco": "^6.1.1",
     "@ensdomains/ensjs": "^2.0.1",

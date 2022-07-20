@@ -13,7 +13,7 @@ import ProfileIcon from '../assets/images/profile.svg';
 import VaultIcon from '../assets/images/vault.svg';
 
 import { selectAccountInfo, selectEnsName } from '../store/selector';
-import { useWalletConnectClient } from '../contexts/walletConnect';
+import {useWalletConnectClient, WalletConnectProvider} from '../contexts/walletConnect';
 
 export const Main = () => {
   const ensName = useSelector(selectEnsName);

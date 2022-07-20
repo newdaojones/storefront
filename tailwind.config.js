@@ -3,9 +3,17 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      fontFamily: {
+        'righteous': ['Righteous', 'system-ui'],
+        'montserrat': ['Montserrat', 'Georgia'],
+        'mono': ['ui-monospace', 'SFMono-Regular'],
+        'display': ['Oswald'],
+        'body': ['Montserrat']
+      },
       borderRadius: {
         '16xl': '64px',
         '10xl': '40px',
+        '8xl': '40px 40px 0px 0px',
       },
       borderWidth: {
         1: '1px',

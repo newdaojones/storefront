@@ -1,12 +1,28 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+  //font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+  //  'Helvetica Neue', sans-serif;
+  font-family: Montserrat, 'Roboto', 'Ubuntu';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-image: url(../images/background.png);
   background-color: #13053d;
 }
+
+@font-face {
+  font-family: 'Righteous';
+  src: local('Righteous'), url(../fonts/Righteous-Regular.ttf) format('truetype');
+  /* other formats include: 'woff2', 'truetype, 'opentype',
+                            'embedded-opentype', and 'svg' */
+}
+
+
+@font-face {
+  font-family: 'Montserrat';
+  src: local('Montserrat'), url(../fonts/Montserrat-VariableFont_wght.ttf) format('truetype');
+}
+
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
@@ -29,4 +45,19 @@ code {
 }
 .ReactModal__Overlay {
   z-index: 1000;
+}
+
+.twoColumnContainer {
+  display: flex;
+}
+
+@media only screen and (max-width: 900px) {
+  .twoColumnContainer {
+    /* it place the items in vertical direction */
+    flex-direction: column;
+  }
+
+  .box {
+    margin: 0 0 1rem;
+  }
 }

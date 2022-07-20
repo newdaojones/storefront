@@ -1,0 +1,52 @@
+server {
+    listen 80;
+    server_name depositor.jxndao.com www.depositor.jxndao.com;
+    return 301 https://depositor.jxndao.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name www.depositor.jxndao.com;
+
+    ssl_certificate     /etc/letsencrypt/live/depositor.jxndao.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/depositor.jxndao.com/privkey.pem;
+
+    return 301 https://depositor.jxndao.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name depositor.jxndao.com;
+
+    ssl_certificate     /etc/letsencrypt/live/depositor.jxndao.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/depositor.jxndao.com/privkey.pem;
+
+    root /home/ubuntu/ndj-depositor/build;
+    index index.html index.htm index.nginx.debian.html;
+
+    location /          {
+        try_files $uri $uri/ /index.html =404;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name test.jxndao.com;
+
+    ssl_certificate     /etc/letsencrypt/live/test.jxndao.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/test.jxndao.com/privkey.pem;
+
+    root /home/ubuntu/ndj-depositor-test/build;
+    index index.html index.htm index.nginx.debian.html;
+
+    location /          {
+        try_files $uri $uri/ /index.html =404;
+    }
+}
+
+server {
+    listen 80;
+    server_name test.jxndao.com www.test.jxndao.com;
+    root /home/ubuntu/ndj-depositor-test/build;
+    return 301 https://test.jxndao.com$request_uri;
+}
