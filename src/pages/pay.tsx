@@ -11,7 +11,7 @@ import {useHistory} from "react-router-dom";
 
 /**
  * Example URL
- * http://localhost:3000/storefront/pay?orderId=1&amount=22.50
+ * http://localhost:3000/storefront/pay?orderId=3&amount=0.55
  *
  * @constructor
  */
@@ -28,12 +28,12 @@ export const Pay = () => {
         console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
     }
 
-    const qrCodeUri = `https://test.jxndao.com/storefront/buy?${query}`;
+    const qrCodeUri = `sf?${query}`;
     React.useEffect(() => {
         if (qrCodeUri) {
             const qrCode = new QRCodeStyling({
-                width: 355,
-                height: 355,
+                width: 380,
+                height: 380,
                 type: 'svg',
                 data: qrCodeUri,
                 dotsOptions: {
@@ -42,7 +42,7 @@ export const Pay = () => {
                         type: 'linear',
                         rotation: 90,
                         colorStops: [
-                            {offset: 0.4, color: 'rgb(115,44,249)'},
+                            {offset: 0.4, color: 'rgb(75,58,155)'},
                             {offset: 0.9, color: 'rgb(88,207,252)'},
                         ],
                     },
@@ -55,7 +55,7 @@ export const Pay = () => {
                     type: 'extra-rounded',
                 },
                 backgroundOptions: {
-                    color: 'rgb(15,7,60)',
+                    color: 'rgb(255,255,255)',
                 },
             });
 
@@ -96,8 +96,8 @@ export const Pay = () => {
                     <p className="font-bold text-xl">{`USD $${order?.amount}`}</p>
                 </div>
 
-                <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden mt-10 qrcode">
-                    <img className="w-16 h-16 absolute" src={logoIcon} alt=""/>
+                <div id="qrcode" className="flex items-center justify-center  overflow-hidden qrcode">
+                    <img className="absolute" src={logoIcon} alt=""/>
                 </div>
 
                 <div className="flex p-4">
