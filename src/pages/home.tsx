@@ -50,7 +50,6 @@ export const HomePage = () => {
   }
 
   const createTransaction = (order: IOrder): void => {
-    //FIXME hardcoded price
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
     const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
@@ -71,30 +70,32 @@ export const HomePage = () => {
   const currencySymbol = accountBalance.token;
   const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);
 
+  function processScanResult(resultText: string) {
+    stopScanning();
+    try {
+      setQrCodeUrl(resultText);
+      console.info(`qr test: ${resultText}`)
+      const order = extractOrderFromUrl(resultText);
+      createTransaction(order);
+    } catch (e) {
+      console.info(`Invalid QrCode url`);
+      toast.error(`Invalid QrCode url`);
+    }
+  }
+
   const qrCode = <QrReader
       onResult={(result, error) => {
-        if (result && qrCodeUrl.length <= 0) {
-          const resultText = result.getText()
-          console.info(`scanned qr result: ${result} text: ${resultText}`)
-          stopScanning();
-
-          try {
-            setQrCodeUrl(resultText);
-            const order = extractOrderFromUrl(resultText);
-            createTransaction(order);
-          } catch (e) {
-            console.info(`Invalid QrCode url`);
-            toast.error(`Invalid QrCode url`);
-          }
+        if (!!result) {
+          console.log(result?.getText());
+          processScanResult(result.getText());
         }
 
-        if (error && error.message) {
-          console.info(`error while scanning: ${error.message}`);
-          toast.error(`error while scanning: ${error.message}`);
+        if (!!error) {
+          console.info(error || "");
         }
       }}
       constraints={{ facingMode : "environment" }}
-      //scanDelay={000}
+      scanDelay={300}
       containerStyle={{}}
       videoStyle={{height: '100vh', width: '100vw', objectFit: 'cover'}}
       className=""
