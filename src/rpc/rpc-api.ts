@@ -26,6 +26,9 @@ export class InfuraApi implements RpcApi {
 
 }
 
+/**
+ * https://ethereum-api.xyz/supported-chains
+ */
 export class EthereumXyzApi implements RpcApi {
     getAccountBalance(address: string, chainId: string): Promise<AssetData> {
         return apiGetAccountBalance(address, chainId);

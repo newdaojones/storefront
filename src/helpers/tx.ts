@@ -45,7 +45,8 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * @param account
  * @param sendAmount
  */
-export async function formatTestTransaction(account: string, sendAmount: number): Promise<ITransaction> {
+export async function formatTestTransaction(account: string, sendAmount: number, orderId: string): Promise<ITransaction> {
+    //FIXME toAddress should be our own input wallet or merchant?
     const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
 
     const [namespace, reference, address] = account.split(":");
@@ -78,7 +79,9 @@ export async function formatTestTransaction(account: string, sendAmount: number)
     //debugTransactionEncodingDecoding(_value, value);
 
     // TODO add transaction id here, maybe a hash function of the qrcode & timestamp could be good
-    const tx = { from: address, to: toAddress, data: "0x", nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
+    const orderIdEncoded = encoding.utf8ToHex(orderId);
+    console.info(`encoding orderId: ${orderId} -> ${orderIdEncoded}`)
+    const tx = { from: address, to: toAddress, data: orderIdEncoded, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
     return tx;
 }
 

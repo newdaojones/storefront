@@ -12,6 +12,7 @@ import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
 import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
+import {extractOrderFromUrl, IOrder} from "../utils/path_utils";
 
 export const HomePage = () => {
   const history = useHistory();
@@ -41,13 +42,6 @@ export const HomePage = () => {
   const startScanning = (): void => {
     console.info(`starting scanning....`)
     setScanning(!scanning);
-
-    //FIXME fake scan
-    // setqrCodeUrl("resultText");
-    //FIXME parse qr code value and feed it as param
-    // setTimeout(() => {
-    //   createTransaction();
-    // }, 3000);
   }
 
   const stopScanning = (): void => {
@@ -55,17 +49,17 @@ export const HomePage = () => {
     setScanning(false);
   }
 
-  const createTransaction = (): void => {
+  const createTransaction = (order: IOrder): void => {
     //FIXME hardcoded price
-    const paymentSubtotalUsd = 0.55;
+    const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
     const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
     if (!ethTotal) {
-      toast.error(`  Could not convert value to crypto. Invalid tickers ${tickers.length}`);
+      toast.error(`Could not convert value to crypto. Invalid tickers ${tickers.length}`);
       return;
     }
     setLoading(true);
-    dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount:ethTotal}));
+    dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount: ethTotal, orderId: order.orderId}));
   };
 
   const onHomeClick = async () => {
@@ -82,11 +76,16 @@ export const HomePage = () => {
         if (result && qrCodeUrl.length <= 0) {
           const resultText = result.getText()
           console.info(`scanned qr result: ${result} text: ${resultText}`)
-          //FIXME parse qr code value and feed it as param
-          setQrCodeUrl(resultText);
-          createTransaction();
-        } else {
-          console.info(`qr scanning result empty or null`);
+          stopScanning();
+
+          try {
+            setQrCodeUrl(resultText);
+            const order = extractOrderFromUrl(resultText);
+            createTransaction(order);
+          } catch (e) {
+            console.info(`Invalid QrCode url`);
+            toast.error(`Invalid QrCode url`);
+          }
         }
 
         if (error && error.message) {

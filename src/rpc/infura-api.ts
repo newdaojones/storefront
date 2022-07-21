@@ -7,7 +7,11 @@ import {AssetData} from "../helpers/types";
 
 //TODO extract config rpc urls
 const ethKovanRpcUrl = "https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
-const polygonMumbainRpcUrl = "https://polygon-mainnet.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
+// TODO infure polygon needs a credit card to be added to be enabled
+// const polygonMumbainRpcUrl = "https://polygon-mainnet.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
+
+const polygonMumbainRpcUrl = "https://matic-testnet-archive-rpc.bwarelabs.com/";
+
 
 
 const ethInstance: AxiosInstance = axios.create({

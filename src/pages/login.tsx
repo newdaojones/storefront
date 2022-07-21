@@ -3,11 +3,9 @@ import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
-import {Link, useHistory} from "react-router-dom";
 
 export const Login = () => {
     const {qrCodeUri} = useWalletConnectClient();
-    const history = useHistory();
 
     React.useEffect(() => {
         if (qrCodeUri) {
