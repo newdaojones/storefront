@@ -67,7 +67,7 @@ export const Pay = () => {
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
             {/*Left Column*/}
-            <div className="w-full overflow-scroll flex items-center justify-center flex-col bg-white shadow-md  py-10">
+            <div className="w-full flex items-center justify-center flex-col bg-white shadow-md  py-10">
                 <div className="flex items-center justify-center ">
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
@@ -108,13 +108,13 @@ export const Pay = () => {
             </div>
 
             {/*Right Column*/}
-            <div className="w-full h-full flex items-center justify-center flex-col py-10">
-                <div id="qrcode2" className="flex items-center justify-center rounded-10xl overflow-hidden m-10 qrcode">
+            <div className="w-full flex items-center justify-center flex-col py-10">
+                <div id="qrcode2" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
                     <img className="w-16 h-16" src={logoIcon} alt=""/>
                 </div>
-                <h1 className="text-white text-xl text-center font-bold mx-40 ">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
+                <h1 className="text-white text-xl text-center font-bold mx-40 mt-10">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
 
-                <img className="w-16 h-16 mt-4" src={promo1} alt=""/>
+                <img className="w-16 h-16 mt-10" src={promo1} alt=""/>
                 <p className="text-white font-bold mt-4">Reach Millions of Users</p>
                 <p className="text-white text-center text-sm mt-4 mx-40">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
 

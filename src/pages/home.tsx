@@ -18,7 +18,7 @@ export const HomePage = () => {
   const dispatch = useDispatch();
   const [ loading, setLoading ] = useState(false)
   const [ scanning, setScanning ] = useState(false)
-  const [ qrCodeUrl, setqrCodeUrl ] = useState('')
+  const [ qrCodeUrl, setQrCodeUrl ] = useState('')
   const [ locationKeys, setLocationKeys ] = useState(false)
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
@@ -82,16 +82,16 @@ export const HomePage = () => {
         if (result && qrCodeUrl.length <= 0) {
           const resultText = result.getText()
           console.info(`scanned qr result: ${result} text: ${resultText}`)
-          setqrCodeUrl(resultText);
           //FIXME parse qr code value and feed it as param
-
-
-
+          setQrCodeUrl(resultText);
           createTransaction();
+        } else {
+          console.info(`qr scanning result empty or null`);
         }
 
         if (error && error.message) {
           console.info(`error while scanning: ${error.message}`);
+          toast.error(`error while scanning: ${error.message}`);
         }
       }}
       constraints={{ facingMode : "environment" }}

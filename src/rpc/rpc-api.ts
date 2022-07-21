@@ -55,17 +55,17 @@ export class RpcSourceAdapter implements RpcApi {
     }
 
     getAccountNonce(address: string, chainId: string): Promise<number> {
-        if (chainId.includes('eip155:42')) {
-            return this.infuraRpcApi.getAccountNonce(address, chainId);
-        }
+        // if (chainId.includes('eip155:42')) {
+        //     return this.infuraRpcApi.getAccountNonce(address, chainId);
+        // }
         return this.ethereumXyzRpcApi.getAccountNonce(address, chainId);
     }
 
     async getGasPrices(chainId: string): Promise<string> {
-        if (chainId.includes('eip155:42')) {
-            let gasPrices = this.infuraRpcApi.getGasPrices(chainId);
-            return gasPrices;
-        }
+        // if (chainId.includes('eip155:42')) {
+        //     let gasPrices = this.infuraRpcApi.getGasPrices(chainId);
+        //     return gasPrices;
+        // }
         return this.ethereumXyzRpcApi.getGasPrices(chainId);
     }
 
