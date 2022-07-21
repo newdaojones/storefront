@@ -18,6 +18,8 @@ import {useHistory} from "react-router-dom";
 export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
+    const [ showBlackWhite, setShowBlackWhite ] = useState(false)
+
 
     let order = null;
     if (!query) {
@@ -31,19 +33,20 @@ export const Pay = () => {
     const qrCodeUri = `sf?${query}`;
     React.useEffect(() => {
         if (qrCodeUri) {
+            let black = 'rgb(0,0,0)';
             const qrCode = new QRCodeStyling({
-                width: 380,
-                height: 380,
+                width: 355,
+                height: 355,
                 type: 'svg',
                 data: qrCodeUri,
                 dotsOptions: {
-                    type: 'dots',
+                    type: showBlackWhite? 'square':'dots',
                     gradient: {
                         type: 'linear',
                         rotation: 90,
                         colorStops: [
-                            {offset: 0.4, color: 'rgb(75,58,155)'},
-                            {offset: 0.9, color: 'rgb(88,207,252)'},
+                            {offset: 0.4, color: showBlackWhite ? black:'rgb(115,44,249)'},
+                            {offset: 0.9, color: showBlackWhite ? black:'rgb(88,207,252)'},
                         ],
                     },
                 },
@@ -55,7 +58,7 @@ export const Pay = () => {
                     type: 'extra-rounded',
                 },
                 backgroundOptions: {
-                    color: 'rgb(255,255,255)',
+                    color: showBlackWhite ? 'rgb(255,255,255)':'rgb(15,7,60)',
                 },
             });
 
@@ -63,7 +66,12 @@ export const Pay = () => {
             qrCodeElement.innerHTML = '';
             qrCode.append(qrCodeElement);
         }
-    }, [qrCodeUri]);
+    }, [qrCodeUri, showBlackWhite]);
+
+    function onTroubleScanningClicked() {
+        setShowBlackWhite(!showBlackWhite);
+    }
+
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
             {/*Left Column*/}
@@ -96,15 +104,18 @@ export const Pay = () => {
                     <p className="font-bold text-xl">{`USD $${order?.amount}`}</p>
                 </div>
 
-                <div id="qrcode" className="flex items-center justify-center  overflow-hidden qrcode">
-                    <img className="absolute" src={logoIcon} alt=""/>
+                <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
+                    <img className="" src={logoIcon} alt=""/>
                 </div>
+                <p onClick={onTroubleScanningClicked}
+                   className="text-xs mt-1 mb-8 cursor-pointer">Trouble Scanning?</p>
 
                 <div className="flex p-4">
                     <p className="text-sm">Order Id</p>
                     <p className="font-bold text-sm pl-4">{`${order?.orderId}`}</p>
                 </div>
                 <p className="mt-10">Scan with the <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
+
             </div>
 
             {/*Right Column*/}
