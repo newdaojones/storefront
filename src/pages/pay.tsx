@@ -5,6 +5,8 @@ import promo1 from '../assets/images/promo_image_1.svg';
 import promo2 from '../assets/images/promo_image_2.svg';
 import promo3 from '../assets/images/promo_image_3.svg';
 import {useLocation} from "react-use";
+import {extractOrderFromUrl} from "../utils/path_utils";
+import {useHistory} from "react-router-dom";
 
 
 /**
@@ -15,13 +17,18 @@ import {useLocation} from "react-use";
  */
 export const Pay = () => {
     let query = useLocation().search;
-    const parsed = new URLSearchParams(query);
-    console.log(`query ${query} parsed:${parsed}`);
-    const amount = parsed.get("amount");
-    const orderId = parsed.get("orderId");
-    console.log(`orderId: ${parsed.get("orderId")} amount: ${amount} `);
-    const qrCodeUri = `https://test.jxndao.com/storefront/buy?${query}`;
+    const history = useHistory();
 
+    let order = null;
+    if (!query) {
+        console.log(`Invalid query data, redirecting`);
+        history.replace("/error");
+    } else {
+        order = extractOrderFromUrl(query);
+        console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
+    }
+
+    const qrCodeUri = `https://test.jxndao.com/storefront/buy?${query}`;
     React.useEffect(() => {
         if (qrCodeUri) {
             const qrCode = new QRCodeStyling({
@@ -86,11 +93,16 @@ export const Pay = () => {
 
                 <div className="flex flex-col p-4">
                     <p className="text-sm">Amount</p>
-                    <p className="font-bold text-xl">{`USD $${amount}`}</p>
+                    <p className="font-bold text-xl">{`USD $${order?.amount}`}</p>
                 </div>
 
                 <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden mt-10 qrcode">
                     <img className="w-16 h-16 absolute" src={logoIcon} alt=""/>
+                </div>
+
+                <div className="flex p-4">
+                    <p className="text-sm">Order Id</p>
+                    <p className="font-bold text-sm pl-4">{`${order?.orderId}`}</p>
                 </div>
                 <p className="mt-10">Scan with the <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
             </div>

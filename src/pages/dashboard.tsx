@@ -2,13 +2,13 @@ import React from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom';
 import {PlayPage} from './play';
 
-import {ProfilePage} from './profile';
+import {HomePage} from './home';
 import {ScanPage} from "./scan";
 import {BuyPage} from "./buy";
 import {ConfirmationPage} from "./confirmation";
 
 export const Dashboard = () => {
-    let mainPage = ProfilePage;
+    let mainPage = HomePage;
     return (
       <div className="w-full h-full flex-1">
         <Switch>

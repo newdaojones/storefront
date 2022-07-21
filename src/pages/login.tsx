@@ -46,8 +46,8 @@ export const Login = () => {
     }, [qrCodeUri]);
 
     const storefrontPayButton = (orderId: String, amount: Number) => {
-        const baseUrl = 'https://test.jxndao.com';
-        // const baseUrl = 'http://localhost:3000';
+        // const baseUrl = 'https://test.jxndao.com';
+        const baseUrl = 'http://localhost:3000';
         const url = `${baseUrl}/storefront/pay?orderId=${orderId}&amount=${amount}`
         return <a href={url}><button className="bg-white justify-center rounded-10xl overflow-hidden mt-4" >Pay with Storefront Pay</button></a>
     }

@@ -13,7 +13,7 @@ import {toast} from "react-toastify";
 import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 
-export const ProfilePage = () => {
+export const HomePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [ loading, setLoading ] = useState(false)
@@ -23,7 +23,7 @@ export const ProfilePage = () => {
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
   const accountBalance = getNonZeroAccountBalance(accounts, balances);
-  console.info(`selected account ${accountBalance.account} ${accountBalance.balanceString} ${accountBalance.token}`)
+  console.info(`selected account:${accountBalance.account} balance:${accountBalance.balanceString} token:${accountBalance.token}`)
 
   const tickers = useSelector(selectTickers)
 
@@ -48,6 +48,11 @@ export const ProfilePage = () => {
     // setTimeout(() => {
     //   createTransaction();
     // }, 3000);
+  }
+
+  const stopScanning = (): void => {
+    console.info(`stop scanning....`)
+    setScanning(false);
   }
 
   const createTransaction = (): void => {
@@ -79,6 +84,9 @@ export const ProfilePage = () => {
           console.info(`scanned qr result: ${result} text: ${resultText}`)
           setqrCodeUrl(resultText);
           //FIXME parse qr code value and feed it as param
+
+
+
           createTransaction();
         }
 
