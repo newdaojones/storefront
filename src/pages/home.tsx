@@ -75,7 +75,7 @@ export const HomePage = () => {
     stopScanning();
     try {
       setQrCodeUrl(resultText);
-      console.info(`qr test: ${resultText}`)
+      console.info(`qr ${resultText}`)
       const order = extractOrderFromUrl(resultText);
       createTransaction(order);
     } catch (e) {
@@ -91,14 +91,14 @@ export const HomePage = () => {
           processScanResult(result.getText());
         }
 
-        if (!!error) {
+        if (!!error && error.message) {
           console.info(error || "");
         }
       }}
       constraints={{ facingMode : "environment" }}
       scanDelay={300}
-      containerStyle={{}}
-      videoStyle={{height: '100vh', width: '100vw', objectFit: 'cover'}}
+      containerStyle={{overflow: 'initial'}}
+      videoStyle={{height: '100vh', width: '100vw', objectFit: 'cover', overflow: 'initial'}}
       className=""
   />
 
@@ -123,7 +123,7 @@ export const HomePage = () => {
                          src={QRIcon} alt="" onClick={startScanning} />
                         :
                         <div className="grid w-1/2 h-1/3 mb-4" onClick={startScanning}
-                             style={{alignSelf: 'center', backgroundImage: `url(${QRTarget})`, backgroundSize: 'cover'}}>
+                             style={{alignSelf: 'center', backgroundImage: `url(${QRTarget})`, backgroundSize: 'cover', overflow: 'initial'}}>
                           <img className="scan w-full"
                                src={QRLine} alt="" />
                         </div>

@@ -154,15 +154,15 @@ export const Pay = () => {
 
                 <img className="w-16 h-16 mt-10" src={promo1} alt=""/>
                 <p className="text-white font-bold mt-4">Reach Millions of Users</p>
-                <p className="text-white text-center text-sm mt-4 mx-40">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
+                <p className="text-white text-center text-sm mt-4 mx-10">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
 
                 <img className="w-16 h-16 mt-10" src={promo2} alt=""/>
                 <p className="text-white font-bold mt-4">Lowest Cost</p>
-                <p className="text-white text-center text-sm mt-4 mx-40">Pay zero transactions fees and save up to 85% on settlement fees. </p>
+                <p className="text-white text-center text-sm mt-4 mx-10">Pay zero transactions fees and save up to 85% on settlement fees. </p>
 
                 <img className="w-16 h-16 mt-10" src={promo3} alt=""/>
                 <p className="text-white font-bold mt-4">Easy Integration</p>
-                <p className="text-white text-center text-sm mt-4 mx-40">Integrate with a few clicks using our SDK or plugins. No coding experience needed. </p>
+                <p className="text-white text-center text-sm mt-4 mx-10">Integrate with a few clicks using our SDK or plugins. No coding experience needed. </p>
             </div>
         </div>
     );

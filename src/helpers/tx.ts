@@ -143,7 +143,7 @@ export function getNonZeroAccountBalance(accounts: string[], balances: AccountBa
             console.log(`balance parse error ${e}`);
         }
 
-        if (balance.gt(0)) {
+        if (balance.gt(0) && balanceToken == null) {
             let formatEther = utils.formatEther(balance);
             console.debug(`getBalanceInUSD account ${value} with balance ${balance}. formatted balance ${formatEther}`)
 
