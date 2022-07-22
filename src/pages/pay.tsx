@@ -78,9 +78,9 @@ export const Pay = () => {
     }
 
     return (
-        <div className=" w-screen flex twoColumnContainer">
+        <div className="h-screen w-screen flex twoColumnContainer">
             {/*Left Column*/}
-            <div className="w-full flex items-center justify-center flex-col bg-white shadow-md">
+            <div className="h-full w-full flex items-center justify-center flex-col bg-white shadow-md">
                 <div className="flex items-center justify-center pt-10">
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">

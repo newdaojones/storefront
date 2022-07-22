@@ -71,6 +71,7 @@ export const HomePage = () => {
   const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);
 
   function processScanResult(resultText: string) {
+    toast.info(`Scanned: ${resultText}`)
     stopScanning();
     try {
       setQrCodeUrl(resultText);
@@ -129,6 +130,7 @@ export const HomePage = () => {
               }
               <p className="text-white mt-8 text-center font-bold">Scan QR Code</p>
               <div className="mt-4">
+
                 <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
                   Scan the qRCode provided by the store to checkout</p>
               </div>

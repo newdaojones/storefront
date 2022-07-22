@@ -184,7 +184,7 @@ export const BuyPage = () => {
   return (
     <div className="w-full h-full flex justify-center">
       <div className="w-full flex flex-col justify-between">
-        <div className="mt-4 flex flex-col text-white items-center">
+        <div className="h-full mt-4 flex flex-col text-white justify-between items-center">
           <p className="mx-4 text-white text-secondary font-bold" style={{alignSelf: 'start'}}>Payment Method</p>
 
           {/*Credit Card*/}
