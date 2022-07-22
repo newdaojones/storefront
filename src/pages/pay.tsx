@@ -7,6 +7,7 @@ import promo3 from '../assets/images/promo_image_3.svg';
 import {useLocation} from "react-use";
 import {extractOrderFromUrl} from "../utils/path_utils";
 import {useHistory} from "react-router-dom";
+import QRCode from 'react-qr-code';
 
 
 /**
@@ -19,7 +20,9 @@ export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
     const [ showBlackWhite, setShowBlackWhite ] = useState(false)
-
+    const [background, setBackground] = useState('#FFFFFF');
+    const [foreground, setForeground] = useState('#000000');
+    const [size, setSize] = useState(300);
 
     let order = null;
     if (!query) {
@@ -35,8 +38,8 @@ export const Pay = () => {
         if (qrCodeUri) {
             let black = 'rgb(0,0,0)';
             const qrCode = new QRCodeStyling({
-                width: 355,
-                height: 355,
+                width: size,
+                height: size,
                 type: 'svg',
                 data: qrCodeUri,
                 dotsOptions: {
@@ -51,11 +54,11 @@ export const Pay = () => {
                     },
                 },
                 cornersDotOptions: {
-                    color: 'rgb(0,255,139)',
+                    color: showBlackWhite ? black:'rgb(0,255,139)',
                 },
                 cornersSquareOptions: {
-                    color: 'rgb(255,0,196)',
-                    type: 'extra-rounded',
+                    color: showBlackWhite ? 'rgb(155,0,96)':'rgb(255,0,196)',
+                    type: showBlackWhite ? 'square' : 'extra-rounded',
                 },
                 backgroundOptions: {
                     color: showBlackWhite ? 'rgb(255,255,255)':'rgb(15,7,60)',
@@ -63,8 +66,10 @@ export const Pay = () => {
             });
 
             const qrCodeElement = document.getElementById('qrcode') as any;
-            qrCodeElement.innerHTML = '';
-            qrCode.append(qrCodeElement);
+            if (qrCodeElement) {
+                qrCodeElement.innerHTML = '';
+                qrCode.append(qrCodeElement);
+            }
         }
     }, [qrCodeUri, showBlackWhite]);
 
@@ -75,8 +80,8 @@ export const Pay = () => {
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
             {/*Left Column*/}
-            <div className="w-full flex items-center justify-center flex-col bg-white shadow-md  py-10">
-                <div className="flex items-center justify-center ">
+            <div className="w-full flex items-center justify-center flex-col bg-white shadow-md pt-10 pb-10">
+                <div className="flex items-center justify-center pt-10">
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
                         <h1 className="text-xl font-righteous">Storefront Pay</h1>
@@ -93,34 +98,56 @@ export const Pay = () => {
                         </div>
                         <p className="text-sm">0x2342...f432</p>
                     </div>
+
+
                     <div className="w-full flex flex-col items-center p-4">
                         <p className="text-sm ">Time remaining</p>
                         <p className="font-righteous">3 minutes</p>
                     </div>
                 </div>
-
-                <div className="flex flex-col p-4">
-                    <p className="text-sm">Amount</p>
-                    <p className="font-bold text-xl">{`USD $${order?.amount}`}</p>
+                <div className="w-3/4 flex justify-around py-4">
+                    <div className="flex flex-col p-4">
+                        <p className="text-sm">Order Id</p>
+                        <p className="font-bold text-xl pl-4">{`${order?.orderId}`}</p>
+                    </div>
+                    <div className="flex flex-col p-4">
+                        <p className="text-sm">Amount</p>
+                        <p className="font-bold text-xl">{`USD $${order?.amount}`}</p>
+                    </div>
                 </div>
 
-                <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
-                    <img className="" src={logoIcon} alt=""/>
-                </div>
+
+                {qrCodeUri && !showBlackWhite && (
+                    <div className="flex items-center justify-center">
+                        <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
+                        </div>
+                        <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
+                    </div>
+                )}
+                {qrCodeUri && showBlackWhite && (
+                    <div className="flex items-center justify-center">
+                        <QRCode
+                            title="Storefront Pay"
+                            value={qrCodeUri}
+                            bgColor={background}
+                            fgColor={foreground}
+                            size={!size ? 0 : size}
+                        >
+                        </QRCode>
+                        <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
+                    </div>
+                )}
+
                 <p onClick={onTroubleScanningClicked}
-                   className="text-xs mt-1 mb-8 cursor-pointer">Trouble Scanning?</p>
+                   className="text-xs mt-1 cursor-pointer">Trouble Scanning?</p>
 
-                <div className="flex p-4">
-                    <p className="text-sm">Order Id</p>
-                    <p className="font-bold text-sm pl-4">{`${order?.orderId}`}</p>
-                </div>
-                <p className="mt-10">Scan with the <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
+                <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
 
             </div>
 
             {/*Right Column*/}
             <div className="w-full flex items-center justify-center flex-col py-10">
-                <div id="qrcode2" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
+                <div id="logo" className="flex items-center justify-center rounded-10xl overflow-hidden">
                     <img className="w-16 h-16" src={logoIcon} alt=""/>
                 </div>
                 <h1 className="text-white text-xl text-center font-bold mx-40 mt-10">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
