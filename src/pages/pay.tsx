@@ -8,6 +8,7 @@ import {useLocation} from "react-use";
 import {extractOrderFromUrl} from "../utils/path_utils";
 import {useHistory} from "react-router-dom";
 import QRCode from 'react-qr-code';
+import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
 
 
 /**
@@ -20,9 +21,9 @@ export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
     const [ showBlackWhite, setShowBlackWhite ] = useState(false)
-    const [background, setBackground] = useState('#FFFFFF');
-    const [foreground, setForeground] = useState('#000000');
-    const [size, setSize] = useState(300);
+    const [background] = useState('#FFFFFF');
+    const [foreground] = useState('#000000');
+    const [size] = useState(300);
 
     let order = null;
     if (!query) {
@@ -33,7 +34,7 @@ export const Pay = () => {
         console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
     }
 
-    const qrCodeUri = `https://test.jxndao.com/storefront/buy?${query}`;
+    const qrCodeUri = `${storefrontPayBaseUrl}/storefront/home${query}`;
     React.useEffect(() => {
         if (qrCodeUri) {
             let black = 'rgb(0,0,0)';

@@ -15,6 +15,7 @@ import {JsonRpcContextProvider} from "./contexts/JsonRpcContext";
 import {Pay} from "./pages/pay";
 import {WalletConnectProvider} from "./contexts/walletConnect";
 import {ErrorPage} from "./pages/storefrontpay/error";
+import {TransactionStatus} from "./pages/storefrontpay/transactionStatus";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -23,6 +24,7 @@ ReactDOM.render(
           <Router basename={'/storefront'}>
               <Switch>
                   <Route path={'/pay'} component={Pay}></Route>
+                  <Route path={'/status'} component={TransactionStatus}></Route>
                   <Route path={'/error'} component={ErrorPage}></Route>
                   <Route path={'/'} component={Main}></Route>
               </Switch>
