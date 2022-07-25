@@ -16,7 +16,7 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress, isMobile} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
-import {AccountBalance, getNonZeroAccountBalance, getHexValueAsBigNumber} from "../helpers/tx";
+import {AccountBalance, getNonZeroAccountBalance, getHexValueAsBigNumber, getHexValueAsString} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
@@ -58,8 +58,7 @@ export const BuyPage = () => {
           console.info(`back event, clearing trx. `)
           dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           dispatch(userAction.unsetTransaction());
-          history.length = 1;
-          history.replace("/home");
+          history.push("/home");
         }
       }
     })
@@ -129,12 +128,13 @@ export const BuyPage = () => {
   let paymentValueUsd = 0;
 
   let paymentTotalUSD = 0;
-  let paymentValueEth = 0;
+  let paymentValueEth: string = "0";
   const token = 'ETH';
   if (transaction?.value) {
-    paymentValueEth = Number(getHexValueAsBigNumber(transaction?.value));
+    console.log(`payment value: ${transaction?.value}`)
+    paymentValueEth = getHexValueAsString(transaction?.value);
 
-    const gasPriceNumber = getHexValueAsBigNumber(transaction?.gasPrice);
+    const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
     const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
     console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
@@ -142,8 +142,8 @@ export const BuyPage = () => {
     const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
     console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
-    const trxValueAsNumber = getHexValueAsBigNumber(transaction?.value);
-    const trxPriceUsd = convertTokenToUSD(Number(trxValueAsNumber), token, tickers);
+    const trxValueAsNumber = Number(paymentValueEth);
+    const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);
 
     if (trxPriceUsd && gasPriceUsd) {
       paymentValueUsd = trxPriceUsd;
@@ -181,7 +181,7 @@ export const BuyPage = () => {
         </div> :
         <div className="w-full flex flex-col items-center justify-center">
           <p className="text-white text-start font-righteous font-bold mr-2">{`Pay $${paymentTotalUSD.toFixed(2)}`}</p>
-          <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.toFixed(6)} ETH`}</p>
+          <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.substring(0,8)} ETH`}</p>
         </div>}
   </button>;
   return (

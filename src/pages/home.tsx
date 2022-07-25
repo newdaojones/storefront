@@ -13,13 +13,16 @@ import {toast} from "react-toastify";
 import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrder} from "../utils/path_utils";
+import {useLocation} from "react-use";
 
 export const HomePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
+  let query = useLocation().search;
   const [ loading, setLoading ] = useState(false)
   const [ scanning, setScanning ] = useState(false)
   const [ qrCodeUrl, setQrCodeUrl ] = useState('')
+  const [ redirected, setRedirected ] = useState(false)
   const [ locationKeys, setLocationKeys ] = useState(false)
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
@@ -34,9 +37,26 @@ export const HomePage = () => {
     console.info(`useEffect locationKeys: ${locationKeys} trxCreated: ${trxCreated}`)
     if (trxCreated && trxCreated.value && !locationKeys) {
       setLocationKeys(true);
-      history.push("/buy");
+      if (!redirected) {
+        history.push("/buy");
+      } else {
+        history.replace("/buy");
+      }
     }
   }, [trxCreated, locationKeys, setLocationKeys, history]);
+
+  useEffect(() => {
+    if (query && tickers?.length > 0) {
+      console.info(`detected order query: ${query}`)
+      const order = extractOrderFromUrl(query);
+      console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
+      if (order.orderId && order.amount && !redirected) {
+        setRedirected(true);
+        createTransaction(order);
+      }
+    }
+
+  }, [query, tickers]);
 
 
   const startScanning = (): void => {
@@ -60,6 +80,8 @@ export const HomePage = () => {
     setLoading(true);
     dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount: ethTotal, orderId: order.orderId}));
   };
+
+
 
   const onHomeClick = async () => {
     console.info(`refreshing balances `)
