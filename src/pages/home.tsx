@@ -15,6 +15,11 @@ import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrder} from "../utils/path_utils";
 import {useLocation} from "react-use";
 
+/**
+ * https://test.jxndao.com/storefront/home
+ * or
+ * http://localhost:3000/storefront/home?orderId=8&amount=0.45
+ */
 export const HomePage = () => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -149,11 +154,11 @@ export const HomePage = () => {
                                src={QRLine} alt="" />
                         </div>
               }
-              <p className="text-white mt-8 text-center font-bold">Scan QR Code</p>
+              <p className="text-white mt-8 text-center font-bold">Scan Payment QR</p>
               <div className="mt-4">
 
                 <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
-                  Scan the qRCode provided by the store to checkout</p>
+                  Scan the payment QR code provided by the store to checkout</p>
               </div>
               <div className="flex items-center justify-center mt-10">
                 <div className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl" onClick={onHomeClick}>

@@ -1,8 +1,10 @@
 import React from "react";
 import logoIcon from "./assets/images/logo.svg";
 
-// const baseUrl = 'https://test.jxndao.com';
-export const storefrontPayBaseUrl = 'http://localhost:3000';
+const baseUrl = 'https://test.jxndao.com';
+const devUrl = 'http://localhost:3000';
+
+export const storefrontPayBaseUrl = baseUrl;
 
 export const storefrontPayButton = (orderId: String, amount: Number) => {
     const url = `${storefrontPayBaseUrl}/storefront/pay?orderId=${orderId}&amount=${amount}`

@@ -11,7 +11,6 @@ import {useHistory} from "react-router-dom";
 /**
  * Example URL
  * http://localhost:3000/storefront/status?transactionId=0x34dfd&orderId=3&amount=0.55
- * http://localhost:3000/storefront/status?transactionId=0x34dfd&orderId=3&amount=0.55
  *
  * @constructor
  */
