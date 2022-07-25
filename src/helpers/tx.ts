@@ -95,9 +95,19 @@ export const encodeNumberAsHex = (value: number): string => {
     return sanitized;
 }
 
-export const getHexValueAsBigNumber = (value: string): string => {
+export const getHexValueAsBigNumberUsingNumber = (value: string): string => {
     const decoded = web3.utils.hexToNumber(value);
     return utils.formatUnits(decoded, "ether")
+}
+
+export const getHexValueAsBigNumber = (value: string): BigNumber => {
+    const bigNumber = BigNumber.from(value);
+    return bigNumber;
+}
+export const getHexValueAsString = (value: string): string => {
+    //const decoded = web3.utils.big(value);
+    const bigNumber = BigNumber.from(value);
+    return utils.formatUnits(bigNumber, "ether")
 }
 
 export const getWeiToString = (value: string): string => {
