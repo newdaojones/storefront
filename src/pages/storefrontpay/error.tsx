@@ -2,12 +2,17 @@ import logoIcon from '../../assets/images/logo.svg';
 import promo1 from '../../assets/images/promo_image_1.svg';
 import promo2 from '../../assets/images/promo_image_2.svg';
 import promo3 from '../../assets/images/promo_image_3.svg';
+import React from "react";
+import {storefrontPayButton} from "../../StorefrontPaySdk";
 
 export const ErrorPage = () => {
+
+    const payButton = storefrontPayButton("12323", 0.45);
+
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
             {/*Left Column*/}
-            <div className="w-full overflow-scroll flex items-center justify-around flex-col bg-white shadow-md  py-10">
+            <div className="h-full w-full flex items-center justify-around flex-col bg-white shadow-md py-40">
                 <div className="flex items-center justify-center ">
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
@@ -23,10 +28,16 @@ export const ErrorPage = () => {
                     <p className="font-bold text-xl">Something went wrong</p>
                 </div>
                 </div>
+
+                {/*Storefront Pay Button*/}
+                <div className="flex flex-col items-center justify-center pt-10">
+                    {payButton}
+                    <p className="font-montserrat text-center text-sm mt-2 mb-4">Add a Pay with Storefront button to your site, or use our sdk.</p>
+                </div>
             </div>
 
             {/*Right Column*/}
-            <div className="w-full h-full flex items-center justify-center flex-col py-10">
+            <div className="w-full flex items-center justify-center flex-col py-10">
                 <div id="qrcode2" className="flex items-center justify-center rounded-10xl overflow-hidden m-10 qrcode">
                     <img className="w-16 h-16" src={logoIcon} alt=""/>
                 </div>

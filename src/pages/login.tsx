@@ -3,6 +3,7 @@ import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
+import {storefrontPayButton} from "../StorefrontPaySdk";
 
 export const Login = () => {
     const {qrCodeUri} = useWalletConnectClient();
@@ -43,12 +44,7 @@ export const Login = () => {
         }
     }, [qrCodeUri]);
 
-    const storefrontPayButton = (orderId: String, amount: Number) => {
-        const baseUrl = 'https://test.jxndao.com';
-        // const baseUrl = 'http://localhost:3000';
-        const url = `${baseUrl}/storefront/pay?orderId=${orderId}&amount=${amount}`
-        return <a href={url}><button className="bg-white justify-center rounded-10xl overflow-hidden mt-4" >Pay with Storefront Pay</button></a>
-    }
+
 
     function onCopyLinkClicked() {
         navigator.clipboard.writeText(qrCodeUri || "");
