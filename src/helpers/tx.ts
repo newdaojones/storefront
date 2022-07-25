@@ -44,6 +44,7 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  *
  * @param account
  * @param sendAmount
+ * @param orderId
  */
 export async function formatTestTransaction(account: string, sendAmount: number, orderId: string): Promise<ITransaction> {
     //FIXME toAddress should be our own input wallet or merchant?
@@ -67,8 +68,8 @@ export async function formatTestTransaction(account: string, sendAmount: number,
     const gasPrice = encodeNumberAsHex(Number(_gasPrice));
 
     // FIXME this should also be a param
-    //  gasLimit
-    const _gasLimit = 21000;
+    // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
+    const _gasLimit = 21112;
     const gasLimit = encodeNumberAsHex(_gasLimit)
 
     const _value = toWad(sendAmount.toString());
@@ -80,8 +81,10 @@ export async function formatTestTransaction(account: string, sendAmount: number,
 
     // TODO add transaction id here, maybe a hash function of the qrcode & timestamp could be good
     const orderIdEncoded = encoding.utf8ToHex(orderId);
+    const data = encoding.sanitizeHex(orderIdEncoded);
     console.info(`encoding orderId: ${orderId} -> ${orderIdEncoded}`)
-    const tx = { from: address, to: toAddress, data: orderIdEncoded, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
+
+    const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
     return tx;
 }
 

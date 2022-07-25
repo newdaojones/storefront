@@ -71,7 +71,6 @@ export const HomePage = () => {
   const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);
 
   function processScanResult(resultText: string) {
-    toast.info(`Scanned: ${resultText}`)
     stopScanning();
     try {
       setQrCodeUrl(resultText);

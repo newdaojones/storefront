@@ -141,9 +141,12 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       const account = accounts.find((account: string) => account === caipAccountAddress);
       if (account === undefined) throw new Error(`Account for ${caipAccountAddress} not found`);
       const balance = BigNumber.from(balances[account][0].balance || "0");
-      console.info(`current balance is ${balance}. gasPrice: ${trx.gasPrice} gasLimit: ${trx.gasLimit}`)
-      if (balance.lt(BigNumber.from(trx.gasPrice).mul(trx.gasLimit))) {
-        console.info(`Insufficient funds for intrinsic transaction cost`);
+
+      let gasPriceBigN = BigNumber.from(trx.gasPrice);
+      const gasLimitBigN = BigNumber.from(trx.gasLimit);
+      let totalGasFees = gasPriceBigN.mul(gasLimitBigN);
+      if (balance.lt(totalGasFees)) {
+        console.warn(`Insufficient funds for intrinsic transaction cost`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
           address,
@@ -153,8 +156,11 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           value: trx.value,
         };
       }
-      if (balance.lt(trx.value)) {
-        console.info(`Insufficient funds for transaction`);
+      const transactionCost = BigNumber.from(trx.value);
+      let transactionCostBigN = transactionCost.add(totalGasFees);
+      console.info(`current balance is ${balance}. gasPrice: ${gasPriceBigN} gasLimit: ${gasLimitBigN}. transaction cost: ${transactionCostBigN}`)
+      if (balance.lt(transactionCostBigN)) {
+        console.warn(`Insufficient funds for transaction`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
           address,
