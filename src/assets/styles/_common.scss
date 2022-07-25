@@ -68,6 +68,11 @@ code {
     transform: rotateZ(45deg);
   }
 
+  .rotateLoading {
+    transform: rotateZ(45deg);
+    animation: 2.4s infinite linear both;
+  }
+
   .cube {
     float: left;
     width: 50%;
@@ -145,6 +150,11 @@ code {
     }
   }
 }
+@keyframes spin {
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+}
+
 
 
 .select {

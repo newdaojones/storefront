@@ -4,6 +4,11 @@ import logoIcon from "./assets/images/logo.svg";
 const baseUrl = 'https://test.jxndao.com';
 const devUrl = 'http://localhost:3000';
 
+
+//FIXME toAddress should be our own input wallet or merchant?
+const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
+export const storefrontPaymentAddress = toAddress;
+
 export const storefrontPayBaseUrl = baseUrl;
 
 export const storefrontPayButton = (orderId: String, amount: Number) => {

@@ -93,6 +93,20 @@ export interface TxOperation {
   functionName: string;
 }
 
+export interface TxDetails {
+  blockHash: string;
+  blockNumber: string;
+  chainId: string;
+  from: string;
+  gas: string;
+  gasPrice: string;
+  hash: string;
+  input: string;
+  nonce: string;
+  to: string;
+  value: string;
+}
+
 export interface GasPricesResponse {
   fastWait: number;
   avgWait: number;

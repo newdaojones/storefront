@@ -8,8 +8,6 @@ import * as encoding from '@walletconnect/encoding';
 import {
   DEFAULT_APP_METADATA,
   DEFAULT_CHAINS,
-  DEFAULT_COSMOS_METHODS,
-  DEFAULT_SOLANA_METHODS,
   DEFAULT_EIP155_METHODS,
   DEFAULT_LOGGER,
   DEFAULT_PROJECT_ID,
@@ -392,7 +390,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         projectId: DEFAULT_PROJECT_ID,
         metadata: getAppMetadata() || DEFAULT_APP_METADATA,
       });
-
+      console.log("CREATED CLIENT: ", _client);
       setClient(_client);
       await _subscribeToEvents(_client);
       await _checkPersistedState(_client);

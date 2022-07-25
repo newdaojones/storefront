@@ -5,6 +5,7 @@ import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
+import {storefrontPaymentAddress} from "../StorefrontPaySdk";
 
 
 // const currentRpcApi: RpcApi = new InfuraApi();
@@ -47,8 +48,7 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * @param orderId
  */
 export async function formatTestTransaction(account: string, sendAmount: number, orderId: string): Promise<ITransaction> {
-    //FIXME toAddress should be our own input wallet or merchant?
-    const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
+    const toAddress = storefrontPaymentAddress;
 
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
