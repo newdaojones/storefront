@@ -33,7 +33,7 @@ export const Pay = () => {
         console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
     }
 
-    const qrCodeUri = `sf?${query}`;
+    const qrCodeUri = `https://test.jxndao.com/storefront/buy?${query}`;
     React.useEffect(() => {
         if (qrCodeUri) {
             let black = 'rgb(0,0,0)';
@@ -118,11 +118,13 @@ export const Pay = () => {
 
 
                 {qrCodeUri && !showBlackWhite && (
+                    <a href={qrCodeUri}>
                     <div className="flex items-center justify-center">
                         <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
                         </div>
                         <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
                     </div>
+                    </a>
                 )}
                 {qrCodeUri && showBlackWhite && (
                     <div className="flex items-center justify-center">

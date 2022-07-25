@@ -14,7 +14,7 @@ import {
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress, isMobile} from "../helpers";
-import {useJsonRpc} from "../contexts/JsonRpcContext";
+import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {AccountBalance, getNonZeroAccountBalance, getHexValueAsBigNumber} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
@@ -75,6 +75,25 @@ export const BuyPage = () => {
 
   };
 
+  function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
+    console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
+    const transactionInfo: ITransactionInfo = {
+      fromAddress: res.address!!,
+      toAddress: res.toAddress || "",
+      value: res.value || "n/a",
+      transactionHash: res.result,
+      paymentValueUsd: paymentValueUsd,
+      paymentFeeUsd: paymentFeeUsd,
+      paymentTotalUSD: paymentTotalUSD,
+    }
+
+    dispatch(userAction.setTransactionInfoWallet(transactionInfo));
+    setTimeout(() => {
+      history.push("/confirmation")
+      dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
+    }, 1000);
+  }
+
   const onSendTransaction = async (accountBalance: AccountBalance) => {
     const account = accountBalance.account;
     const [namespace, reference, address] = account.split(":");
@@ -91,31 +110,15 @@ export const BuyPage = () => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
           if (res?.valid) {
-            console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
-            const transactionInfo: ITransactionInfo = {
-              fromAddress: res.address!!,
-              toAddress: res.toAddress || "",
-              value: res.value  || "n/a",
-              transactionHash: res.result,
-              paymentValueUsd: paymentValueUsd,
-              paymentFeeUsd: paymentFeeUsd,
-              paymentTotalUSD: paymentTotalUSD,
-            }
-
-            dispatch(userAction.setTransactionInfoWallet(transactionInfo));
-            setTimeout(() => {
-              history.push("/confirmation")
-              dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
-            }, 1000);
-
+            handleSuccessfulTransaction(res);
           } else {
-            console.info(`valid = false. transaction result ${res?.result}`)
             toast.error(res?.result || "Something went wrong, please try again. ");
+            console.info(`valid = false. transaction result ${res?.result}`)
             dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           }
         })
         .catch((error) => {
-          toast.error(error || "Something went wrong, please try again. ");
+          toast.error(error || "Something went wrong sending the transaction, please try again. ");
           console.log(`error on signing trx ${error} state: ${rpcResult}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
         })
