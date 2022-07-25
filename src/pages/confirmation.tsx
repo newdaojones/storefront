@@ -7,6 +7,8 @@ import {useHistory} from "react-router-dom";
 import {convertHexToNumber, ellipseAddress} from "../helpers";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {userAction} from "../store/actions";
+import logoIcon from "../assets/images/logo.svg";
+import QRCodeStyling from "qr-code-styling";
 
 export const ConfirmationPage = () => {
   const history = useHistory();
@@ -18,11 +20,15 @@ export const ConfirmationPage = () => {
 
   let transactionInfo = useSelector(selectBuyTransaction)
 
+    if (!transactionInfo) {
+        history.replace("/")
+    }
+
   const onHomeClick = async () => {
       await refreshBalances(accounts).then(r => {
           dispatch(userAction.unsetTransaction());
           history.go(-2)
-          history.replace("/profile");
+          history.replace("/home");
       });
 
   }
@@ -30,19 +36,64 @@ export const ConfirmationPage = () => {
   const onQRCodeClick = (): void => {
     console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${transactionInfo?.transactionHash}`)
   };
+
   let weiNumber = convertHexToNumber(transactionInfo?.value!!);
   console.info(`wei number ${weiNumber}`)
   const bigN = BigNumber.from(weiNumber.toString())
   const formatted = utils.formatUnits(bigN, "ether")
 
-  return (
+  let trxLink = `https://kovan.etherscan.io/tx/${transactionInfo?.transactionHash}`;
+
+   React.useEffect(() => {
+        if (!transactionInfo) {
+            const qrCode = new QRCodeStyling({
+                width: 255,
+                height: 255,
+                type: 'svg',
+                data: trxLink,
+                dotsOptions: {
+                    type: 'dots',
+                    gradient: {
+                        type: 'linear',
+                        rotation: 90,
+                        colorStops: [
+                            {offset: 0.4, color: 'rgb(115,44,249)'},
+                            {offset: 0.9, color: 'rgb(88,207,252)'},
+                        ],
+                    },
+                },
+                cornersDotOptions: {
+                    color: 'rgb(0,255,139)',
+                },
+                cornersSquareOptions: {
+                    color: 'rgb(255,0,196)',
+                    type: 'extra-rounded',
+                },
+                backgroundOptions: {
+                    color: 'rgb(15,7,60)',
+                },
+            });
+
+            const qrCodeElement = document.getElementById('qrcode') as any;
+            qrCodeElement.innerHTML = '';
+            qrCode.append(qrCodeElement);
+        }
+    }, [transactionInfo]);
+
+
+    return (
     <div className="w-full h-full flex justify-center">
       <div className="w-3/4 m-10">
         <p className="text-white text-secondary font-bold">Payment Successful</p>
         {/*QR CODE*/}
-          <div className="w-full flex flex-col items-center justify-center ">
-            <img style={{alignSelf: "center", justifySelf:"center"}} className="w-30 h-30 min-w-max items-center justify-center p-4" src={QRIcon} alt="" onClick={onQRCodeClick} />
-          </div>
+          <a target="_blank" rel='noreferrer' className="p-10 link cursor-pointer" href={trxLink}>
+              <div className="flex items-center justify-center">
+                  <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
+                  </div>
+                  <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
+              </div>
+          </a>
+
       {/*Invoice*/}
           <div className="w-full flex items-center justify-center mt-2">
               <div  style={{fontFamily: 'Righteous', fontStyle: 'normal',}} className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
@@ -71,7 +122,7 @@ export const ConfirmationPage = () => {
                   <div className="w-full flex justify-between p-4">
                       <p className="text-white text-start text-xs mr-2 mt-2">Transaction Hash</p>
                       <a target="_blank" rel='noreferrer' className="link cursor-pointer"
-                         href={`https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${transactionInfo?.transactionHash}`}>
+                         href={trxLink}>
                           {/*<img className="w-8 h-8 mt-2 justify-center" src={SearchIcon} alt=""/>*/}
                           <p className="text-white text-start text-xs mr-2 mt-2">{ellipseAddress(transactionInfo?.transactionHash)}</p>
                       </a>

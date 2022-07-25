@@ -52,7 +52,7 @@ export const Main = () => {
     { route: '/vault', icon: VaultIcon },
     { route: '/priceWatchers', icon: BookIcon },
     { route: '/play', icon: PlayIcon },
-    { route: '/profile', icon: ProfileIcon },
+    { route: '/home', icon: ProfileIcon },
   ];
 
   let ens = ensName || null;

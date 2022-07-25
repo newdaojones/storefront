@@ -12,12 +12,12 @@ export const Dashboard = () => {
     return (
       <div className="w-full h-full flex-1">
         <Switch>
-          <Route path="/profile" component={mainPage} />
+          <Route path="/home" component={mainPage} />
           <Route path="/play" component={PlayPage} />
           <Route path="/scan" component={ScanPage} />
           <Route path="/buy" component={BuyPage} />
           <Route path="/confirmation" component={ConfirmationPage} />
-          <Redirect to="/profile" />
+          <Redirect to="/home" />
         </Switch>
       </div>
     );

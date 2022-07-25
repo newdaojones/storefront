@@ -59,7 +59,7 @@ export const BuyPage = () => {
           dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           dispatch(userAction.unsetTransaction());
           history.length = 1;
-          history.replace("/profile");
+          history.replace("/home");
         }
       }
     })
@@ -156,8 +156,8 @@ export const BuyPage = () => {
     console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
     console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
   } else {
-    console.info(`transaction value not available. maybe should go back?. redirecting to /profile page`)
-    history.replace("/profile");
+    console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
+    history.replace("/home");
   }
 
   const buyProgress = transactionInProgress.valueOf();
