@@ -44,10 +44,29 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 ### How to use local copy that needs overflow:visible change
     git checkout or copy the node_modules/lib directory, and build it. 
 
-### Link library's react to the main project react
+### Link librarys react to the main project react and build
 go into the library folder (deps/lib), and link react libary to the projects, like in https://reactjs.org/warnings/invalid-hook-call-warning.html
-    cd node_modules/react; yarn link
-    cd deps/lib; yarn link react
+    
+    cd node_modules/react; yarn link; cd ../..
+    cd deps/react-qr-reader; yarn link react; cd ../..
+
+    cd node_modules/react-dom; yarn link; cd ../..
+    cd deps/react-qr-reader; yarn link react-dom
+
+    yarn install
+    cd ../..
+
+
+### Link library from folder
+Adjust packages.json to point to folder
+    
+    "react-qr-reader": "file:deps/react-qr-reader",
+
+Link library to folder
+
+    cd deps/react-qr-reader; yarn link
+    cd ../..; yarn link react-qr-reader
+    yarn install
 
 ## Learn More
 

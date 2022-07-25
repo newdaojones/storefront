@@ -12,11 +12,12 @@ import PlayIcon from '../assets/images/play.svg';
 import ProfileIcon from '../assets/images/profile.svg';
 import VaultIcon from '../assets/images/vault.svg';
 
-import {selectEnsName} from '../store/selector';
-import {useWalletConnectClient} from '../contexts/walletConnect';
+import { selectAccountInfo, selectEnsName } from '../store/selector';
+import {useWalletConnectClient, WalletConnectProvider} from '../contexts/walletConnect';
 
 export const Main = () => {
   const ensName = useSelector(selectEnsName);
+  const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
 
   // Initialize the WalletConnect client.
@@ -51,7 +52,7 @@ export const Main = () => {
     { route: '/vault', icon: VaultIcon },
     { route: '/priceWatchers', icon: BookIcon },
     { route: '/play', icon: PlayIcon },
-    { route: '/profile', icon: ProfileIcon },
+    { route: '/home', icon: ProfileIcon },
   ];
 
   let ens = ensName || null;

@@ -2,8 +2,6 @@ $prim: #ffffff;
 
 body {
   margin: 0;
-  //font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-  //  'Helvetica Neue', sans-serif;
   font-family: Montserrat, 'Roboto', 'Ubuntu';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -170,5 +168,21 @@ code {
   }
   to {
     transform: translateY(6rem);
+  }
+}
+
+
+.twoColumnContainer {
+  display: flex;
+}
+
+@media only screen and (max-width: 900px) {
+  .twoColumnContainer {
+    /* it place the items in vertical direction */
+    flex-direction: column;
+  }
+
+  .box {
+    margin: 0 0 1rem;
   }
 }

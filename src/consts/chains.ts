@@ -1,3 +1,5 @@
+//TODO maybe this should be fixed
+// This chain data is used in the menu, and account modal to show info about selected chains.
 export const chainData: any = {
   bep20: {
     '1': {
@@ -11,18 +13,18 @@ export const chainData: any = {
       symbol: 'BSC',
     },
   },
-  bip122: {
-    '000000000019d6689c085ae165831e93': {
-      id: 'bip122:000000000019d6689c085ae165831e93',
-      name: 'Bitcoin Mainnet',
-      rpc: ['https://bsc-dataseed.binance.org'],
-      slip44: 60,
-      testnet: false,
-      logo: '/btc.png',
-      rgb: '243, 186, 44',
-      symbol: 'BTC',
-    },
-  },
+  // bip122: {
+  //   '000000000019d6689c085ae165831e93': {
+  //     id: 'bip122:000000000019d6689c085ae165831e93',
+  //     name: 'Bitcoin Mainnet',
+  //     rpc: ['https://bsc-dataseed.binance.org'],
+  //     slip44: 60,
+  //     testnet: false,
+  //     logo: '/btc.png',
+  //     rgb: '243, 186, 44',
+  //     symbol: 'BTC',
+  //   },
+  // },
   solana: {
     '4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ': {
       id: 'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',
@@ -62,6 +64,16 @@ export const chainData: any = {
       rpc: ['https://rpc-mainnet.matic.network'],
       slip44: 60,
       testnet: false,
+      logo: 'https://blockchain-api.xyz/logos/eip155:137.png',
+      rgb: '130, 71, 229',
+      symbol: 'MATIC',
+    },
+    '80001': {
+      name: 'Polygon Mumbai',
+      id: 'eip155:80001',
+      rpc: ['https://rpc-mumbai.matic.today'],
+      slip44: 60,
+      testnet: true,
       logo: 'https://blockchain-api.xyz/logos/eip155:137.png',
       rgb: '130, 71, 229',
       symbol: 'MATIC',

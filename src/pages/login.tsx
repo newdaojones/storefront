@@ -3,6 +3,7 @@ import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
+import {storefrontPayButton} from "../StorefrontPaySdk";
 
 export const Login = () => {
     const {qrCodeUri} = useWalletConnectClient();
@@ -43,6 +44,8 @@ export const Login = () => {
         }
     }, [qrCodeUri]);
 
+
+
     function onCopyLinkClicked() {
         navigator.clipboard.writeText(qrCodeUri || "");
         toast.info("Copied", {
@@ -50,19 +53,25 @@ export const Login = () => {
         })
     }
 
+    const payButton = storefrontPayButton("12323", 0.45);
+
     return (
         <div className="w-full h-full flex items-center justify-center flex-col">
             <h4 className="font-righteous text-white mt-4">Welcome to the StoreFront DApp</h4>
             <a href={qrCodeUri} className="">
-                <div id="qrcode" className="z-1 flex items-center justify-center rounded-10xl overflow-hidden mt-4 qrcode">
-                    <img className="w-16 h-16 absolute z-20" src={logoIcon} alt=""/>
+                <div className="flex items-center justify-center pt-2">
+                    <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
+                    </div>
+                    <img className="w-20 h-20 absolute z-10" src={logoIcon} alt="" />
                 </div>
             </a>
             <p onClick={onCopyLinkClicked}
                className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
+            <p className="font-montserrat text-center text-white mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
 
-
-            <p className="font-montserrat text-center text-white mt-2 mb-4">Scan or Tap the qrCode <br/>to connect with WalletConnect v2</p>
+            {/*Storefront Pay Button*/}
+            {payButton}
+            <p className="font-montserrat text-center text-white mt-2 mb-4">Add a Pay with Storefront button to your site, or use our sdk.</p>
         </div>
     );
 };

@@ -1,18 +1,34 @@
 import * as encoding from "@walletconnect/encoding";
 import {BigNumber, utils} from "ethers";
 
-import {apiGetAccountNonce, apiGetGasPrices} from "./api";
 import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
-import {infuraGetAccountNonce} from "./infura-api";
+import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
+
+
+// const currentRpcApi: RpcApi = new InfuraApi();
+// export const currentRpcApi: RpcApi = new EthereumXyzApi();
+export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
 export async function getGasPrice(chainId: string): Promise<string> {
-    if (chainId === "eip155:1") return toWad("20", 9).toHexString();
-    const gasPrices = await apiGetGasPrices();
-    return toWad(`${gasPrices.slow.price}`, 9).toHexString();
+    //TODO wtf hardcoded gas price for ethereum mainnet?
+    //if (chainId === "eip155:1") return toWad("20", 9).toHexString();
+    const gasPrices = await currentRpcApi.getGasPrices(chainId);
+    return gasPrices
 }
 
+
+function debugTransactionEncodingDecoding(_value: any, value: string) {
+    //TODO this is only debug code
+    const bigN = BigNumber.from(_value.toString())
+    const formatted = utils.formatUnits(bigN, "ether")
+    console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
+    const val1 = web3.utils.hexToNumber(value);
+    const val2 = web3.utils.toDecimal(value);
+    const val3 = encoding.hexToNumber(value);
+    console.debug(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
+}
 
 /**
  * See transaction https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
@@ -27,8 +43,11 @@ export async function getGasPrice(chainId: string): Promise<string> {
  *
  *
  * @param account
+ * @param sendAmount
+ * @param orderId
  */
-export async function formatTestTransaction(account: string, sendAmount: number): Promise<ITransaction> {
+export async function formatTestTransaction(account: string, sendAmount: number, orderId: string): Promise<ITransaction> {
+    //FIXME toAddress should be our own input wallet or merchant?
     const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
 
     const [namespace, reference, address] = account.split(":");
@@ -36,8 +55,7 @@ export async function formatTestTransaction(account: string, sendAmount: number)
 
     let _nonce;
     try {
-        _nonce = await infuraGetAccountNonce(address, chainId);
-        //_nonce = await apiGetAccountNonce(address, chainId);
+        _nonce = await currentRpcApi.getAccountNonce(address, chainId);
     } catch (error) {
         throw new Error(`failed to fetch nonce for address ${address} on chain ${chainId}`);
     }
@@ -45,32 +63,31 @@ export async function formatTestTransaction(account: string, sendAmount: number)
     const nonce = encoding.sanitizeHex(encoding.numberToHex(_nonce));
 
     const _gasPrice = await getGasPrice(chainId);
+    console.info(`gas price number: ${_gasPrice}`);
+
     const gasPrice = encodeNumberAsHex(Number(_gasPrice));
 
     // FIXME this should also be a param
-    //  gasLimit
-    const _gasLimit = 21000;
+    // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
+    const _gasLimit = 21112;
     const gasLimit = encodeNumberAsHex(_gasLimit)
 
-
     const _value = toWad(sendAmount.toString());
-    console.info(`send amount ${sendAmount} toWat -> ${_value} `)
+    console.info(`send amount ${sendAmount} toWad -> ${_value} `)
     // const _value = 123500000000000; //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
 
     const value = encoding.sanitizeHex(_value.toHexString());
+    //debugTransactionEncodingDecoding(_value, value);
 
-    //TODO this is only debug code
-    const bigN = BigNumber.from(_value.toString())
-    const formatted = utils.formatUnits(bigN, "ether")
-    console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
-    const val1  = web3.utils.hexToNumber(value);
-    const val2  = web3.utils.toDecimal(value);
-    const val3 = encoding.hexToNumber(value);
-    console.debug(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
+    // TODO add transaction id here, maybe a hash function of the qrcode & timestamp could be good
+    const orderIdEncoded = encoding.utf8ToHex(orderId);
+    const data = encoding.sanitizeHex(orderIdEncoded);
+    console.info(`encoding orderId: ${orderId} -> ${orderIdEncoded}`)
 
-    const tx = { from: address, to: toAddress, data: "0x", nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
+    const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
     return tx;
 }
+
 
 export const encodeNumberAsHex = (value: number): string => {
     const hex3 = web3.utils.numberToHex(value);
@@ -78,9 +95,19 @@ export const encodeNumberAsHex = (value: number): string => {
     return sanitized;
 }
 
-export const getHexValueAsBigNumber = (value: string): string => {
+export const getHexValueAsBigNumberUsingNumber = (value: string): string => {
     const decoded = web3.utils.hexToNumber(value);
     return utils.formatUnits(decoded, "ether")
+}
+
+export const getHexValueAsBigNumber = (value: string): BigNumber => {
+    const bigNumber = BigNumber.from(value);
+    return bigNumber;
+}
+export const getHexValueAsString = (value: string): string => {
+    //const decoded = web3.utils.big(value);
+    const bigNumber = BigNumber.from(value);
+    return utils.formatUnits(bigNumber, "ether")
 }
 
 export const getWeiToString = (value: string): string => {
@@ -104,13 +131,16 @@ export interface AccountBalance {
     balance: BigNumber;
     balanceUsd: BigNumber;
     balanceString: string;
+    token: string;
 }
 
-export function getBalanceInUSD(accounts: string[], balances: AccountBalances): AccountBalance {
+//TODO this returns the latest account in the list with non-zero amount
+export function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];
     let accountBalance = BigNumber.from(0);
     let accountBalanceUSD = BigNumber.from(0);
+    let balanceToken: string | null = null;
     accounts.forEach(value => {
         let accountBalances = balances[value];
         if (!accountBalances) {
@@ -118,8 +148,15 @@ export function getBalanceInUSD(accounts: string[], balances: AccountBalances): 
             return;
         }
         let balanceElement = accountBalances[0];
-        const balance = BigNumber.from(balanceElement.balance || "0");
-        if (balance.gt(0)) {
+        let balance = BigNumber.from(0);
+        try {
+            balance = BigNumber.from(balanceElement.balance || "0");
+        }
+        catch (e) {
+            console.log(`balance parse error ${e}`);
+        }
+
+        if (balance.gt(0) && balanceToken == null) {
             let formatEther = utils.formatEther(balance);
             console.debug(`getBalanceInUSD account ${value} with balance ${balance}. formatted balance ${formatEther}`)
 
@@ -127,9 +164,11 @@ export function getBalanceInUSD(accounts: string[], balances: AccountBalances): 
             accountBalance = utils.parseUnits(balance.toString(), "ether")
             accountBalanceUSD = accountBalance;
             balanceString = formatEther;
+            balanceToken = balanceElement.symbol;
         }
     })
     return {
+        token: balanceToken || 'ETH',
         account: firstNonZeroAccount,
         balance: accountBalance,
         balanceUsd: accountBalanceUSD,

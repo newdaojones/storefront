@@ -5,6 +5,7 @@ import { Transaction as EthTransaction } from "@ethereumjs/tx";
 import {getLocalStorageTestnetFlag} from "../helpers";
 import { useWalletConnectClient } from "./walletConnect";
 import {
+  chainData,
   DEFAULT_EIP155_METHODS,
 } from '../consts';
 import {ITransaction} from "../helpers/tx";
@@ -31,7 +32,7 @@ interface IContext {
     testSignTransaction: TRpcRequestCallback;
     testEthSign: TRpcRequestCallback;
     testSignPersonalMessage: TRpcRequestCallback;
-    testEthBalance: TRpcRequestCallback;
+    // testEthBalance: TRpcRequestCallback;
   };
   // cosmosRpc: {
   //   testSignDirect: TRpcRequestCallback;
@@ -111,7 +112,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       let valid = false;
 
       try {
-        await client.session.ping(session.topic);
+        await client.ping({ topic: session.topic });
         valid = true;
       } catch (e) {
         valid = false;
@@ -139,11 +140,13 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       const caipAccountAddress = `${chainId}:${address}`;
       const account = accounts.find((account: string) => account === caipAccountAddress);
       if (account === undefined) throw new Error(`Account for ${caipAccountAddress} not found`);
-
       const balance = BigNumber.from(balances[account][0].balance || "0");
-      console.info(`current balance is ${balance}. gasPrice: ${trx.gasPrice} gasLimit: ${trx.gasLimit}`)
-      if (balance.lt(BigNumber.from(trx.gasPrice).mul(trx.gasLimit))) {
-        console.info(`Insufficient funds for intrinsic transaction cost`);
+
+      let gasPriceBigN = BigNumber.from(trx.gasPrice);
+      const gasLimitBigN = BigNumber.from(trx.gasLimit);
+      let totalGasFees = gasPriceBigN.mul(gasLimitBigN);
+      if (balance.lt(totalGasFees)) {
+        console.warn(`Insufficient funds for intrinsic transaction cost`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
           address,
@@ -153,9 +156,11 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           value: trx.value,
         };
       }
-
-      if (balance.lt(trx.value)) {
-        console.info(`Insufficient funds for transaction`);
+      const transactionCost = BigNumber.from(trx.value);
+      let transactionCostBigN = transactionCost.add(totalGasFees);
+      console.info(`current balance is ${balance}. gasPrice: ${gasPriceBigN} gasLimit: ${gasLimitBigN}. transaction cost: ${transactionCostBigN}`)
+      if (balance.lt(transactionCostBigN)) {
+        console.warn(`Insufficient funds for transaction`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
           address,
@@ -165,9 +170,8 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           value: trx.value,
         };
       }
-
       console.info(`committing trx to wc`)
-      const result = await client!.request({
+      const result = await client!.request<string>({
         topic: session!.topic,
         chainId,
         request: {
@@ -175,12 +179,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           params: [trx],
         },
       });
-      console.info(`ETH_SEND_TRANSACTION result: ${result.result}`)
-      console.info(`ETH_SEND_TRANSACTION error: ${result.error}`)
-
-      // format displayed result
-      //let formatEther = utils.formatEther(tx.value);
-
+      console.info(`ETH_SEND_TRANSACTION result: ${result}`)
       return {
         method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
         address,
@@ -232,7 +231,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         const params = [hexMsg, address];
 
         // send message
-        const signature: string = await client!.request({
+        const signature = await client!.request<string>({
           topic: session!.topic,
           chainId,
           request: {
@@ -244,11 +243,11 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         //  split chainId
         const [namespace, reference] = chainId.split(":");
 
-        // const targetChainData = chainData[namespace][reference];
-        //
-        // if (typeof targetChainData === "undefined") {
-        //   throw new Error(`Missing chain data for chainId: ${chainId}`);
-        // }
+        const targetChainData = chainData[namespace][reference];
+
+        if (typeof targetChainData === "undefined") {
+          throw new Error(`Missing chain data for chainId: ${chainId}`);
+        }
 
         const valid = _verifyEip155MessageSignature(message, signature, address);
 
@@ -296,30 +295,6 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         address,
         valid,
         result: signature,
-      };
-    }),
-    testEthBalance: _createJsonRpcRequestHandler(async (chainId: string, address: string) => {
-      const params = [address];
-
-      // get balance
-      // https://docs.infura.io/infura/networks/ethereum/json-rpc-methods/eth_getbalance
-      const balanceResponse: string = await client!.request({
-        topic: session!.topic,
-        chainId,
-        request: {
-          method: DEFAULT_EIP155_METHODS.ETH_GET_BALANCE,
-          params,
-        },
-      });
-
-      const valid = balanceResponse;
-
-      return {
-        method: DEFAULT_EIP155_METHODS.ETH_GET_BALANCE,
-        address,
-        valid: true,
-        result: balanceResponse,
-        value: valid,
       };
     }),
   };
