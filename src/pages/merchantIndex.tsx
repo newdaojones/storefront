@@ -3,12 +3,13 @@ import { useSelector } from 'react-redux';
 
 import { AccountModal } from '../components';
 
-import { MerchantDashboard} from './merchant_dashboard';
+import { MerchantDashboard} from './merchant/merchant_dashboard';
 import { Login } from './login';
 import { Landing } from './landing';
 
-import PlayIcon from '../assets/images/play.svg';
-import ProfileIcon from '../assets/images/profile.svg';
+import FindIcon from '../assets/images/find.svg';
+import StorefrontIcon from '../assets/images/storefront.svg';
+import SettingsIcon from '../assets/images/settings.svg';
 
 import { selectAccountInfo, selectEnsName } from '../store/selector';
 import { useWalletConnectClient } from '../contexts/walletConnect';
@@ -54,8 +55,9 @@ export const MerchantMain = () => {
   }, [initialized, connect, session]);
 
   let menuItems = [
-    { route: '/merchant/settings', icon: PlayIcon },
-    { route: '/merchant/profile', icon: ProfileIcon },
+    { route: '/merchant/profile', icon: StorefrontIcon },
+    { route: '/merchant/find', icon: FindIcon },
+    { route: '/merchant/settings', icon: SettingsIcon },
   ];
 
   let ens = ensName;
