@@ -22,6 +22,8 @@ export const ConfirmationPage = () => {
   let transactionInfo = useSelector(selectBuyTransaction)
   const [linkUrl, setLinkUrl] = useState('');
 
+  const link = `${storefrontPayBaseUrl}/status?transactionId=${transactionInfo?.transactionHash}&orderId=2&amount=${transactionInfo?.paymentTotalUSD}`;
+
     if (!transactionInfo) {
         history.replace("/")
     }
@@ -47,7 +49,7 @@ export const ConfirmationPage = () => {
 
    React.useEffect(() => {
         if (transactionInfo) {
-            const link = `${storefrontPayBaseUrl}/status?transactionId=${transactionInfo?.transactionHash}&orderId=2&amount=${transactionInfo?.paymentTotalUSD}`;
+
             const qrCode = new QRCodeStyling({
                 width: 255,
                 height: 255,
@@ -88,7 +90,7 @@ export const ConfirmationPage = () => {
       <div className="w-3/4 m-10">
         <p className="text-white text-secondary font-bold">Payment Successful</p>
         {/*QR CODE*/}
-          <a target="_blank" rel='noreferrer' className="p-10 link cursor-pointer" href={linkUrl}>
+          <a target="_blank" rel='noreferrer' className="p-10 link cursor-pointer" href={link}>
               <div className="flex items-center justify-center">
                   <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
                   </div>
@@ -124,7 +126,7 @@ export const ConfirmationPage = () => {
                   <div className="w-full flex justify-between p-4">
                       <p className="text-white text-start text-xs mr-2 mt-2">Transaction Hash</p>
                       <a target="_blank" rel='noreferrer' className="link cursor-pointer"
-                         href={linkUrl}>
+                         href={link}>
                           {/*<img className="w-8 h-8 mt-2 justify-center" src={SearchIcon} alt=""/>*/}
                           <p className="text-white text-start text-xs mr-2 mt-2">{ellipseAddress(transactionInfo?.transactionHash)}</p>
                       </a>
