@@ -84,6 +84,7 @@ export const BuyPage = () => {
       paymentValueUsd: paymentValueUsd,
       paymentFeeUsd: paymentFeeUsd,
       paymentTotalUSD: paymentTotalUSD,
+      date: null,
     }
 
     dispatch(userAction.setTransactionInfoWallet(transactionInfo));

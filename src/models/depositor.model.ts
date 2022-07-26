@@ -59,4 +59,5 @@ export interface ITransactionInfo {
   paymentValueUsd: number;
   paymentFeeUsd: number;
   paymentTotalUSD: number;
+  date: string | null;
 }

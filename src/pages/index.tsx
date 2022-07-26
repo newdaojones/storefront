@@ -7,10 +7,7 @@ import {Dashboard} from './dashboard';
 import {Login} from './login';
 import {Landing} from './landing';
 
-import BookIcon from '../assets/images/book.svg';
-import PlayIcon from '../assets/images/play.svg';
-import ProfileIcon from '../assets/images/profile.svg';
-import VaultIcon from '../assets/images/vault.svg';
+import VaultIcon from '../assets/images/menu_icon.svg';
 
 import { selectAccountInfo, selectEnsName } from '../store/selector';
 import {useWalletConnectClient, WalletConnectProvider} from '../contexts/walletConnect';
@@ -49,16 +46,15 @@ export const Main = () => {
   }, [initialized, connect, session]);
 
   let menuItems = [
-    { route: '/vault', icon: VaultIcon },
-    { route: '/priceWatchers', icon: BookIcon },
-    { route: '/play', icon: PlayIcon },
-    { route: '/home', icon: ProfileIcon },
+    { route: '/home', icon: VaultIcon },
   ];
 
   let ens = ensName || null;
   // if (!ensName) {
   //   ens = accountInfo?.memberENSAddress;
   // }
+
+  console.info(`loading Main component at pages/index `)
 
   return (
     <div className="h-screen w-screen flex flex-col">
@@ -70,7 +66,7 @@ export const Main = () => {
         ensName={ens}
         items={menuItems}
         size={200}
-        key={'orbitalMenu'}
+        key={'topMenu'}
       />
       {isLoading || isInitializing ? <Landing /> : account ? <Dashboard /> : <Login />}
       <AccountModal

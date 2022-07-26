@@ -25,6 +25,7 @@ module.exports = {
       colors: {
         primary: '#13053D',
         secondary: '#FFB01D',
+        terciary: '#ff00c4',
         footer: '#212134',
       },
       boxShadow: {

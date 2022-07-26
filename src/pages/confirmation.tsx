@@ -26,6 +26,7 @@ export const ConfirmationPage = () => {
 
   const onHomeClick = async () => {
       await refreshBalances(accounts).then(r => {
+          console.info(`refreshing balances on home click`)
           dispatch(userAction.unsetTransaction());
           history.go(-2)
           history.replace("/home");

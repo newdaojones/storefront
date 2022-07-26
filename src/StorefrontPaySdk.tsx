@@ -9,7 +9,9 @@ const devUrl = 'http://localhost:3000';
 const toAddress = '0x96fca7a522A4Ff7AA96B62a155914a831fe2aC05';
 export const storefrontPaymentAddress = toAddress;
 
-export const storefrontPayBaseUrl = baseUrl;
+//TODO FIX
+export const storefrontPayBaseUrl = devUrl;
+// export const storefrontPayBaseUrl = baseUrl;
 
 export const storefrontPayButton = (orderId: String, amount: Number) => {
     const url = `${storefrontPayBaseUrl}/storefront/pay?orderId=${orderId}&amount=${amount}`

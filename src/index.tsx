@@ -4,10 +4,7 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
 import './assets/styles/index.scss';
-
 import { Main } from './pages';
 import reportWebVitals from './reportWebVitals';
 import { store } from './store';
@@ -16,6 +13,7 @@ import {Pay} from "./pages/pay";
 import {WalletConnectProvider} from "./contexts/walletConnect";
 import {ErrorPage} from "./pages/storefrontpay/error";
 import {TransactionStatus} from "./pages/storefrontpay/transactionStatus";
+import {MerchantMain} from "./pages/merchantIndex";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -26,6 +24,7 @@ ReactDOM.render(
                   <Route path={'/pay'} component={Pay}></Route>
                   <Route path={'/status'} component={TransactionStatus}></Route>
                   <Route path={'/error'} component={ErrorPage}></Route>
+                  <Route path={'/merchant'} component={MerchantMain}></Route>
                   <Route path={'/'} component={Main}></Route>
               </Switch>
             <ToastContainer

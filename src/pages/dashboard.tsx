@@ -8,6 +8,8 @@ import {BuyPage} from "./buy";
 import {ConfirmationPage} from "./confirmation";
 
 export const Dashboard = () => {
+    console.info(`loading dashboard`);
+
     let mainPage = HomePage;
     return (
       <div className="w-full h-full flex-1">
