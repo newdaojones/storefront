@@ -22,7 +22,7 @@ export const ConfirmationPage = () => {
   let transactionInfo = useSelector(selectBuyTransaction)
   const [linkUrl, setLinkUrl] = useState('');
 
-  const link = `${storefrontPayBaseUrl}/status?transactionId=${transactionInfo?.transactionHash}&orderId=2&amount=${transactionInfo?.paymentTotalUSD}`;
+  const link = `${storefrontPayBaseUrl}/storefront/status?transactionId=${transactionInfo?.transactionHash}&orderId=2&amount=${transactionInfo?.paymentTotalUSD}`;
 
     if (!transactionInfo) {
         history.replace("/")

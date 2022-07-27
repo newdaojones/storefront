@@ -102,7 +102,7 @@ export const TransactionStatus = () => {
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>
-                        <p className="font-bold text-xl">{`USD $${transactionId?.amount}`}</p>
+                        <p className="font-bold text-xl">{`USD $${transactionId?.amount.toFixed(2)}`}</p>
                     </div>
                 </div>
 
