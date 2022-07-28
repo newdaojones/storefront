@@ -49,3 +49,7 @@ export const selectTransactionInProgress = createSelector([selectUserState], use
 export const selectBuyTransaction = createSelector([selectUserState], userState => {
   return userState.transactionInfo;
 });
+
+export const selectCurrentOrder = createSelector([selectUserState], userState => {
+  return userState.order;
+});

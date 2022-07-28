@@ -9,6 +9,10 @@ import {extractOrderFromUrl} from "../utils/path_utils";
 import {useHistory} from "react-router-dom";
 import QRCode from 'react-qr-code';
 import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
+import {useDispatch, useSelector} from "react-redux";
+import {userAction} from "../store/actions";
+import {IOrder} from "../models";
+import {selectBuyTransaction, selectCurrentOrder} from "../store/selector";
 
 
 /**
@@ -20,10 +24,13 @@ import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
 export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
+    const dispatch = useDispatch();
     const [ showBlackWhite, setShowBlackWhite ] = useState(false)
     const [background] = useState('#FFFFFF');
     const [foreground] = useState('#000000');
     const [size] = useState(300);
+
+    let currentOrder = useSelector(selectCurrentOrder)
 
     let order = null;
     if (!query) {
@@ -31,12 +38,36 @@ export const Pay = () => {
         history.replace("/error");
     } else {
         order = extractOrderFromUrl(query);
-        console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
+        console.log(`orderId: ${order.externalOrderId} amount: ${order.amount}`);
     }
 
-    const qrCodeUri = `${storefrontPayBaseUrl}/storefront/home${query}`;
+    //TODO create the order and populate the qr with that tracking Id, to let it fetch data.
+
+    if (!order?.externalOrderId) {
+        console.log(`Invalid query data, redirecting`);
+        history.replace("/error");
+    } else {
+        if (!currentOrder) {
+            console.log(`creating order`)
+            let orderInstance: IOrder = {
+                amount: order.amount,
+                externalOrderId: order?.externalOrderId,
+                testnet: true,
+                token: "USD",
+                //FIXME hardcoded merchant
+                toAddress: "eB58Fff80D9a9D8f6898212Cf2301B16DCFF4796",
+                transactionHash: null
+            };
+            dispatch(userAction.createOrder(orderInstance));
+        } else {
+            console.log(`order created trackingId: ${currentOrder.trackingId}`)
+        }
+    }
+
+    var qrCodeUri = currentOrder ? `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder.trackingId}` : '';
     React.useEffect(() => {
-        if (qrCodeUri) {
+        if (currentOrder) {
+            //const qrCodeUri = `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder?.trackingId}`
             let black = 'rgb(0,0,0)';
             const qrCode = new QRCodeStyling({
                 width: size,
@@ -72,7 +103,7 @@ export const Pay = () => {
                 qrCode.append(qrCodeElement);
             }
         }
-    }, [qrCodeUri, showBlackWhite]);
+    }, [currentOrder, showBlackWhite]);
 
     function onTroubleScanningClicked() {
         setShowBlackWhite(!showBlackWhite);
@@ -109,7 +140,7 @@ export const Pay = () => {
                 <div className="w-3/4 flex justify-around pb-4">
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Order Id</p>
-                        <p className="font-bold text-xl pl-4">{`${order?.orderId}`}</p>
+                        <p className="font-bold text-xl pl-4">{`${order?.externalOrderId}`}</p>
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>
@@ -117,8 +148,7 @@ export const Pay = () => {
                     </div>
                 </div>
 
-
-                {qrCodeUri && !showBlackWhite && (
+                {currentOrder && !showBlackWhite && (
                     <a href={qrCodeUri}>
                     <div className="flex items-center justify-center">
                         <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
@@ -127,7 +157,7 @@ export const Pay = () => {
                     </div>
                     </a>
                 )}
-                {qrCodeUri && showBlackWhite && (
+                {currentOrder && showBlackWhite && (
                     <div className="flex items-center justify-center">
                         <QRCode
                             title="Storefront Pay"

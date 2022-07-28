@@ -12,7 +12,7 @@ import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
 import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
-import {extractOrderFromUrl, IOrder} from "../utils/path_utils";
+import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
 
 /**
@@ -54,8 +54,8 @@ export const HomePage = () => {
     if (query && tickers?.length > 0) {
       console.info(`detected order query: ${query}`)
       const order = extractOrderFromUrl(query);
-      console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
-      if (order.orderId && order.amount && !redirected) {
+      console.log(`orderTrackingId: ${order.orderTrackingId} externalOrderId: ${order.externalOrderId} amount: ${order.amount}`);
+      if (order.orderTrackingId && order.amount && !redirected) {
         setRedirected(true);
         createTransaction(order);
       }
@@ -74,7 +74,7 @@ export const HomePage = () => {
     setScanning(false);
   }
 
-  const createTransaction = (order: IOrder): void => {
+  const createTransaction = (order: IOrderParams): void => {
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
     const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
@@ -83,10 +83,13 @@ export const HomePage = () => {
       return;
     }
     setLoading(true);
-    dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount: ethTotal, orderId: order.orderId}));
+
+    if (!order.orderTrackingId) {
+      toast.error("Invalid order tracking ID")
+    } else {
+      dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount: ethTotal, orderTrackingId: order.orderTrackingId}));
+    }
   };
-
-
 
   const onHomeClick = async () => {
     console.info(`refreshing balances `)

@@ -85,6 +85,7 @@ export const BuyPage = () => {
       paymentFeeUsd: paymentFeeUsd,
       paymentTotalUSD: paymentTotalUSD,
       date: null,
+      orderTrackingId: transaction?.orderTrackingId || "n/a",
     }
 
     dispatch(userAction.setTransactionInfoWallet(transactionInfo));

@@ -5,7 +5,7 @@ import { UserService } from '../../services';
 import { userAction } from '../actions';
 import { toast } from 'react-toastify';
 import { ens } from '../../utils/walletConnect';
-import { ITicker } from '../../models';
+import {IMerchant, IOrder, ITicker, IUserInfo} from '../../models';
 import {formatTestTransaction, ITransaction} from "../../helpers/tx";
 
 export function storageKey(storagePrefix: string): string {
@@ -19,6 +19,13 @@ export default function* root() {
 
     takeLatest(EUserActionTypes.SET_CREATE_TRANSACTION as any, watchCreateTransactions),
     takeLatest(EUserActionTypes.UNSET_TRANSACTION as any, watchUnsetTransaction),
+
+
+    takeLatest(EUserActionTypes.CREATE_ORDER as any, watchCreateNewOrder),
+
+    takeLatest(EUserActionTypes.SET_ORDER_TRANSACTION_HASH as any, watchLinkOrderTransaction),
+    //TODO this automatically?
+    //takeLatest(EUserActionTypes.GET_USER_INFO_SUCCESS as any, watchGetMerchantInfo),
   ]);
 }
 
@@ -42,6 +49,47 @@ function* watchGetEnsName(action: { type: EUserActionTypes; payload: string }) {
   }
 }
 
+function* watchGetAccountInfo() {
+  try {
+    const res: AxiosResponse<IUserInfo> = yield call(UserService.getMeApi);
+    yield put(userAction.getAccountInfoSuccess(res.data));
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+}
+
+function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {address: string}}) {
+  try {
+    const res: AxiosResponse<IMerchant> = yield call(() => UserService.getMerchantInfoApi(action.payload.address));
+    yield put(userAction.getMerchantInfoSuccess(res.data));
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+}
+
+function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}) {
+  try {
+    const res: AxiosResponse<IOrder> = yield call(() => UserService.createNewOrder(action.payload.toAddress, action.payload));
+    if (res.status != 200) {
+      console.error(`error result in create new order`);
+    }
+    console.info(`calling create new order got externalOrderId: ${res.data.externalOrderId} amount ${res.data.amount} trackingId: ${res.data.trackingId}`)
+    yield put(userAction.setCreateOrderSuccess(res.data));
+  } catch (err: any) {
+    console.error(`error while creating order ${err}`)
+    toast.error(`error ${err.message}`);
+  }
+}
+
+function* watchLinkOrderTransaction(action: { type: EUserActionTypes; payload: { orderTrackingId: string, transactionHash: string }}) {
+  try {
+    yield call(() => UserService.linkOrderTransaction(action.payload.orderTrackingId, action.payload.transactionHash));
+    //yield put(userAction.setLinkTransactionSuccess(res));
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+}
+
 function* watchGetTickers() {
   try {
     const res: AxiosResponse<ITicker[]> = yield call(() => UserService.getTickersApi());
@@ -51,9 +99,9 @@ function* watchGetTickers() {
   }
 }
 
-function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; amount: number, orderId: string }}) {
+function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; amount: number, orderTrackingId: string }}) {
   try {
-    const res: ITransaction = yield call(() => formatTestTransaction(action.payload.account, action.payload.amount, action.payload.orderId));
+    const res: ITransaction = yield call(() => formatTestTransaction(action.payload.account, action.payload.amount, action.payload.orderTrackingId));
     yield put(userAction.setCreateTransactionSuccess(res));
   } catch (err: any) {
     toast.error(err.message);

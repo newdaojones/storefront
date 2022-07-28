@@ -41,7 +41,7 @@ export const TransactionStatus = () => {
         history.replace("/error?msg=invalid data");
     } else {
         transactionId = extractTransactionIdFromUrl(query);
-        console.log(`transactionId: ${transactionId.transactionId} orderId: ${transactionId.orderId}`);
+        console.log(`transactionId: ${transactionId.transactionId} orderTrackingId: ${transactionId.orderTrackingId}`);
     }
 
     React.useEffect(() => {
@@ -98,7 +98,7 @@ export const TransactionStatus = () => {
                 <div className="w-3/4 flex justify-around pb-4">
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Order Id</p>
-                        <p className="font-bold text-xl pl-4">{`${transactionId?.orderId}`}</p>
+                        <p className="font-bold text-xl pl-4">{`${transactionId?.externalOrderId}`}</p>
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>

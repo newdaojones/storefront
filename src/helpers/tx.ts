@@ -47,7 +47,7 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * @param sendAmount
  * @param orderId
  */
-export async function formatTestTransaction(account: string, sendAmount: number, orderId: string): Promise<ITransaction> {
+export async function formatTestTransaction(account: string, sendAmount: number, orderTrackingId: string): Promise<ITransaction> {
     const toAddress = storefrontPaymentAddress;
 
     const [namespace, reference, address] = account.split(":");
@@ -80,11 +80,11 @@ export async function formatTestTransaction(account: string, sendAmount: number,
     //debugTransactionEncodingDecoding(_value, value);
 
     // TODO add transaction id here, maybe a hash function of the qrcode & timestamp could be good
-    const orderIdEncoded = encoding.utf8ToHex(orderId);
+    const orderIdEncoded = encoding.utf8ToHex(orderTrackingId);
     const data = encoding.sanitizeHex(orderIdEncoded);
-    console.info(`encoding orderId: ${orderId} -> ${orderIdEncoded}`)
+    console.info(`encoding orderId: ${orderTrackingId} -> ${orderIdEncoded}`)
 
-    const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value };
+    const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value, orderTrackingId: orderTrackingId};
     return tx;
 }
 
@@ -124,6 +124,7 @@ export interface ITransaction {
     gasPrice: string;
     gasLimit: string;
     value: string;
+    orderTrackingId: string,
 }
 
 export interface AccountBalance {

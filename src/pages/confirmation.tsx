@@ -22,13 +22,23 @@ export const ConfirmationPage = () => {
   let transactionInfo = useSelector(selectBuyTransaction)
   const [linkUrl, setLinkUrl] = useState('');
 
+    //TODO link transaction
+
   const link = `${storefrontPayBaseUrl}/storefront/status?transactionId=${transactionInfo?.transactionHash}&orderId=2&amount=${transactionInfo?.paymentTotalUSD}`;
 
-    if (!transactionInfo) {
+
+    if (!transactionInfo?.transactionHash) {
         history.replace("/")
     }
 
-  const onHomeClick = async () => {
+    if (!transactionInfo?.orderTrackingId) {
+        console.error(`can't set order transaction hash since orderTrackingId not valid.`)
+    } else {
+        dispatch(userAction.setOrderTransactionHash({orderTrackingId: transactionInfo?.orderTrackingId, transactionHash: transactionInfo?.transactionHash!!}));
+    }
+
+
+    const onHomeClick = async () => {
       await refreshBalances(accounts).then(r => {
           console.info(`refreshing balances on home click`)
           dispatch(userAction.unsetTransaction());

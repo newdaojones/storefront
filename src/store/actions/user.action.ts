@@ -1,5 +1,5 @@
 import { EUserActionTypes } from '../../enums';
-import {IAccountInfo, ITicker, ITransactionInfo, IUserInfo, TransactionState} from '../../models';
+import {IAccountInfo, IMerchant, IOrder, ITicker, ITransactionInfo, IUserInfo, TransactionState} from '../../models';
 import {ITransaction} from "../../helpers/tx";
 
 //namespace, reference, address
@@ -12,7 +12,14 @@ const loginSuccess = (payload: IAccountInfo) => {
 
 const getAccountInfoSuccess = (payload: IUserInfo) => {
   return {
-    type: EUserActionTypes.GET_ACCOUNT_INFO_SUCCESS,
+    type: EUserActionTypes.GET_USER_INFO_SUCCESS,
+    payload,
+  };
+};
+
+const getMerchantInfoSuccess = (payload: IMerchant) => {
+  return {
+    type: EUserActionTypes.GET_MERCHANT_INFO_SUCCESS,
     payload,
   };
 };
@@ -47,7 +54,7 @@ const setTransactionInfoWallet = (payload: ITransactionInfo) => {
   };
 };
 
-const setCreateTransaction = (payload: { amount: number;  account: string; orderId: string}) => {
+const setCreateTransaction = (payload: { amount: number;  account: string; orderTrackingId: string}) => {
   return {
     type: EUserActionTypes.SET_CREATE_TRANSACTION,
     payload
@@ -67,15 +74,40 @@ const setCreateTransactionSuccess = (payload: ITransaction | null) => {
   };
 };
 
+const setCreateOrderSuccess = (payload: IOrder) => {
+  console.info(`setCreateOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
+  return {
+    type: EUserActionTypes.CREATE_ORDER_SUCCESS,
+    payload
+  };
+};
+
+const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string }) => {
+  return {
+    type: EUserActionTypes.SET_ORDER_TRANSACTION_HASH,
+    payload
+  };
+};
+
+const createOrder = (payload: IOrder) => {
+  return {
+    type: EUserActionTypes.CREATE_ORDER,
+    payload
+  };
+};
 
 export const userAction = {
   loginSuccess,
   getAccountInfoSuccess,
+  getMerchantInfoSuccess,
   getEnsNameSuccess,
   getTickersSuccess,
   setTransactionInProgress,
   setTransactionInfoWallet,
   setCreateTransaction,
   unsetTransaction,
-  setCreateTransactionSuccess
+  setCreateTransactionSuccess,
+  setCreateOrderSuccess,
+  setOrderTransactionHash,
+  createOrder
 };

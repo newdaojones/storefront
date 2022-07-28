@@ -1,13 +1,14 @@
-export interface IOrder {
-  orderId: string,
+export interface IOrderParams {
+  externalOrderId: string,
   amount: number,
+  orderTrackingId: string | null,
 }
 
-export interface ITransactionStatus extends IOrder {
+export interface ITransactionStatus extends IOrderParams {
   transactionId: string,
 }
 
-export const extractOrderFromUrl = (url: string) : IOrder => {
+export const extractOrderFromUrl = (url: string) : IOrderParams => {
   if (!url) {
     throw new Error("input url must be not empty");
   }
@@ -18,15 +19,17 @@ export const extractOrderFromUrl = (url: string) : IOrder => {
   const parsed = new URLSearchParams(queryString);
   console.log(`url: ${url} queryString: ${queryString} parsed: ${parsed}`);
   const amount = Number(parsed.get("amount"));
-  const orderId = parsed.get("orderId");
-  console.log(`orderId: ${orderId} amount: ${amount}`);
+  const externalOrderId = parsed.get("orderId");
+  const orderTrackingId = parsed.get("orderTrackingId");
+  console.log(`trackingId: ${orderTrackingId} orderId: ${externalOrderId} amount: ${amount}`);
 
-  if (!orderId || !amount) {
+  if (!externalOrderId|| !amount) {
     throw new Error("orderId or amount missing");
   }
 
   return {
-    orderId: orderId,
+    externalOrderId: externalOrderId,
+    orderTrackingId: orderTrackingId || null,
     amount: amount,
   }
 }
@@ -50,7 +53,8 @@ export const extractTransactionIdFromUrl = (url: string) : ITransactionStatus =>
   const orderData = extractOrderFromUrl(url);
   return {
     amount: orderData.amount,
-    orderId: orderData.orderId,
+    orderTrackingId: orderData.orderTrackingId,
+    externalOrderId: orderData.externalOrderId,
     transactionId: transactionId
   }
 }

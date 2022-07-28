@@ -22,6 +22,8 @@ import { toast } from 'react-toastify';
 import {AccountBalances} from "../helpers";
 import {getRequiredNamespaces} from "../helpers/namespaces";
 import {currentRpcApi} from "../helpers/tx";
+import {UserService} from "../services";
+import axios from "../services/axios";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -188,22 +190,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         setIsLoading(true);
         const startTime = moment();
 
-
-
-        // const res = await UserService.loginApi(address);
-        // const nonce = res.data.nonce;
-        //
-        // if (!nonce) {
-        //   throw new Error(res.data.message);
-        // }
-
-        // let signature = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
-        // if (!signature) {
-        //   signature = await signNonce(account, nonce);
-        // }
-        //
-        // axios.setAuthorizationToken(signature);
-        // axios.setNonce(nonce);
         const [namespace, reference, address] = account.split(':');
 
         const duration = moment.duration(moment().diff(startTime)).asSeconds();
@@ -215,7 +201,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
         setAccount(account);
         localStorage.setItem(NDJ_ADDRESS, account);
+
         dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
+
       } catch (err: any) {
         localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
         toast.error(err.message);
@@ -225,6 +213,56 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       }
     },
     [client, session]
+  );
+
+  //TODO this should be used when we access the merchant app, as opposed to one step login when using the purchase app with no signature
+  const loginWithSignedNonce = useCallback(
+      async (account: string) => {
+        try {
+          setIsLoading(true);
+          const startTime = moment();
+
+          const [namespace, reference, address] = account.split(':');
+          const res = await UserService.loginApi(address);
+          const nonce = res.data.nonce;
+
+          if (!nonce) {
+            throw new Error(res.data.message);
+          }
+
+          let signature: string | null = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
+          if (!signature) {
+            signature = await signNonce(account, nonce) || null;
+          }
+
+          if (signature) {
+            axios.setAuthorizationToken(signature);
+            axios.setNonce(nonce);
+          } else {
+            toast("Invalid signature")
+          }
+
+          const duration = moment.duration(moment().diff(startTime)).asSeconds();
+          const waitTime = loadingTimeout - duration;
+
+          if (waitTime > 0) {
+            await sleep(waitTime * 1000);
+          }
+
+          setAccount(account);
+          localStorage.setItem(NDJ_ADDRESS, account);
+
+          dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
+
+        } catch (err: any) {
+          localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
+          toast.error(err.message);
+          disconnect();
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      [client, session]
   );
 
   const connect = useCallback(
@@ -307,7 +345,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           throw new Error('Session is not connected');
         }
         console.log('_account', _account);
-        login(_account);
+        await login(_account);
       } catch (err: any) {
         toast.error(err.message);
       }
