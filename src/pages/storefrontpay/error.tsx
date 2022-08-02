@@ -7,7 +7,7 @@ import {storefrontPayButton} from "../../StorefrontPaySdk";
 
 export const ErrorPage = () => {
 
-    const payButton = storefrontPayButton("12323", 0.45);
+
 
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
@@ -28,11 +28,7 @@ export const ErrorPage = () => {
                 </div>
                 </div>
 
-                {/*Storefront Pay Button*/}
-                <div className="flex flex-col items-center justify-center pt-10">
-                    {payButton}
-                    <p className="font-montserrat text-center text-sm mt-2 mb-4">Add a Pay with Storefront button to your site, or use our sdk.</p>
-                </div>
+
             </div>
 
             {/*Right Column*/}

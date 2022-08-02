@@ -16,7 +16,13 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress, isMobile} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
-import {AccountBalance, getNonZeroAccountBalance, getHexValueAsBigNumber, getHexValueAsString} from "../helpers/tx";
+import {
+  AccountBalance,
+  getNonZeroAccountBalance,
+  getHexValueAsBigNumber,
+  getHexValueAsString,
+  ITransaction
+} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
@@ -77,9 +83,7 @@ export const BuyPage = () => {
   function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
     console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
     const transactionInfo: ITransactionInfo = {
-      fromAddress: res.address!!,
-      toAddress: res.toAddress || "",
-      value: res.value || "n/a",
+      transaction: transaction?.transaction || null,
       transactionHash: res.result,
       paymentValueUsd: paymentValueUsd,
       paymentFeeUsd: paymentFeeUsd,
@@ -106,7 +110,7 @@ export const BuyPage = () => {
     }
 
     //TODO this should be moved to a redux action, with a dispatcher & reducer
-    await ethereumRpc.testSendTransaction(chainId, address, transaction)
+    await ethereumRpc.testSendTransaction(chainId, address, transaction.transaction)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
@@ -125,42 +129,47 @@ export const BuyPage = () => {
         })
   };
 
-//TODO all this block should be a hook or effect, and run before the view is rendered.
-  let paymentFeeUsd = 0;
-  let paymentValueUsd = 0;
+  function initializePaymentData(transaction: ITransaction) {
+    let paymentFeeUsd = 0;
+    let paymentValueUsd = 0;
 
-  let paymentTotalUSD = 0;
-  let paymentValueEth: string = "0";
-  const token = 'ETH';
-  if (transaction?.value) {
-    console.log(`payment value: ${transaction?.value}`)
-    paymentValueEth = getHexValueAsString(transaction?.value);
+    let paymentTotalUSD = 0;
+    let paymentValueEth: string = "0";
+    const token = 'ETH';
+    if (transaction?.value) {
+      console.log(`payment value: ${transaction?.value}`)
+      paymentValueEth = getHexValueAsString(transaction?.value);
 
-    const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
-    const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
-    console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
+      const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
+      const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
+      console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
-    const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
-    const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
-    console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
+      const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
+      const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
+      console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
-    const trxValueAsNumber = Number(paymentValueEth);
-    const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);
+      const trxValueAsNumber = Number(paymentValueEth);
+      const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);
 
-    if (trxPriceUsd && gasPriceUsd) {
-      paymentValueUsd = trxPriceUsd;
-      paymentFeeUsd = gasPriceUsd;
-      paymentTotalUSD = trxPriceUsd + gasPriceUsd;
+      if (trxPriceUsd && gasPriceUsd) {
+        paymentValueUsd = trxPriceUsd;
+        paymentFeeUsd = gasPriceUsd;
+        paymentTotalUSD = trxPriceUsd + gasPriceUsd;
+      } else {
+        console.info(`unable to calculate total trx price in USD`);
+      }
+
+      console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
+      console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
     } else {
-      console.info(`unable to calculate total trx price in USD`);
+      console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
+      history.replace("/home");
     }
-
-    console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
-    console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
-  } else {
-    console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
-    history.replace("/home");
+    return {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth};
   }
+
+  //TODO all this block should be a hook or effect, and run before the view is rendered.
+  let {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth} = initializePaymentData(transaction?.transaction!!);
 
   const buyProgress = transactionInProgress.valueOf();
 

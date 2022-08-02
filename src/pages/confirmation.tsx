@@ -52,7 +52,7 @@ export const ConfirmationPage = () => {
     console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${transactionInfo?.transactionHash}`)
   };
 
-  let weiNumber = convertHexToNumber(transactionInfo?.value!!);
+  let weiNumber = convertHexToNumber(transactionInfo?.transaction?.value!!) || 0;
   console.info(`wei number ${weiNumber}`)
   const bigN = BigNumber.from(weiNumber.toString())
   const formatted = utils.formatUnits(bigN, "ether")
@@ -144,11 +144,11 @@ export const ConfirmationPage = () => {
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4">
                       <p className="text-white text-start text-xs mr-2">From Address</p>
-                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.fromAddress)}</p>
+                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.from)}</p>
                   </div>
                   <div className="w-full flex justify-between p-4">
                       <p className="text-white text-start text-xs mr-2">To Address</p>
-                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.toAddress)}</p>
+                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.to)}</p>
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4 pb-6">
                       <p className="text-white text-start text-xs mr-2">Amount</p>

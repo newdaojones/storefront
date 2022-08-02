@@ -47,7 +47,7 @@ const setTransactionInProgress = (payload: TransactionState) => {
 };
 
 const setTransactionInfoWallet = (payload: ITransactionInfo) => {
-  console.info(`setting transaction as hash: ${payload.transactionHash} value: ${payload.value} toAddress: ${payload.toAddress}`)
+  console.info(`setting transaction as hash: ${payload.transactionHash} value: ${payload.transaction?.value} toAddress: ${payload.transaction?.to}`)
   return {
     type: EUserActionTypes.SET_TRANSACTION_INFO,
     payload,
@@ -89,6 +89,14 @@ const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionH
   };
 };
 
+
+const merchantLoginSuccess = (payload: {address: string}) => {
+  return {
+    type: EUserActionTypes.MERCHANT_LOGIN_SUCCESS,
+    payload
+  };
+};
+
 const createOrder = (payload: IOrder) => {
   return {
     type: EUserActionTypes.CREATE_ORDER,
@@ -109,5 +117,6 @@ export const userAction = {
   setCreateTransactionSuccess,
   setCreateOrderSuccess,
   setOrderTransactionHash,
-  createOrder
+  createOrder,
+  merchantLoginSuccess
 };

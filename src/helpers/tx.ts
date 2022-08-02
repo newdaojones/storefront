@@ -84,7 +84,7 @@ export async function formatTestTransaction(account: string, sendAmount: number,
     const data = encoding.sanitizeHex(orderIdEncoded);
     console.info(`encoding orderId: ${orderTrackingId} -> ${orderIdEncoded}`)
 
-    const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value, orderTrackingId: orderTrackingId};
+    const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value};
     return tx;
 }
 
@@ -124,7 +124,6 @@ export interface ITransaction {
     gasPrice: string;
     gasLimit: string;
     value: string;
-    orderTrackingId: string,
 }
 
 export interface AccountBalance {

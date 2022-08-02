@@ -22,8 +22,11 @@ export const getNamespacesFromChains = (chains: string[]) => {
 
 export const getSupportedMethodsByNamespace = (namespace: string) => {
     switch (namespace) {
-        case "eip155":
-            return Object.values(DEFAULT_EIP155_METHODS);
+        case "eip155":{
+            let values = Object.values(DEFAULT_EIP155_METHODS);
+            console.log(`selected methods ${values} for namespace: ${namespace}` );
+            return values;
+        }
         case "cosmos":
             return Object.values(DEFAULT_COSMOS_METHODS);
         case "solana":
@@ -49,6 +52,10 @@ export const getSupportedEventsByNamespace = (namespace: string) => {
 export const getRequiredNamespaces = (chains: string[]): ProposalTypes.RequiredNamespaces => {
     const selectedNamespaces = getNamespacesFromChains(chains);
     console.log("selected namespaces:", selectedNamespaces);
+
+    // for (let item in selectedNamespaces){
+    //     console.log(`"supported methods for: ${item} ${getSupportedMethodsByNamespace(item)}`);
+    // }
 
     return Object.fromEntries(
         selectedNamespaces.map(namespace => [

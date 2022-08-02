@@ -1,4 +1,4 @@
-import {IMerchant, IOrder, ITicker, ITransactionInfo, IUserInfo} from '.';
+import {IMerchant, IOrder, ITicker, ITransactionInfo, ITransactionOrder, IUserInfo} from '.';
 import {ITransaction} from "../helpers/tx";
 
 export interface IRootState {
@@ -27,7 +27,7 @@ export interface IUserState {
   userInfo?: IUserInfo;
   merchantInfo?: IMerchant;
   tickers: ITicker[];
-  transactionData: ITransaction | null;
+  transactionData: ITransactionOrder | null;
   transactionInfo: ITransactionInfo | null;
   order: IOrder | null;
   transactionInProgress: TransactionState;

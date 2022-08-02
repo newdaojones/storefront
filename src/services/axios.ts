@@ -5,11 +5,11 @@ import axios from 'axios';
 
 // DEV
 //TODO url
-axios.defaults.baseURL = 'http://localhost:5000/';
+// axios.defaults.baseURL = 'http://localhost:5000/';
 
 // Test (http/https)
 // axios.defaults.baseURL = 'http://fundapi-test.us-east-2.elasticbeanstalk.com/';
-// axios.defaults.baseURL = 'https://test-api.jxndao.com/';
+axios.defaults.baseURL = 'https://test-api.jxndao.com/';
 
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 

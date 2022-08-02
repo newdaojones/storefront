@@ -53,3 +53,7 @@ export const selectBuyTransaction = createSelector([selectUserState], userState 
 export const selectCurrentOrder = createSelector([selectUserState], userState => {
   return userState.order;
 });
+
+export const selectMerchantInfo = createSelector([selectUserState], userState => {
+  return userState.merchantInfo;
+});

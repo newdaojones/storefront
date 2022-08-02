@@ -14,6 +14,7 @@ import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
+import {ITransactionInfo} from "../models";
 
 /**
  * https://test.jxndao.com/storefront/home
@@ -40,7 +41,7 @@ export const HomePage = () => {
 
   useEffect(() => {
     console.info(`useEffect locationKeys: ${locationKeys} trxCreated: ${trxCreated}`)
-    if (trxCreated && trxCreated.value && !locationKeys) {
+    if (trxCreated && trxCreated.transaction.value && !locationKeys) {
       setLocationKeys(true);
       if (!redirected) {
         history.push("/buy");

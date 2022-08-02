@@ -6,43 +6,18 @@ import DollarIcon from '../../assets/images/dollarIcon.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
 import TransactionRow from "../../components/transactionRow";
 import {ITransactionInfo} from "../../models";
+import {useSelector} from "react-redux";
+import {selectMerchantInfo} from "../../store/selector";
+import OrderRow from "../../components/orderRow";
 
 export const ProfilePage = () => {
 
   // const depositors = [{transactionHash: 0x212123abd, amount: 0.55}, {transactionHash: 0x212123abd, amount: 0.55}];
 
-  const depositors: ITransactionInfo[] = [
-      {
-    transactionHash: '0x01bdade',
-    value: '0.000012',
-    paymentTotalUSD: 0.55,
-    paymentFeeUsd: 0.001,
-    paymentValueUsd: 0.54,
-    toAddress: "0x96aa",
-    fromAddress: '0xfrom',
-    date: '2022-06-22'
-  },
-    {
-      transactionHash: '0xf1bdade',
-      value: '0.0000085',
-      paymentTotalUSD: 0.50,
-      paymentFeeUsd: 0.02,
-      paymentValueUsd: 0.48,
-      toAddress: "0x96aa",
-      fromAddress: '0x12ff4',
-      date: '2022-02-12'
-    },
-    {
-      transactionHash: '0x02afdade',
-      value: '0.0000085',
-      paymentTotalUSD: 0.50,
-      paymentFeeUsd: 0.02,
-      paymentValueUsd: 0.48,
-      toAddress: "0x96aa",
-      fromAddress: '0x12ff4',
-      date: '2022-02-12'
-    }
-  ];
+  let merchantInfo = useSelector(selectMerchantInfo);
+  console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
+  const orders = merchantInfo?.orders
+
   let onEdit = () => {
   };
   return (
@@ -74,10 +49,10 @@ export const ProfilePage = () => {
           <div className="flex items-center justify-around px-10">
             <div className="grid w-full h-60 overflow-auto">
               {
-                depositors.length > 0 ?
-                    depositors.map(token => (
+                orders && orders.length > 0 ?
+                    orders.map(token => (
                         <div>
-                          <TransactionRow key={token.transactionHash} asset={token} onEdit={onEdit}/>
+                          <OrderRow key={token.transactionHash} asset={token} onEdit={onEdit}/>
                         </div>)
                     )
                     :

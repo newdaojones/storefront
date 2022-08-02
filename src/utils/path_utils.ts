@@ -1,6 +1,7 @@
 export interface IOrderParams {
   externalOrderId: string,
   amount: number,
+  merchantAddress: string,
   orderTrackingId: string | null,
 }
 
@@ -21,16 +22,18 @@ export const extractOrderFromUrl = (url: string) : IOrderParams => {
   const amount = Number(parsed.get("amount"));
   const externalOrderId = parsed.get("orderId");
   const orderTrackingId = parsed.get("orderTrackingId");
+  const merchantAddress = parsed.get("merchantAddress");
   console.log(`trackingId: ${orderTrackingId} orderId: ${externalOrderId} amount: ${amount}`);
 
-  if (!externalOrderId|| !amount) {
-    throw new Error("orderId or amount missing");
+  if (!externalOrderId|| !amount || !merchantAddress) {
+    throw new Error("orderId, merchantAddress and amount are required.");
   }
 
   return {
     externalOrderId: externalOrderId,
     orderTrackingId: orderTrackingId || null,
     amount: amount,
+    merchantAddress: merchantAddress,
   }
 }
 
@@ -55,6 +58,7 @@ export const extractTransactionIdFromUrl = (url: string) : ITransactionStatus =>
     amount: orderData.amount,
     orderTrackingId: orderData.orderTrackingId,
     externalOrderId: orderData.externalOrderId,
+    merchantAddress: orderData.merchantAddress,
     transactionId: transactionId
   }
 }

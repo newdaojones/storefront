@@ -7,7 +7,7 @@ import {
   IAction,
   IMerchant, IOrder,
   ITicker,
-  ITransactionInfo,
+  ITransactionInfo, ITransactionOrder,
   IUserInfo,
   IUserState,
   TransactionState
@@ -71,7 +71,7 @@ function setMerchantInfo(state: IUserState, { payload }: IAction<IMerchant>) {
   });
 }
 
-function setTransactionData(state: IUserState, { payload }: IAction<ITransaction>) {
+function setTransactionData(state: IUserState, { payload }: IAction<ITransactionOrder>) {
   return produce(state, draft => {
     draft.transactionData = payload;
   });

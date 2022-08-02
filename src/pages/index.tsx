@@ -10,7 +10,7 @@ import {Landing} from './landing';
 import VaultIcon from '../assets/images/menu_icon.svg';
 
 import { selectAccountInfo, selectEnsName } from '../store/selector';
-import {useWalletConnectClient, WalletConnectProvider} from '../contexts/walletConnect';
+import {useWalletConnectClient} from '../contexts/walletConnect';
 
 export const Main = () => {
   const ensName = useSelector(selectEnsName);

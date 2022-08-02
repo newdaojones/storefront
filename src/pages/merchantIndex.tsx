@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { AccountModal } from '../components';
 
 import { MerchantDashboard} from './merchant/merchant_dashboard';
-import { Login } from './login';
 import { Landing } from './landing';
 
 import FindIcon from '../assets/images/find.svg';
@@ -14,6 +13,7 @@ import SettingsIcon from '../assets/images/settings.svg';
 import { selectAccountInfo, selectEnsName } from '../store/selector';
 import { useWalletConnectClient } from '../contexts/walletConnect';
 import {OrbitalMenu} from "../components/menu/circular";
+import {MerchantLogin} from "./merchant_login";
 
 
 /**
@@ -37,6 +37,7 @@ export const MerchantMain = () => {
     account,
     isLoading,
     accounts,
+    merchantLogin,
   } = useWalletConnectClient();
 
   const onSelectAccount = (item: string) => {
@@ -77,7 +78,7 @@ export const MerchantMain = () => {
             size={450}
             key={'orbMenu'}
         />
-        {isLoading || isInitializing ? <Landing /> : account ? <MerchantDashboard /> : <Login />}
+        {isLoading || isInitializing ? <Landing /> : account && merchantLogin ? <MerchantDashboard /> : <MerchantLogin />}
         <AccountModal
             account={account}
             accounts={accounts}

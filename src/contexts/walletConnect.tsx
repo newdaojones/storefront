@@ -24,6 +24,7 @@ import {getRequiredNamespaces} from "../helpers/namespaces";
 import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
+import {useLocation} from "react-use";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -50,6 +51,7 @@ interface IContext {
   solanaPublicKeys?: Record<string, PublicKey>;
   balances: AccountBalances;
   setChains: any;
+  merchantLogin: boolean;
 }
 
 /**
@@ -78,6 +80,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [chains, setChains] = useState<string[]>(DEFAULT_CHAINS);
 
   const [balances, setBalances] = useState<AccountBalances>({});
+
+  const [merchantLogin, setMerchantLogin] = useState<boolean>(false);
+
+
+  let pathname = useLocation().pathname;
+  let host = useLocation().host;
+  let hostname = useLocation().hostname;
+  console.log(`path ${pathname} host ${host} hostname ${hostname}`)
+
+
 
   const reset = () => {
     console.info(`resetting balances`);
@@ -138,27 +150,48 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     await getAccountBalances(allNamespaceAccounts);
   }, []);
 
+
+  useEffect(() => {
+    if (!pathname) {
+      return;
+    }
+    if (pathname.startsWith('/storefront/merchant')) {
+      setMerchantLogin(true);
+    } else {
+      setMerchantLogin(false);
+    }
+
+  }, [pathname]);
+
+  function loginWithAccount(account: string, merchantLogin: boolean) {
+    if (!merchantLogin) {
+      login(account);
+    } else {
+      loginWithSignedNonce(account);
+    }
+  }
+
   useEffect(() => {
     if (!accounts.length) {
       return;
     }
 
     const account = localStorage.getItem(NDJ_ADDRESS);
-
+    //TODO this should use some kind of route param to tell if it is a merchant login or buyer login
     if (!accounts.length) {
       return;
     }
-
     const availableAccounts = accounts.filter(a => !a.startsWith('solana'));
+
     if (account && availableAccounts.includes(account)) {
-      login(account);
+      loginWithAccount(account, merchantLogin);
     } else if (availableAccounts[0]) {
-      login(availableAccounts[0]);
+      loginWithAccount(availableAccounts[0], merchantLogin);
     } else {
       toast.error('No available accounts');
       disconnect();
     }
-  }, [accounts]);
+  }, [accounts, merchantLogin]);
 
   async function signNonce(account: string, nonce: string) {
     const [namespace, reference, address] = account.split(':');
@@ -253,11 +286,12 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           localStorage.setItem(NDJ_ADDRESS, account);
 
           dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
+          dispatch(userAction.merchantLoginSuccess({address: address}));
 
         } catch (err: any) {
           localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
-          toast.error(err.message);
-          disconnect();
+          toast.error(`Error: ${err.message}. Disconnecting...`);
+          disconnect().then(() => console.log(`disconnect done.`));
         } finally {
           setIsLoading(false);
         }
@@ -312,7 +346,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       // Reset app state after disconnect.
       reset();
     } catch (err: any) {
-      toast.error(err.message);
+      console.log(`disconnect error ${err?.message}`)
+      //toast.error(err.message);
     }
   }, [client, session]);
 
@@ -345,7 +380,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           throw new Error('Session is not connected');
         }
         console.log('_account', _account);
-        await login(_account);
+        login(_account);
       } catch (err: any) {
         toast.error(err.message);
       }
@@ -473,6 +508,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       refreshBalances,
       setChains,
       switchAccount,
+      merchantLogin,
     }),
     [
       pairings,
@@ -492,6 +528,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       refreshBalances,
       setChains,
       switchAccount,
+      merchantLogin
     ]
   );
 

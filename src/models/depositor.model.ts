@@ -1,3 +1,5 @@
+import {ITransaction} from "../helpers/tx";
+
 export interface IUserInfo {
   memberName: string;
   memberENSAddress: string;
@@ -50,12 +52,14 @@ export interface IUpdateAddressRequest {
   address: string;
 }
 
+export interface ITransactionOrder {
+  transaction: ITransaction;
+  orderTrackingId: string;
+}
 
 export interface ITransactionInfo {
+  transaction: ITransaction | null;
   transactionHash: string;
-  fromAddress: string;
-  toAddress: string;
-  value: string;
   paymentValueUsd: number;
   paymentFeeUsd: number;
   paymentTotalUSD: number;

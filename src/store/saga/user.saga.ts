@@ -25,7 +25,8 @@ export default function* root() {
 
     takeLatest(EUserActionTypes.SET_ORDER_TRANSACTION_HASH as any, watchLinkOrderTransaction),
     //TODO this automatically?
-    //takeLatest(EUserActionTypes.GET_USER_INFO_SUCCESS as any, watchGetMerchantInfo),
+
+    takeLatest(EUserActionTypes.MERCHANT_LOGIN_SUCCESS as any, watchGetMerchantInfo),
   ]);
 }
 
