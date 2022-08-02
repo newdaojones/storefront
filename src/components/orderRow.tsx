@@ -151,14 +151,14 @@ const OrderRow = (props: any) => {
             <div style={SAssetRowLeft}>
                 <img style={Center} className="w-8 h-8 mr-2" src={ProfileIcon} alt="" />
                 <div style={SColumnLeft}>
-                    <div style={SAssetName}>{`from: ${depositorInfo.externalOrderId}`}</div>
+                    <div style={SAssetName}>{`orderId: ${depositorInfo.externalOrderId}`}</div>
                     <div className="flex text-xs text-white overflow-hidden">
-                        {depositorInfo.transactionHash ? `hash: ${ellipseAddress(depositorInfo.transactionHash)}` : '-'}
+                        {depositorInfo.transactionHash ? `hash: ${ellipseAddress(depositorInfo.transactionHash)}` : 'Pending'}
                     </div>
                 </div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${depositorInfo.updatedAt}`}</div>
+                <div style={SAssetName}>{`${depositorInfo.updatedAt?.substring(0, 16).replace('T', " ")}`}</div>
             </div>
             <div style={SPriceLimits}>
                 <div style={SColumn}>
@@ -173,8 +173,8 @@ const OrderRow = (props: any) => {
                 </div>
             </div>
 
-            <div style={SAssetBalance}>
-                {editDepositorDialog}
+            <div  style={Center}>
+                <p>CONFIRMED</p>
             </div>
         </div>
     );
