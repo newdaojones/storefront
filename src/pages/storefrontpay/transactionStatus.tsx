@@ -5,7 +5,6 @@ import promo2 from '../../assets/images/promo_image_2.svg';
 import promo3 from '../../assets/images/promo_image_3.svg';
 import confirmedIcon from '../../assets/images/confirmed.svg';
 import pendingIcon from '../../assets/images/loading.svg';
-import errorIcon from '../../assets/images/loading.svg';
 
 import {useLocation} from "react-use";
 import {extractTransactionIdFromUrl, ITransactionStatus} from "../../utils/path_utils";
@@ -13,10 +12,14 @@ import {useHistory} from "react-router-dom";
 import {currentRpcApi, getNonZeroAccountBalance} from "../../helpers/tx";
 import {ellipseAddress} from "../../helpers";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
+import {toast} from "react-toastify";
+import {useDispatch, useSelector} from "react-redux";
+import {selectCurrentOrder} from "../../store/selector";
+import {userAction} from "../../store/actions";
 
 /**
  * Example URL
- * http://localhost:3000/storefront/status?transactionId=0x75a4753509b0dcc3e8cb176ee343a30545995945e16250ca6907c22a4ac3b398&orderId=3&amount=0.55
+ * http://localhost:3000/storefront/status?transactionId=0x75a4753509b0dcc3e8cb176ee343a30545995945e16250ca6907c22a4ac3b398&orderTrackingId=6020fb4d-02e1-41c7-9570-584584e0e3a1
  *
  * http://localhost:3000/storefront/status?transactionId=0x34dfd&orderId=3&amount=0.55
 
@@ -27,22 +30,34 @@ import {useWalletConnectClient} from "../../contexts/walletConnect";
 
 export const TransactionStatus = () => {
     let query = useLocation().search;
+    const dispatch = useDispatch();
     const { accounts, balances } = useWalletConnectClient();
     const accountBalance = getNonZeroAccountBalance(accounts, balances);
 
     const history = useHistory();
     const [ confirmed, setConfirmed ] = useState(false)
     const [ blockHash, setBlockHash ] = useState('')
+    const [ transactionId, setTransactionId ] = useState<ITransactionStatus | null>(null)
+
+    const currentOrder = useSelector(selectCurrentOrder)
 
 
-    let transactionId: ITransactionStatus | null = null;
-    if (!query) {
-        console.log(`Invalid query data, redirecting`);
-        history.replace("/error?msg=invalid data");
-    } else {
-        transactionId = extractTransactionIdFromUrl(query);
-        console.log(`transactionId: ${transactionId.transactionId} orderTrackingId: ${transactionId.orderTrackingId}`);
-    }
+    React.useEffect(() => {
+        if (!query) {
+            console.log(`Invalid query data, redirecting`);
+            history.replace("/error?msg=invalid data");
+        } else {
+            try {
+                const transactionData = extractTransactionIdFromUrl(query);
+                setTransactionId(transactionData);
+                dispatch(userAction.getOrder({orderTrackingId: transactionId?.orderTrackingId!!}));
+                console.log(`transactionId: ${transactionId?.transactionId} orderTrackingId: ${transactionId?.orderTrackingId} externalId: ${transactionId?.externalOrderId}`);
+            } catch (e: any) {
+                toast.error(`${e?.message || 'error'}`)
+            }
+        }
+    }, [query]);
+
 
     React.useEffect(() => {
         if (transactionId && accountBalance && accountBalance?.account) {
@@ -85,7 +100,7 @@ export const TransactionStatus = () => {
                     <div className="w-full flex flex-col items-center p-4">
                         <p className="text-sm">Payment from</p>
                         <div className="flex">
-                            <p className="font-bold font-righteous">0x2342...f432</p>
+                            <p className="font-bold font-righteous">ellipseAddress(transactionId?.)</p>
                         </div>
                     </div>
 

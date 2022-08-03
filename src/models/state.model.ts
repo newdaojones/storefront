@@ -29,7 +29,6 @@ export interface IUserState {
   tickers: ITicker[];
   transactionData: ITransactionOrder | null;
   transactionInfo: ITransactionInfo | null;
-  order: IOrder | null;
   transactionInProgress: TransactionState;
 }
 

@@ -18,6 +18,10 @@ export const UserService = (function () {
     return axios.get(`/merchants/${address}`);
   };
 
+  const getOrderApi = async (orderTrackingId: string) => {
+    return axios.get(`/merchants/orders/${orderTrackingId}`);
+  };
+
   const createNewOrder = async (address: string, order: IOrder) => {
     return axios.post(`/merchants/${address}/orders`, order);
   };
@@ -32,6 +36,7 @@ export const UserService = (function () {
     getTickersApi,
     getMerchantInfoApi,
     createNewOrder,
+    getOrderApi,
     linkOrderTransaction
   };
 })();

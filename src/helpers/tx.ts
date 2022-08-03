@@ -8,8 +8,6 @@ import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 import {storefrontPaymentAddress} from "../StorefrontPaySdk";
 
 
-// const currentRpcApi: RpcApi = new InfuraApi();
-// export const currentRpcApi: RpcApi = new EthereumXyzApi();
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
 export async function getGasPrice(chainId: string): Promise<string> {
@@ -47,7 +45,7 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * @param sendAmount
  * @param orderId
  */
-export async function formatTestTransaction(account: string, sendAmount: number, orderTrackingId: string): Promise<ITransaction> {
+export async function generateTransaction(account: string, sendAmount: number, orderTrackingId: string): Promise<ITransaction> {
     const toAddress = storefrontPaymentAddress;
 
     const [namespace, reference, address] = account.split(":");
@@ -80,9 +78,11 @@ export async function formatTestTransaction(account: string, sendAmount: number,
     //debugTransactionEncodingDecoding(_value, value);
 
     // TODO add transaction id here, maybe a hash function of the qrcode & timestamp could be good
-    const orderIdEncoded = encoding.utf8ToHex(orderTrackingId);
-    const data = encoding.sanitizeHex(orderIdEncoded);
-    console.info(`encoding orderId: ${orderTrackingId} -> ${orderIdEncoded}`)
+    // const orderIdEncoded = encoding.utf8ToHex(orderTrackingId);
+    // const data = encoding.sanitizeHex(orderIdEncoded);
+    // console.info(`encoding orderId: ${orderTrackingId} -> ${orderIdEncoded}`)
+
+    const data = '0x'
 
     const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value};
     return tx;

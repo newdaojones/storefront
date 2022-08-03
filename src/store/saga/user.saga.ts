@@ -6,7 +6,7 @@ import { userAction } from '../actions';
 import { toast } from 'react-toastify';
 import { ens } from '../../utils/walletConnect';
 import {IMerchant, IOrder, ITicker, ITransactionOrder, IUserInfo} from '../../models';
-import {formatTestTransaction, ITransaction} from "../../helpers/tx";
+import {generateTransaction, ITransaction} from "../../helpers/tx";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -26,6 +26,8 @@ export default function* root() {
     takeLatest(EUserActionTypes.SET_ORDER_TRANSACTION_HASH as any, watchLinkOrderTransaction),
 
     takeLatest(EUserActionTypes.MERCHANT_LOGIN_SUCCESS as any, watchGetMerchantInfo),
+
+    takeLatest(EUserActionTypes.GET_ORDER as any, watchGetOrderInfo),
   ]);
 }
 
@@ -68,6 +70,16 @@ function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {addre
   }
 }
 
+function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: {orderTrackingId: string}}) {
+  try {
+    console.log(`watchGetMerchantInfo`)
+    const res: AxiosResponse<IOrder> = yield call(() => UserService.getOrderApi(action.payload.orderTrackingId));
+    yield put(userAction.getOrderSuccess(res.data));
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+}
+
 function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}) {
   try {
     const res: AxiosResponse<IOrder> = yield call(() => UserService.createNewOrder(action.payload.toAddress, action.payload));
@@ -102,7 +114,7 @@ function* watchGetTickers() {
 
 function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; amount: number, orderTrackingId: string }}) {
   try {
-    const res: ITransaction = yield call(() => formatTestTransaction(action.payload.account, action.payload.amount, action.payload.orderTrackingId));
+    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.amount, action.payload.orderTrackingId));
     const transactionOrder: ITransactionOrder = {
       transaction: res,
       orderTrackingId: action.payload.orderTrackingId
@@ -120,4 +132,5 @@ function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
     toast.error(err.message);
   }
 }
+
 

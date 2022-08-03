@@ -91,6 +91,14 @@ const setCreateOrderSuccess = (payload: IOrder) => {
   };
 };
 
+const getOrderSuccess = (payload: IOrder) => {
+  console.info(`getOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
+  return {
+    type: EUserActionTypes.GET_ORDER_SUCCESS,
+    payload
+  };
+};
+
 const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string }) => {
   return {
     type: EUserActionTypes.SET_ORDER_TRANSACTION_HASH,
@@ -113,10 +121,18 @@ const createOrder = (payload: IOrder) => {
   };
 };
 
+const getOrder = (payload: { orderTrackingId: String }) => {
+  return {
+    type: EUserActionTypes.GET_ORDER,
+    payload
+  };
+};
+
 export const userAction = {
   loginSuccess,
   getAccountInfoSuccess,
   getMerchantInfoSuccess,
+  getOrderSuccess,
   getEnsNameSuccess,
   getTickersSuccess,
   setTransactionInProgress,
@@ -127,5 +143,6 @@ export const userAction = {
   setCreateOrderSuccess,
   setOrderTransactionHash,
   createOrder,
+  getOrder,
   merchantLoginSuccess
 };
