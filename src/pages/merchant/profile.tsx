@@ -46,7 +46,7 @@ export const ProfilePage = () => {
             <p className="text-white"></p>
           </div>
 
-          <div className="flex items-center justify-around px-10">
+          <div className="flex items-center justify-around px-2">
             <div className="grid w-full h-60 overflow-auto">
               {
                 orders && orders.length > 0 ?

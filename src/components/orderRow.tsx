@@ -3,11 +3,13 @@ import {useState} from "react";
 import {IOrder, ITransactionInfo} from "../models";
 import numeral from "numeral";
 import BTCIcon from '../assets/images/btcIcon.svg';
+import ETHIcon from '../assets/images/eth.svg';
 import DollarIcon from '../assets/images/dollarIcon.svg';
 import AccountEditIcon from '../assets/images/account-edit.svg';
 import ProfileIcon from '../assets/images/profile_icon.svg';
 import ConfirmDialog from "./ConfirmDialogStyle";
 import {ellipseAddress} from "../helpers";
+import {transactionStatusLink} from "../utils/link_utils";
 
 const SAssetRow = {
     width: '100%',
@@ -153,7 +155,9 @@ const OrderRow = (props: any) => {
                 <div style={SColumnLeft}>
                     <div style={SAssetName}>{`orderId: ${depositorInfo.externalOrderId}`}</div>
                     <div className="flex text-xs text-white overflow-hidden">
-                        {depositorInfo.transactionHash ? `hash: ${ellipseAddress(depositorInfo.transactionHash)}` : 'Pending'}
+                        {depositorInfo.transactionHash && depositorInfo.trackingId ?
+                            <a target='_blank'
+                                   href={transactionStatusLink(depositorInfo.transactionHash, depositorInfo.trackingId)}>{`${ellipseAddress(depositorInfo.transactionHash)}`}</a> : 'Transaction Pending'}
                     </div>
                 </div>
             </div>
@@ -166,15 +170,21 @@ const OrderRow = (props: any) => {
                         <img className="w-6 h-6 mr-2" src={DollarIcon} alt="" />
                         {numeral(depositorInfo.amount || 0).format('0,0.00')}
                     </div>
-                    <div style={SLimitValues}>
-                        <img className="w-6 h-6 mr-2" src={BTCIcon} alt="" />
-                        {numeral(depositorInfo.amount || 0).format('0,0.000000')}
-                    </div>
+                    {depositorInfo.transactionHash && depositorInfo.trackingId ?
+
+                        <div style={SLimitValues}>
+                            <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>
+                            {numeral(depositorInfo.amount || 0).format('0,0.000000')}
+                        </div>
+                        : <div style={SLimitValues}>
+                            <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>
+                            {numeral(0).format('0,0.000000')}
+                        </div>}
                 </div>
             </div>
 
-            <div  style={Center}>
-                <p>CONFIRMED</p>
+            <div className="w-20 text-sm font-righteous">
+                <p>{depositorInfo.transactionHash && depositorInfo.trackingId ? `CONFIRMED` : `PENDING`}</p>
             </div>
         </div>
     );

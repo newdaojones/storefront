@@ -134,7 +134,7 @@ export const Pay = () => {
                     <div className="w-full flex flex-col items-center p-4">
                         <p className="text-sm">Send payment to</p>
                         <div className="flex">
-                            <p className="font-bold font-righteous">{currentOrder?.merchantName || "missing merchant"}</p><img className="w-6 h-6" src={logoIcon} alt=""/>
+                            <p className="font-bold font-righteous">{currentOrder?.merchantName || ""}</p><img className="w-6 h-6" src={logoIcon} alt=""/>
                         </div>
                         <p className="text-sm">{ellipseAddress(currentOrder?.toAddress)}</p>
                     </div>
