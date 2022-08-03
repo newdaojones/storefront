@@ -10,9 +10,6 @@ import {FindPage} from "./find";
  */
 export const MerchantDashboard = () => {
     let mainPage = ProfilePage;
-
-    console.info(`loading MerchantDashboard`);
-
     return (
       <div className="w-full h-full flex-1">
         <Switch>

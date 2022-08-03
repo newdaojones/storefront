@@ -5,7 +5,7 @@ import { UserService } from '../../services';
 import { userAction } from '../actions';
 import { toast } from 'react-toastify';
 import { ens } from '../../utils/walletConnect';
-import {IMerchant, IOrder, ITicker, IUserInfo} from '../../models';
+import {IMerchant, IOrder, ITicker, ITransactionOrder, IUserInfo} from '../../models';
 import {formatTestTransaction, ITransaction} from "../../helpers/tx";
 
 export function storageKey(storagePrefix: string): string {
@@ -103,7 +103,11 @@ function* watchGetTickers() {
 function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; amount: number, orderTrackingId: string }}) {
   try {
     const res: ITransaction = yield call(() => formatTestTransaction(action.payload.account, action.payload.amount, action.payload.orderTrackingId));
-    yield put(userAction.setCreateTransactionSuccess(res));
+    const transactionOrder: ITransactionOrder = {
+      transaction: res,
+      orderTrackingId: action.payload.orderTrackingId
+    }
+    yield put(userAction.setCreateTransactionSuccess(transactionOrder));
   } catch (err: any) {
     toast.error(err.message);
   }

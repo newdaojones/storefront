@@ -1,5 +1,14 @@
 import { EUserActionTypes } from '../../enums';
-import {IAccountInfo, IMerchant, IOrder, ITicker, ITransactionInfo, IUserInfo, TransactionState} from '../../models';
+import {
+  IAccountInfo,
+  IMerchant,
+  IOrder,
+  ITicker,
+  ITransactionInfo,
+  ITransactionOrder,
+  IUserInfo,
+  TransactionState
+} from '../../models';
 import {ITransaction} from "../../helpers/tx";
 
 //namespace, reference, address
@@ -67,7 +76,7 @@ const unsetTransaction = () => {
   };
 };
 
-const setCreateTransactionSuccess = (payload: ITransaction | null) => {
+const setCreateTransactionSuccess = (payload: ITransactionOrder | null) => {
   return {
     type: EUserActionTypes.SET_TRANSACTION_SUCCESS,
     payload,

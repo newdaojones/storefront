@@ -13,11 +13,15 @@ import {useDispatch, useSelector} from "react-redux";
 import {userAction} from "../store/actions";
 import {IOrder} from "../models";
 import {selectBuyTransaction, selectCurrentOrder} from "../store/selector";
+import {toast} from "react-toastify";
+import {ellipseAddress} from "../helpers";
 
 
 /**
  * Example URL
- * http://localhost:3000/storefront/pay?orderId=3&amount=0.55
+ * http://localhost:3000/storefront/pay?orderId=1&amount=0.25&merchantAddress=0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004
+ *
+ * 0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004 = Zen Sweat
  *
  * @constructor
  */
@@ -35,10 +39,14 @@ export const Pay = () => {
     let order = null;
     if (!query) {
         console.log(`Invalid query data, redirecting`);
-        history.replace("/error");
+        history.replace("/error?msg=Invalid data query");
     } else {
-        order = extractOrderFromUrl(query);
-        console.log(`orderId: ${order.externalOrderId} amount: ${order.amount}`);
+        try {
+            order = extractOrderFromUrl(query);
+            console.log(`orderId: ${order.externalOrderId} amount: ${order.amount}`);
+        } catch (e: any) {
+            toast.error(`${e?.message}`)
+        }
     }
 
     //TODO create the order and populate the qr with that tracking Id, to let it fetch data.
@@ -126,9 +134,9 @@ export const Pay = () => {
                     <div className="w-full flex flex-col items-center p-4">
                         <p className="text-sm">Send payment to</p>
                         <div className="flex">
-                            <p className="font-bold font-righteous">Test Merchant</p><img className="w-6 h-6" src={logoIcon} alt=""/>
+                            <p className="font-bold font-righteous">{currentOrder?.merchantName || "missing merchant"}</p><img className="w-6 h-6" src={logoIcon} alt=""/>
                         </div>
-                        <p className="text-sm">0x2342...f432</p>
+                        <p className="text-sm">{ellipseAddress(currentOrder?.toAddress)}</p>
                     </div>
 
 
@@ -149,7 +157,7 @@ export const Pay = () => {
                 </div>
 
                 {currentOrder && !showBlackWhite && (
-                    <a href={qrCodeUri}>
+                    <a href={qrCodeUri} target={'_blank'}>
                     <div className="flex items-center justify-center">
                         <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
                         </div>

@@ -85,11 +85,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
 
   let pathname = useLocation().pathname;
-  let host = useLocation().host;
-  let hostname = useLocation().hostname;
-  console.log(`path ${pathname} host ${host} hostname ${hostname}`)
-
-
 
   const reset = () => {
     console.info(`resetting balances`);

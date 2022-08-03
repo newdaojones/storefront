@@ -28,7 +28,7 @@ export const convertUSDtoToken = (value: number, token: string, tickers: ITicker
     let balanceUsd: number | null;
     if (ethTicker) {
         balanceUsd = value / ethTicker.price;
-        console.info(`${value} ${token} = ${balanceUsd} USD - Price 1 ${token} = ${ethTicker?.price} USD`)
+        console.info(`converting ${value} USD = ${balanceUsd} ${token} - Price 1 ${token} = ${ethTicker?.price} USD`)
     } else {
         console.info(`ticker are not available for ETH`)
         balanceUsd = null;

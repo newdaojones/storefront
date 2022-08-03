@@ -79,6 +79,8 @@ export interface IOrder {
   addedAt?: string,
   updatedAt?: string,
   id?: number,
+  merchantName?: String,
+  merchantAddress?: String,
 
   /**
    * externalOrderId	"28"

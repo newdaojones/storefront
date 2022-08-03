@@ -54,8 +54,6 @@ export const Main = () => {
   //   ens = accountInfo?.memberENSAddress;
   // }
 
-  console.info(`loading Main component at pages/index `)
-
   return (
     <div className="h-screen w-screen flex flex-col">
       <Menu
