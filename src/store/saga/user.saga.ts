@@ -24,7 +24,6 @@ export default function* root() {
     takeLatest(EUserActionTypes.CREATE_ORDER as any, watchCreateNewOrder),
 
     takeLatest(EUserActionTypes.SET_ORDER_TRANSACTION_HASH as any, watchLinkOrderTransaction),
-    //TODO this automatically?
 
     takeLatest(EUserActionTypes.MERCHANT_LOGIN_SUCCESS as any, watchGetMerchantInfo),
   ]);
@@ -61,6 +60,7 @@ function* watchGetAccountInfo() {
 
 function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {address: string}}) {
   try {
+    console.log(`watchGetMerchantInfo`)
     const res: AxiosResponse<IMerchant> = yield call(() => UserService.getMerchantInfoApi(action.payload.address));
     yield put(userAction.getMerchantInfoSuccess(res.data));
   } catch (err: any) {
