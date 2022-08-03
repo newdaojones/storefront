@@ -72,7 +72,7 @@ function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {addre
 
 function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: {orderTrackingId: string}}) {
   try {
-    console.log(`watchGetMerchantInfo`)
+    console.log(`watchGetOrderInfo orderTrackingId: ${action.payload.orderTrackingId}`)
     const res: AxiosResponse<IOrder> = yield call(() => UserService.getOrderApi(action.payload.orderTrackingId));
     yield put(userAction.getOrderSuccess(res.data));
   } catch (err: any) {

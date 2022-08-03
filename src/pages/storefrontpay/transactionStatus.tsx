@@ -10,7 +10,7 @@ import {useLocation} from "react-use";
 import {extractTransactionIdFromUrl, ITransactionStatus} from "../../utils/path_utils";
 import {useHistory} from "react-router-dom";
 import {currentRpcApi, getNonZeroAccountBalance} from "../../helpers/tx";
-import {ellipseAddress} from "../../helpers";
+import {ellipseAddress, TxDetails} from "../../helpers";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
@@ -36,11 +36,12 @@ export const TransactionStatus = () => {
 
     const history = useHistory();
     const [ confirmed, setConfirmed ] = useState(false)
-    const [ blockHash, setBlockHash ] = useState('')
+
+    const [ blockTransactionData, setBlockTransactionData ] = useState<TxDetails>()
+
     const [ transactionId, setTransactionId ] = useState<ITransactionStatus | null>(null)
 
     const currentOrder = useSelector(selectCurrentOrder)
-
 
     React.useEffect(() => {
         if (!query) {
@@ -49,18 +50,23 @@ export const TransactionStatus = () => {
         } else {
             try {
                 const transactionData = extractTransactionIdFromUrl(query);
-                setTransactionId(transactionData);
-                dispatch(userAction.getOrder({orderTrackingId: transactionId?.orderTrackingId!!}));
-                console.log(`transactionId: ${transactionId?.transactionId} orderTrackingId: ${transactionId?.orderTrackingId} externalId: ${transactionId?.externalOrderId}`);
+
+                if (transactionData.orderTrackingId) {
+                    setTransactionId(transactionData);
+                    console.info(`dispatch get order for trackingId ${transactionData.orderTrackingId}`)
+                    dispatch(userAction.getOrder({orderTrackingId: transactionData.orderTrackingId}));
+                    console.log(`transactionId: ${transactionId?.transactionId} response orderTrackingId: ${transactionData.orderTrackingId}  orderTrackingId: ${transactionId?.orderTrackingId} externalId: ${transactionId?.externalOrderId}`);
+                }
+
             } catch (e: any) {
                 toast.error(`${e?.message || 'error'}`)
             }
         }
-    }, [query]);
+    }, [query, setTransactionId]);
 
 
     React.useEffect(() => {
-        if (transactionId && accountBalance && accountBalance?.account) {
+        if (transactionId && accountBalance && accountBalance?.account && !blockTransactionData) {
             const account = accountBalance.account;
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
@@ -73,9 +79,13 @@ export const TransactionStatus = () => {
                     // )
 
                     console.log(`transaction details block hash: ${response.blockHash}`);
+                    if (response) {
+                        setBlockTransactionData(response)
+                    }
+
                     if (response?.blockHash) {
                         setConfirmed(true);
-                        setBlockHash(response.blockHash);
+                        //setBlockHash(response.blockHash);
                     }
 
                 }
@@ -100,7 +110,7 @@ export const TransactionStatus = () => {
                     <div className="w-full flex flex-col items-center p-4">
                         <p className="text-sm">Payment from</p>
                         <div className="flex">
-                            <p className="font-bold font-righteous">ellipseAddress(transactionId?.)</p>
+                            <p className="font-bold font-righteous">{ellipseAddress(blockTransactionData?.from)}</p>
                         </div>
                     </div>
 
@@ -113,11 +123,11 @@ export const TransactionStatus = () => {
                 <div className="w-3/4 flex justify-around pb-4">
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Order Id</p>
-                        <p className="font-bold text-xl pl-4">{`${transactionId?.externalOrderId}`}</p>
+                        <p className="font-bold text-xl pl-4">{`${currentOrder?.externalOrderId || ''}`}</p>
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>
-                        <p className="font-bold text-xl">{`USD $${transactionId?.amount.toFixed(2)}`}</p>
+                        <p className="font-bold text-xl">{`USD $${currentOrder?.amount.toFixed(2) || ''}`}</p>
                     </div>
                 </div>
 
@@ -138,7 +148,7 @@ export const TransactionStatus = () => {
 
                 <p className="text-xs mt-1 cursor-pointer">{confirmed? <div>
                     <p>Block Hash</p>
-                    <p>{ellipseAddress(blockHash)}</p>
+                    <p>{ellipseAddress(blockTransactionData?.blockHash)}</p>
                 </div>: `Trouble verifying?`}</p>
                 <p className="mt-40 mb-40 mx-10 text-center">Please allow for the network to verify the transaction <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Block Explorer</a> to learn more.</p>
 
