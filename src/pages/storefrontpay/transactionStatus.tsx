@@ -21,8 +21,6 @@ import {userAction} from "../../store/actions";
  * Example URL
  * http://localhost:3000/storefront/status?transactionId=0x75a4753509b0dcc3e8cb176ee343a30545995945e16250ca6907c22a4ac3b398&orderTrackingId=6020fb4d-02e1-41c7-9570-584584e0e3a1
  *
- * http://localhost:3000/storefront/status?transactionId=0x34dfd&orderId=3&amount=0.55
-
  * https://kovan.etherscan.io/tx/0x75a4753509b0dcc3e8cb176ee343a30545995945e16250ca6907c22a4ac3b398
  *
  * @constructor
