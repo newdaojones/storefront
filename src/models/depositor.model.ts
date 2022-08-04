@@ -81,7 +81,7 @@ export interface IOrder {
   id?: number,
   merchantName?: String,
   merchantAddress?: String,
-  nativeAmount: number | null,
+  nativeAmount: string | null,
 
   /**
    * externalOrderId	"28"

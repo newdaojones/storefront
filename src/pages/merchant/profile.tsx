@@ -47,11 +47,11 @@ export const ProfilePage = () => {
           </div>
 
           <div className="flex items-center justify-around px-2">
-            <div className="grid w-full h-60 overflow-auto">
+            <div className="grid w-full min-w-max overflow-auto">
               {
                 orders && orders.length > 0 ?
                     orders.map(token => (
-                        <div>
+                        <div className="pt-1">
                           <OrderRow key={token.transactionHash} asset={token} onEdit={onEdit}/>
                         </div>)
                     )

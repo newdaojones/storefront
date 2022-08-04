@@ -47,9 +47,9 @@ const SAssetName = {
 const SPriceLimits = {
     display: 'flex',
     alignItems: 'end',
-    width: 'max-content',
     fontSize: 'smaller',
     alignSelf: 'center',
+    width: '18%',
 }
 
 const SAssetBalance = {
@@ -171,15 +171,11 @@ const OrderRow = (props: any) => {
                         {numeral(depositorInfo.amount || 0).format('0,0.00')}
                     </div>
                     {depositorInfo.transactionHash && depositorInfo.trackingId ?
-
                         <div style={SLimitValues}>
                             <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>
-                            {numeral(depositorInfo.amount || 0).format('0,0.000000')}
+                            {numeral(depositorInfo.nativeAmount || 0).format('0,0.000000')}
                         </div>
-                        : <div style={SLimitValues}>
-                            <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>
-                            {numeral(0).format('0,0.000000')}
-                        </div>}
+                        : ''}
                 </div>
             </div>
 

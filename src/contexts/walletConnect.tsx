@@ -285,8 +285,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
         } catch (err: any) {
           localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
-          toast.error(`Error: ${err.message}. Disconnecting...`);
-          disconnect().then(() => console.log(`disconnect done.`));
+          console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
+          toast.error(`Error: ${err.message}.`);
+          // disconnect().then(() => console.log(`disconnect done.`));
         } finally {
           setIsLoading(false);
         }

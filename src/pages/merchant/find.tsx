@@ -1,43 +1,77 @@
-import React from 'react';
+import React, {useState} from 'react';
 import numeral from 'numeral';
 
-import BTCIcon from '../../assets/images/btcIcon.svg';
 import DollarIcon from '../../assets/images/dollarIcon.svg';
-import NotFoundImage from '../../assets/images/notfound.gif';
-import TransactionRow from "../../components/transactionRow";
-import {ITransactionInfo} from "../../models";
 import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
+import logoIcon from "../../assets/images/logo.svg";
+import {payLink} from "../../utils/link_utils";
+import {useSelector} from "react-redux";
+import {selectMerchantInfo} from "../../store/selector";
+import {toast} from "react-toastify";
 
 export const FindPage = () => {
-
+  let merchantInfo = useSelector(selectMerchantInfo);
   // const depositors = [{transactionHash: 0x212123abd, amount: 0.55}, {transactionHash: 0x212123abd, amount: 0.55}];
+  const [orderId, setOrderId] = useState('');
+  const [amount, setAmount] = useState(0);
 
   let onEdit = () => {
   };
+
+  function generateUrl() {
+    if (orderId == '') {
+      toast.error("orderId must be valid")
+      return;
+    }
+    if (amount == 0) {
+      toast.error("amount must be greater than zero")
+      return;
+    }
+    const linkUrl = payLink(amount, orderId, merchantInfo?.memberAddress!!);
+    window.open(linkUrl, "_blank");
+    console.info(`generateUrl, redirecting to ${linkUrl}`);
+  }
+
+  const handleChange = (event: any) => {
+    if (event.target.name == "orderId") {
+      console.info(`setting orderId ${event.target.value}`);
+      setOrderId(event.target.value);
+    } else if (event.target.name == "amount") {
+      console.info(`setting amount ${event.target.value}`);
+      setAmount(event.target.value);
+    }
+
+  }
+
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 h-3/4 bg-black bg-opacity-10 border-2 border-terciary rounded-16xl shadow-md p-20">
-        <p className="text-white text-xl font-bold font-righteous text-center">Transaction Status</p>
+      <div className="w-3/4 h-3/4 flex justify-center bg-black bg-opacity-10 border-2 border-terciary rounded-16xl shadow-md p-20">
+        <div className="w-3/4 flex flex-col items-center justify-center mt-10">
+          <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="text-white">Order ID</p>
+            <input id='orderId' name='orderId' type="text" className="bg-white text-white bg-opacity-25 py-1 rounded" onChange={handleChange}/>
+          </div>
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="text-white">Order Value</p>
+            <input name='amount' type="number" className="bg-white text-white bg-opacity-25 py-1 rounded" onChange={handleChange}/>
+          </div>
 
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="text-center text-white">Description</p>
+            <input id='desc' type="text" className="bg-white text-white bg-opacity-25 py-1 rounded" onChange={handleChange}/>
+          </div>
 
-        <div className="w-3/4 flex flex-col items-center justify-between mt-10 ">
-          <div className="w-full flex items-center justify-end mt-10">
-            <p className="text-center text-white mr-8">transaction hash</p>
-
-            <a href={storefrontPayBaseUrl + '/storefront/status?orderId=1&amount=0.50&transactionId=0x75a4753509b0dcc3e8cb176ee343a30545995945e16250ca6907c22a4ac3b398'}>
-              <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
-                {'0x9737f6...30fd772'}
-              </div>
-            </a>
+          <div className="mt-10">
+            <a onClick={generateUrl}>
+            <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+              <img className="w-8 h-8 mr-4" src={logoIcon} alt="" />
+              <p className="font-righteous">Generate Order</p>
+            </button>
+          </a>
           </div>
         </div>
-        <div className="mt-10">
 
-          <div className="flex items-center justify-around px-10">
-            <div className="grid w-full h-60 overflow-auto">
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

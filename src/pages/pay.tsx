@@ -21,6 +21,8 @@ import {ellipseAddress} from "../helpers";
  * Example URL
  * http://localhost:3000/storefront/pay?orderId=1&amount=0.25&merchantAddress=0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004
  *
+ * http://localhost:3000/storefront/pay?orderId=14&amount=0.14&merchantAddress=eB58Fff80D9a9D8f6898212Cf2301B16DCFF4796
+ *
  * 0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004 = Zen Sweat
  *
  * @constructor
