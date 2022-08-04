@@ -43,7 +43,7 @@ export const BuyPage = () => {
 
   const transaction = useSelector(selectCreateTransaction)
   const helpMessages = ['Tap the button above to submit the signing request',
-    'Switch to your wallet app and sign the transaction',
+    'Switch to your wallet app and sign the transaction. Click here to open it.',
     'Sending transaction...']
 
   const {
@@ -195,6 +195,10 @@ export const BuyPage = () => {
           <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.substring(0,8)} ETH`}</p>
         </div>}
   </button>;
+
+  const helperTextMessage = <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
+               className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+
   return (
     <div className="w-full h-full flex justify-between">
       <div className="w-full flex flex-col justify-between">
@@ -251,11 +255,8 @@ export const BuyPage = () => {
           <div className="flex w-full flex-col bg-footer text-white justify-end pt-4 px-14 bg-opacity-90 rounded-8xl"
                style={{}}>
             {
-              isMobile() ? <a href={"wc://wallets"} className="">
-                {animatedBuyButton}
-              </a> : animatedBuyButton
+              animatedBuyButton
             }
-
             {
               // transaction progress bar / text
               <div className="flex flex-col text-center text-secondary text-xs">
@@ -267,14 +268,16 @@ export const BuyPage = () => {
                   <img className="w-full absolute mr-8" src={ProgressFull} alt=""/>}
                 </div>
                 <p className="mt-4">{`${buyProgress + 1}/3`}</p>
-                <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
-                   className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+                {
+                  isMobile() && buyProgress == 1 ? <a href={"wc://"} className="">
+                    {helperTextMessage}
+                  </a> : helperTextMessage
+                }
               </div>
             }
           </div>
         </div>
       </div>
-
     </div>
   );
 };

@@ -28,10 +28,19 @@ export const ConfirmationPage = () => {
         history.replace("/")
     }
 
+    let weiNumber = convertHexToNumber(transactionInfo?.transaction?.value!!) || 0;
+    const bigN = BigNumber.from(weiNumber.toString())
+    const formatted = utils.formatUnits(bigN, "ether")
+    console.info(`wei number ${weiNumber} bigN: ${bigN} formatted: ${formatted}`)
+
     if (!transactionInfo?.orderTrackingId) {
         console.error(`can't set order transaction hash since orderTrackingId not valid.`)
     } else {
-        dispatch(userAction.setOrderTransactionHash({orderTrackingId: transactionInfo?.orderTrackingId, transactionHash: transactionInfo?.transactionHash!!}));
+        dispatch(userAction.setOrderTransactionHash({
+            orderTrackingId: transactionInfo?.orderTrackingId,
+            transactionHash: transactionInfo?.transactionHash!!,
+            nativeAmount: formatted,
+        }));
     }
 
 
@@ -49,10 +58,6 @@ export const ConfirmationPage = () => {
     console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${transactionInfo?.transactionHash}`)
   };
 
-  let weiNumber = convertHexToNumber(transactionInfo?.transaction?.value!!) || 0;
-  console.info(`wei number ${weiNumber}`)
-  const bigN = BigNumber.from(weiNumber.toString())
-  const formatted = utils.formatUnits(bigN, "ether")
 
    React.useEffect(() => {
         if (transactionInfo) {

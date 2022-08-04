@@ -145,8 +145,10 @@ export const TransactionStatus = () => {
                 )}
 
                 <p className="text-xs mt-1 cursor-pointer">{confirmed? <div>
-                    <p>Block Hash</p>
-                    <p>{ellipseAddress(blockTransactionData?.blockHash)}</p>
+                    <a href={`https://kovan.etherscan.io/tx/${blockTransactionData?.hash}`}>
+                        <p>Block Hash</p>
+                        <p>{ellipseAddress(blockTransactionData?.blockHash)}</p>
+                    </a>
                 </div>: `Trouble verifying?`}</p>
                 <p className="mt-40 mb-40 mx-10 text-center">Please allow for the network to verify the transaction <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Block Explorer</a> to learn more.</p>
 

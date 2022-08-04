@@ -94,9 +94,9 @@ function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}
   }
 }
 
-function* watchLinkOrderTransaction(action: { type: EUserActionTypes; payload: { orderTrackingId: string, transactionHash: string }}) {
+function* watchLinkOrderTransaction(action: { type: EUserActionTypes; payload: { orderTrackingId: string, transactionHash: string, nativeAmount: number }}) {
   try {
-    yield call(() => UserService.linkOrderTransaction(action.payload.orderTrackingId, action.payload.transactionHash));
+    yield call(() => UserService.linkOrderTransaction(action.payload.orderTrackingId, action.payload.transactionHash, action.payload.nativeAmount));
     //yield put(userAction.setLinkTransactionSuccess(res));
   } catch (err: any) {
     toast.error(err.message);

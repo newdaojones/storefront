@@ -60,11 +60,12 @@ export const Pay = () => {
             let orderInstance: IOrder = {
                 amount: order.amount,
                 externalOrderId: order?.externalOrderId,
-                //FIXME hardcoded merchant data
+                //FIXME hardcoded merchant data like testnet = true
                 testnet: true,
                 token: "USD",
                 toAddress: order.merchantAddress,
-                transactionHash: null
+                transactionHash: null,
+                nativeAmount: null
             };
             dispatch(userAction.createOrder(orderInstance));
         } else {

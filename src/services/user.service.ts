@@ -26,8 +26,8 @@ export const UserService = (function () {
     return axios.post(`/merchants/${address}/orders`, order);
   };
 
-  const linkOrderTransaction = async (orderTrackingId: string, transactionHash: string) => {
-    return axios.post(`/merchants/orders/${orderTrackingId}/transaction`, {transactionHash: transactionHash});
+  const linkOrderTransaction = async (orderTrackingId: string, transactionHash: string, nativeAmount: number) => {
+    return axios.post(`/merchants/orders/${orderTrackingId}/transaction`, {transactionHash: transactionHash, nativeAmount: nativeAmount});
   };
 
   return {
