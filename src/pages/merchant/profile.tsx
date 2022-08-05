@@ -37,12 +37,12 @@ export const ProfilePage = () => {
             </div>
           </div>
         </div>
-        <div className="mt-10">
+        <div className="mt-8">
 
           {/*Depositor table*/}
 
           <div className="flex items-center justify-between px-10">
-            <p className="text-white mt-1 py-2 font-bold font-montserrat">Transactions</p>
+            <p className="text-white mt-1 py-2 font-bold font-montserrat">Orders</p>
             <p className="text-white"></p>
           </div>
 
