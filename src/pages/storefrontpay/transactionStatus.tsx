@@ -16,6 +16,7 @@ import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder} from "../../store/selector";
 import {userAction} from "../../store/actions";
+import numeral from "numeral";
 
 /**
  * Example URL
@@ -71,21 +72,13 @@ export const TransactionStatus = () => {
             const gasPrices = currentRpcApi.getTransactionByHash(transactionId.transactionId, chainId);
             gasPrices.then(
                 response => {
-                    // response.forEach(value => {
-                    //         console.log(`trx: ${value}`);
-                    //     }
-                    // )
-
-                    console.log(`transaction details block hash: ${response.blockHash}`);
                     if (response) {
                         setBlockTransactionData(response)
                     }
-
                     if (response?.blockHash) {
+                        console.log(`transaction details block hash: ${response.blockHash}`);
                         setConfirmed(true);
-                        //setBlockHash(response.blockHash);
                     }
-
                 }
             )
         }
@@ -144,12 +137,19 @@ export const TransactionStatus = () => {
                     </a>
                 )}
 
-                <p className="text-xs mt-1 cursor-pointer">{confirmed? <div>
-                    <a href={`https://kovan.etherscan.io/tx/${blockTransactionData?.hash}`}>
+                <p className="text-xs mt-1 ">{confirmed?
+                    <div className="flex flex-col justify-center items-center">
                         <p>Block Hash</p>
-                        <p>{ellipseAddress(blockTransactionData?.blockHash)}</p>
-                    </a>
-                </div>: `Trouble verifying?`}</p>
+                        <a href={`https://kovan.etherscan.io/tx/${blockTransactionData?.hash}`}>
+                            <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.blockHash)}</p>
+                        </a>
+                        {/*<div className="flex pt-2">*/}
+                            <p className="pt-2">Native Amount</p>
+                            <p>{`${numeral(currentOrder?.nativeAmount).format('0,0.000000')} ${currentOrder?.token}`}</p>
+                        {/*</div>*/}
+                    </div>
+                    : `Trouble verifying?`}
+                </p>
                 <p className="mt-40 mb-40 mx-10 text-center">Please allow for the network to verify the transaction <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Block Explorer</a> to learn more.</p>
 
             </div>

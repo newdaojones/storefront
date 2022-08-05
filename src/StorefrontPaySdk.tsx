@@ -2,7 +2,7 @@ import React from "react";
 import logoIcon from "./assets/images/logo.svg";
 
 const baseUrl = 'https://test.jxndao.com';
-// const devUrl = 'http://localhost:3000';
+// const baseUrl = 'http://localhost:3000';
 
 
 //FIXME toAddress should be our own input wallet or merchant?

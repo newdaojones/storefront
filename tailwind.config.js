@@ -12,7 +12,7 @@ module.exports = {
       },
       size: {
         'h30': '20px',
-        'w30': '30px',
+        'w-30': '30px',
       },
       borderRadius: {
         '16xl': '64px',

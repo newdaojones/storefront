@@ -57,7 +57,7 @@ export const MerchantMain = () => {
 
   let menuItems = [
     { route: '/merchant/profile', icon: StorefrontIcon },
-    { route: '/merchant/find', icon: FindIcon },
+    { route: '/merchant/order', icon: FindIcon },
     { route: '/merchant/settings', icon: SettingsIcon },
   ];
 

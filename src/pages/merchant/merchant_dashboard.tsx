@@ -2,7 +2,7 @@ import React from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom';
 import {ProfilePage} from "./profile";
 import {SettingsPage} from "./settings";
-import {FindPage} from "./find";
+import {CreateOrderPage} from "./create_order";
 
 /**
  * http://localhost:3000/storefront/merchant
@@ -15,7 +15,7 @@ export const MerchantDashboard = () => {
         <Switch>
           <Route path="/merchant/profile" component={mainPage} />
           <Route path="/merchant/settings" component={SettingsPage} />
-            <Route path="/merchant/find" component={FindPage} />
+            <Route path="/merchant/order" component={CreateOrderPage} />
           <Redirect to="/merchant/profile" />
         </Switch>
       </div>
