@@ -5,7 +5,9 @@ import numeral from "numeral";
 import ETHIcon from '../assets/images/eth.svg';
 import DollarIcon from '../assets/images/dollarIcon.svg';
 import AccountEditIcon from '../assets/images/account-edit.svg';
-import ProfileIcon from '../assets/images/profile_icon.svg';
+import ConfirmedIcon from '../assets/images/confirmed_white.svg';
+import PendingIcon from '../assets/images/loading_white.svg';
+
 import ConfirmDialog from "./ConfirmDialogStyle";
 import {ellipseAddress} from "../helpers";
 import {transactionStatusLink} from "../utils/link_utils";
@@ -102,6 +104,11 @@ const OrderRow = (props: any) => {
         // return onEdit(depositorData)
         return false;
     }
+
+    const isTransactionConfirmed = (): boolean => {
+        return depositorInfo?.transactionHash != null
+    }
+
     let editDepositorDialog = <ConfirmDialog onConfirm={() => onEditConfirmed()}
                                              onCancel={() => {}}
                                              onShow={() => {console.log(`showing depositor edit dialog`)}}
@@ -150,7 +157,7 @@ const OrderRow = (props: any) => {
     return (
         <div style={SAssetRow}>
             <div style={SAssetRowLeft}>
-                <img style={Center} className="w-8 h-8 mr-2" src={ProfileIcon} alt="" />
+                <img style={Center} className="w-8 h-8 mr-2 filter-white" src={isTransactionConfirmed() ? ConfirmedIcon : PendingIcon} alt="" />
                 <div style={SColumnLeft}>
                     <div style={SAssetName}>{`orderId: ${depositorInfo.externalOrderId}`}</div>
                     <div className="flex text-xs text-white overflow-hidden">

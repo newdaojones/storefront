@@ -1,17 +1,8 @@
 import React from 'react';
-import numeral from 'numeral';
-
-import BTCIcon from '../../assets/images/btcIcon.svg';
-import DollarIcon from '../../assets/images/dollarIcon.svg';
-import NotFoundImage from '../../assets/images/notfound.gif';
-import TransactionRow from "../../components/transactionRow";
-import {ITransactionInfo} from "../../models";
 import {storefrontPayButton} from "../../StorefrontPaySdk";
 import {useSelector} from "react-redux";
-import {userInfo} from "os";
-import {selectAccount, selectMerchantInfo} from "../../store/selector";
+import {selectMerchantInfo} from "../../store/selector";
 import {getAddressFromAccount} from "@walletconnect/utils";
-import QRCodeStyling from "qr-code-styling";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {ellipseAddress} from "../../helpers";
 
@@ -34,7 +25,7 @@ export const SettingsPage = () => {
   };
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 h-3/4 items-center justify-center bg-black bg-opacity-10 border-2 border-terciary rounded-16xl shadow-md p-20">
+      <div className="w-3/4 items-center justify-center bg-black bg-opacity-10 border-2 border-terciary rounded-16xl shadow-md p-20">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Settings</p>
 
         <div className="flex flex-col items-center justify-between mt-10 px-14">
@@ -64,8 +55,22 @@ export const SettingsPage = () => {
             </div>
           </div>
 
+          <div className="w-full flex justify-between mt-10">
+            <p className="text-center text-white  mr-8">Supported Tokens</p>
+            <div className="flex flex-col justify-center bg-white bg-opacity-25 py-1 px-2 rounded">
+              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+                {'ETH'}
+                <input className="m-2" type="checkbox" readOnly={true} value='true'/>
+              </div>
+              <div className="flex items-center justify-center text-white py-1 px-2 rounded mt-2">
+                {'MATIC'}
+                <input className="m-2" type="checkbox" value='true'/>
+              </div>
+            </div>
+          </div>
+
           {/*Storefront Pay Button*/}
-          <div className="w-full flex flex-col items-center justify-around pt-20">
+          <div className="w-full flex flex-col items-center justify-around pt-10">
             {payButton}
             <p className="font-montserrat text-white text-center text-sm mt-2 mb-4">Add a Pay with Storefront button to your site, or use our sdk.</p>
           </div>

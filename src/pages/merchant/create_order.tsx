@@ -50,11 +50,11 @@ export const CreateOrderPage = () => {
           <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
           <div className="w-full flex items-center justify-between mt-10">
             <p className="text-white">Order ID</p>
-            <input id='orderId' name='orderId' type="text" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+            <input id='orderId' name='orderId' placeholder="Your order ID" type="text" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
           <div className="w-full flex items-center justify-between mt-10">
             <p className="text-white">Order Value</p>
-            <input name='amount' type="number" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+            <input name='amount' placeholder="0.50"  type="number" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
