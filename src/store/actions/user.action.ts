@@ -9,7 +9,6 @@ import {
   IUserInfo,
   TransactionState
 } from '../../models';
-import {ITransaction} from "../../helpers/tx";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {

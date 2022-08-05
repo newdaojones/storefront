@@ -1,8 +1,7 @@
 import * as React from "react";
 import {useState} from "react";
-import {IOrder, ITransactionInfo} from "../models";
+import {IOrder} from "../models";
 import numeral from "numeral";
-import BTCIcon from '../assets/images/btcIcon.svg';
 import ETHIcon from '../assets/images/eth.svg';
 import DollarIcon from '../assets/images/dollarIcon.svg';
 import AccountEditIcon from '../assets/images/account-edit.svg';

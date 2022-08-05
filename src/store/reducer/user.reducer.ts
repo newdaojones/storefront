@@ -13,7 +13,6 @@ import {
   TransactionState
 } from '../../models';
 import { userState } from '../states/user.state';
-import {ITransaction} from "../../helpers/tx";
 
 export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.LOGIN_SUCCESS]: setLoginSuccessStatus,

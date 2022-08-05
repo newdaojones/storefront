@@ -22,7 +22,7 @@ import {MerchantLogin} from "./merchant_login";
  */
 export const MerchantMain = () => {
   const ensName = useSelector(selectEnsName);
-  const accountInfo = useSelector(selectAccountInfo);
+  // const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
 
   console.info(`loading MerchantMain`);

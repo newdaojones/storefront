@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from "axios";
-import {AssetData, TxData, TxDetails} from "../helpers/types";
+import {AssetData, TxDetails} from "../helpers/types";
 
 // Infura-Api only used for kovan & polygon at the moment
 // FIXME the url should be read from the config, as everywhere else,

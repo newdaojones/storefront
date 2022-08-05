@@ -83,7 +83,7 @@ function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: {orderTra
 function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}) {
   try {
     const res: AxiosResponse<IOrder> = yield call(() => UserService.createNewOrder(action.payload.toAddress, action.payload));
-    if (res.status != 200) {
+    if (res.status !== 200) {
       console.error(`error result in create new order`);
     }
     console.info(`calling create new order got externalOrderId: ${res.data.externalOrderId} amount ${res.data.amount} trackingId: ${res.data.trackingId}`)

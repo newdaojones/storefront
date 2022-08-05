@@ -61,7 +61,7 @@ export const TransactionStatus = () => {
                 toast.error(`${e?.message || 'error'}`)
             }
         }
-    }, [query, setTransactionId]);
+    }, [query, dispatch, history, transactionId?.externalOrderId, transactionId?.transactionId, transactionId?.orderTrackingId]);
 
 
     React.useEffect(() => {
@@ -82,7 +82,7 @@ export const TransactionStatus = () => {
                 }
             )
         }
-    }, [transactionId, accountBalance, accountBalance?.account]);
+    }, [transactionId, accountBalance, accountBalance?.account, blockTransactionData]);
 
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
