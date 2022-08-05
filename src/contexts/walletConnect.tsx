@@ -1,5 +1,5 @@
 import Client from '@walletconnect/sign-client';
-import { PairingTypes, SessionTypes } from '@walletconnect/types';
+import {PairingTypes, SessionTypes} from '@walletconnect/types';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import moment from 'moment';
@@ -11,7 +11,7 @@ import {
   DEFAULT_EIP155_METHODS,
   DEFAULT_LOGGER,
   DEFAULT_PROJECT_ID,
-  DEFAULT_RELAY_URL,
+  DEFAULT_RELAY_URL, REQUIRED_CHAINS,
 } from '../consts';
 import { getAppMetadata, getSdkError } from "@walletconnect/utils";
 import { getPublicKeysFromAccounts } from '../helpers/solana';
@@ -77,7 +77,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [account, setAccount] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [solanaPublicKeys, setSolanaPublicKeys] = useState<Record<string, PublicKey>>();
-  const [chains, setChains] = useState<string[]>(DEFAULT_CHAINS);
+  const [chains, setChains] = useState<string[]>(REQUIRED_CHAINS);
 
   const [balances, setBalances] = useState<AccountBalances>({});
 
@@ -94,7 +94,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     setSession(undefined);
     setAccount(undefined);
     setAccounts([]);
-    setChains(DEFAULT_CHAINS);
+    setChains([]);
 
     for (var i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -305,10 +305,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         const requiredNamespaces = getRequiredNamespaces(chains);
         console.log("requiredNamespaces config for connect:", requiredNamespaces);
 
-        const { uri, approval } = await client.connect({
+        let connectParams = {
           pairingTopic: pairing?.topic,
           requiredNamespaces,
-        });
+        };
+        const { uri, approval } = await client.connect(connectParams);
 
         // Open QRCode modal if a URI was returned (i.e. we're not connecting an existing pairing).
         if (uri) {

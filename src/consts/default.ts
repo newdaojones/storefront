@@ -19,8 +19,18 @@ export const DEFAULT_TEST_CHAINS = [
   // "eip155:44787",
   // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",
 ];
+export const REQUIRED_TEST_CHAINS = [
+  // testnets
+  "eip155:42",//ethereum kovan
+  // "eip155:69",
+  // "eip155:80001",//polygon mumbai
+  // "eip155:421611",
+  // "eip155:44787",
+  // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",
+];
 
 export const DEFAULT_CHAINS = [...DEFAULT_MAIN_CHAINS, ...DEFAULT_TEST_CHAINS];
+export const REQUIRED_CHAINS = [...DEFAULT_MAIN_CHAINS, ...REQUIRED_TEST_CHAINS];
 
 // Wallet connect project ID
 export const DEFAULT_PROJECT_ID = 'f17194a7efd15ee24623a532ccff7c77';
