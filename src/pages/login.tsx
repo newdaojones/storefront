@@ -1,6 +1,7 @@
 import React from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
+import backpackLogo from '../assets/images/backpacklogo.png';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
 import {storefrontPayButton} from "../StorefrontPaySdk";
@@ -54,10 +55,9 @@ export const Login = () => {
     }
 
     const payButton = storefrontPayButton('0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004', "12323", 0.45);
-
+    const backpackDeeplink = qrCodeUri ? `ndj-backpack://${qrCodeUri}` : '';
     return (
         <div className="w-full h-full flex items-center justify-center flex-col">
-            <h4 className="font-righteous text-white mt-4">Welcome to the StoreFront DApp</h4>
             <a href={qrCodeUri} className="">
                 <div className="flex items-center justify-center pt-2">
                     <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
@@ -70,8 +70,14 @@ export const Login = () => {
             <p className="font-montserrat text-center text-white mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
 
             {/*Storefront Pay Button*/}
-            {payButton}
-            <p className="font-montserrat text-center text-white mt-2 mb-4">Add a Pay with Storefront button to your site, or use our sdk.</p>
+            <a href={backpackDeeplink}>
+                <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+                    <img className="w-8 h-8 mr-4" src={backpackLogo} alt="" />
+                    <p className="font-righteous">Connect with Backpack</p>
+                </button>
+            </a>
+            <p className="font-montserrat text-center text-white mt-2 mb-10">Or connect directly with your Backpack</p>
         </div>
     );
 };
+
