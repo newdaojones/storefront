@@ -12,12 +12,13 @@ import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
 import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
-import {extractOrderFromUrl, IOrder} from "../utils/path_utils";
+import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
 
 /**
  * https://test.jxndao.com/storefront/home
  * or
+ * http://localhost:3000/storefront/home?orderId=1&amount=0.25&merchantAddress=0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004&orderTrackingId=6020fb4d-02e1-41c7-9570-584584e0e3a1
  * http://localhost:3000/storefront/home?orderId=8&amount=0.45
  */
 export const HomePage = () => {
@@ -28,7 +29,7 @@ export const HomePage = () => {
   const [ scanning, setScanning ] = useState(false)
   const [ qrCodeUrl, setQrCodeUrl ] = useState('')
   const [ redirected, setRedirected ] = useState(false)
-  const [ locationKeys, setLocationKeys ] = useState(false)
+  const [ transactionCreatedLock, setTransactionCreatedLock ] = useState(false)
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
   const accountBalance = getNonZeroAccountBalance(accounts, balances);
@@ -39,25 +40,33 @@ export const HomePage = () => {
   const trxCreated = useSelector(selectCreateTransaction)
 
   useEffect(() => {
-    console.info(`useEffect locationKeys: ${locationKeys} trxCreated: ${trxCreated}`)
-    if (trxCreated && trxCreated.value && !locationKeys) {
-      setLocationKeys(true);
+    console.info(`useEffect transactionCreatedLock: ${transactionCreatedLock} trxCreated: ${trxCreated} transaction: ${trxCreated?.transaction}`)
+    if (trxCreated?.transaction && trxCreated.transaction.value && !transactionCreatedLock) {
+      setTransactionCreatedLock(true);
       if (!redirected) {
         history.push("/buy");
       } else {
         history.replace("/buy");
       }
     }
-  }, [trxCreated, locationKeys, setLocationKeys, history]);
+  }, [trxCreated, transactionCreatedLock, setTransactionCreatedLock, history]);
 
   useEffect(() => {
     if (query && tickers?.length > 0) {
       console.info(`detected order query: ${query}`)
-      const order = extractOrderFromUrl(query);
-      console.log(`orderId: ${order.orderId} amount: ${order.amount}`);
-      if (order.orderId && order.amount && !redirected) {
-        setRedirected(true);
-        createTransaction(order);
+
+      try {
+        const order = extractOrderFromUrl(query);
+        console.log(`orderTrackingId: ${order.orderTrackingId} externalOrderId: ${order.externalOrderId} amount: ${order.amount}`);
+        if (order.orderTrackingId && order.amount && !redirected) {
+          setRedirected(true);
+          createTransaction(order);
+        } else {
+          console.log(`not creating trx`)
+        }
+      } catch (e: any) {
+        console.log(e);
+        toast.error(`${e?.message}`)
       }
     }
 
@@ -74,7 +83,7 @@ export const HomePage = () => {
     setScanning(false);
   }
 
-  const createTransaction = (order: IOrder): void => {
+  const createTransaction = (order: IOrderParams): void => {
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
     const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
@@ -83,10 +92,13 @@ export const HomePage = () => {
       return;
     }
     setLoading(true);
-    dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount: ethTotal, orderId: order.orderId}));
+
+    if (!order.orderTrackingId) {
+      toast.error("Invalid order tracking ID")
+    } else {
+      dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount: ethTotal, orderTrackingId: order.orderTrackingId}));
+    }
   };
-
-
 
   const onHomeClick = async () => {
     console.info(`refreshing balances `)

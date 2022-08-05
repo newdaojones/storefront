@@ -12,4 +12,6 @@ export const userState: IUserState = {
   transactionInProgress: TransactionState.INITIAL,
   accountInfo: undefined,
   transactionData: null,
+  userInfo: undefined,
+  order: null,
 };

@@ -16,7 +16,13 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {ellipseAddress, isMobile} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
-import {AccountBalance, getNonZeroAccountBalance, getHexValueAsBigNumber, getHexValueAsString} from "../helpers/tx";
+import {
+  AccountBalance,
+  getNonZeroAccountBalance,
+  getHexValueAsBigNumber,
+  getHexValueAsString,
+  ITransaction
+} from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
@@ -37,7 +43,7 @@ export const BuyPage = () => {
 
   const transaction = useSelector(selectCreateTransaction)
   const helpMessages = ['Tap the button above to submit the signing request',
-    'Switch to your wallet app and sign the transaction',
+    'Switch to your wallet app and sign the transaction. Click here to open it.',
     'Sending transaction...']
 
   const {
@@ -77,13 +83,13 @@ export const BuyPage = () => {
   function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
     console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
     const transactionInfo: ITransactionInfo = {
-      fromAddress: res.address!!,
-      toAddress: res.toAddress || "",
-      value: res.value || "n/a",
+      transaction: transaction?.transaction || null,
       transactionHash: res.result,
       paymentValueUsd: paymentValueUsd,
       paymentFeeUsd: paymentFeeUsd,
       paymentTotalUSD: paymentTotalUSD,
+      date: null,
+      orderTrackingId: transaction?.orderTrackingId || "n/a",
     }
 
     dispatch(userAction.setTransactionInfoWallet(transactionInfo));
@@ -104,7 +110,7 @@ export const BuyPage = () => {
     }
 
     //TODO this should be moved to a redux action, with a dispatcher & reducer
-    await ethereumRpc.testSendTransaction(chainId, address, transaction)
+    await ethereumRpc.testSendTransaction(chainId, address, transaction.transaction)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
@@ -123,42 +129,47 @@ export const BuyPage = () => {
         })
   };
 
-//TODO all this block should be a hook or effect, and run before the view is rendered.
-  let paymentFeeUsd = 0;
-  let paymentValueUsd = 0;
+  function initializePaymentData(transaction: ITransaction) {
+    let paymentFeeUsd = 0;
+    let paymentValueUsd = 0;
 
-  let paymentTotalUSD = 0;
-  let paymentValueEth: string = "0";
-  const token = 'ETH';
-  if (transaction?.value) {
-    console.log(`payment value: ${transaction?.value}`)
-    paymentValueEth = getHexValueAsString(transaction?.value);
+    let paymentTotalUSD = 0;
+    let paymentValueEth: string = "0";
+    const token = 'ETH';
+    if (transaction?.value) {
+      console.log(`payment value: ${transaction?.value}`)
+      paymentValueEth = getHexValueAsString(transaction?.value);
 
-    const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
-    const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
-    console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
+      const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
+      const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
+      console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
-    const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
-    const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
-    console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
+      const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
+      const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
+      console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
-    const trxValueAsNumber = Number(paymentValueEth);
-    const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);
+      const trxValueAsNumber = Number(paymentValueEth);
+      const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);
 
-    if (trxPriceUsd && gasPriceUsd) {
-      paymentValueUsd = trxPriceUsd;
-      paymentFeeUsd = gasPriceUsd;
-      paymentTotalUSD = trxPriceUsd + gasPriceUsd;
+      if (trxPriceUsd && gasPriceUsd) {
+        paymentValueUsd = trxPriceUsd;
+        paymentFeeUsd = gasPriceUsd;
+        paymentTotalUSD = trxPriceUsd + gasPriceUsd;
+      } else {
+        console.info(`unable to calculate total trx price in USD`);
+      }
+
+      console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
+      console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
     } else {
-      console.info(`unable to calculate total trx price in USD`);
+      console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
+      history.replace("/home");
     }
-
-    console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
-    console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
-  } else {
-    console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
-    history.replace("/home");
+    return {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth};
   }
+
+  //TODO all this block should be a hook or effect, and run before the view is rendered.
+  let {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth} = initializePaymentData(transaction?.transaction!!);
 
   const buyProgress = transactionInProgress.valueOf();
 
@@ -184,6 +195,10 @@ export const BuyPage = () => {
           <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.substring(0,8)} ETH`}</p>
         </div>}
   </button>;
+
+  const helperTextMessage = <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
+               className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+
   return (
     <div className="w-full h-full flex justify-between">
       <div className="w-full flex flex-col justify-between">
@@ -240,11 +255,8 @@ export const BuyPage = () => {
           <div className="flex w-full flex-col bg-footer text-white justify-end pt-4 px-14 bg-opacity-90 rounded-8xl"
                style={{}}>
             {
-              isMobile() ? <a href={"wc://wallets"} className="">
-                {animatedBuyButton}
-              </a> : animatedBuyButton
+              animatedBuyButton
             }
-
             {
               // transaction progress bar / text
               <div className="flex flex-col text-center text-secondary text-xs">
@@ -256,14 +268,16 @@ export const BuyPage = () => {
                   <img className="w-full absolute mr-8" src={ProgressFull} alt=""/>}
                 </div>
                 <p className="mt-4">{`${buyProgress + 1}/3`}</p>
-                <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
-                   className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+                {
+                  isMobile() && buyProgress == 1 ? <a href={"wc://"} className="">
+                    {helperTextMessage}
+                  </a> : helperTextMessage
+                }
               </div>
             }
           </div>
         </div>
       </div>
-
     </div>
   );
 };

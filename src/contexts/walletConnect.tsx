@@ -8,8 +8,6 @@ import * as encoding from '@walletconnect/encoding';
 import {
   DEFAULT_APP_METADATA,
   DEFAULT_CHAINS,
-  DEFAULT_COSMOS_METHODS,
-  DEFAULT_SOLANA_METHODS,
   DEFAULT_EIP155_METHODS,
   DEFAULT_LOGGER,
   DEFAULT_PROJECT_ID,
@@ -24,6 +22,9 @@ import { toast } from 'react-toastify';
 import {AccountBalances} from "../helpers";
 import {getRequiredNamespaces} from "../helpers/namespaces";
 import {currentRpcApi} from "../helpers/tx";
+import {UserService} from "../services";
+import axios from "../services/axios";
+import {useLocation} from "react-use";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -50,6 +51,7 @@ interface IContext {
   solanaPublicKeys?: Record<string, PublicKey>;
   balances: AccountBalances;
   setChains: any;
+  merchantLogin: boolean;
 }
 
 /**
@@ -78,6 +80,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [chains, setChains] = useState<string[]>(DEFAULT_CHAINS);
 
   const [balances, setBalances] = useState<AccountBalances>({});
+
+  const [merchantLogin, setMerchantLogin] = useState<boolean>(false);
+
+
+  let pathname = useLocation().pathname;
 
   const reset = () => {
     console.info(`resetting balances`);
@@ -138,27 +145,48 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     await getAccountBalances(allNamespaceAccounts);
   }, []);
 
+
+  useEffect(() => {
+    if (!pathname) {
+      return;
+    }
+    if (pathname.startsWith('/storefront/merchant')) {
+      setMerchantLogin(true);
+    } else {
+      setMerchantLogin(false);
+    }
+
+  }, [pathname]);
+
+  function loginWithAccount(account: string, merchantLogin: boolean) {
+    if (!merchantLogin) {
+      login(account);
+    } else {
+      loginWithSignedNonce(account);
+    }
+  }
+
   useEffect(() => {
     if (!accounts.length) {
       return;
     }
 
     const account = localStorage.getItem(NDJ_ADDRESS);
-
+    //TODO this should use some kind of route param to tell if it is a merchant login or buyer login
     if (!accounts.length) {
       return;
     }
-
     const availableAccounts = accounts.filter(a => !a.startsWith('solana'));
+
     if (account && availableAccounts.includes(account)) {
-      login(account);
+      loginWithAccount(account, merchantLogin);
     } else if (availableAccounts[0]) {
-      login(availableAccounts[0]);
+      loginWithAccount(availableAccounts[0], merchantLogin);
     } else {
       toast.error('No available accounts');
       disconnect();
     }
-  }, [accounts]);
+  }, [accounts, merchantLogin]);
 
   async function signNonce(account: string, nonce: string) {
     const [namespace, reference, address] = account.split(':');
@@ -190,22 +218,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         setIsLoading(true);
         const startTime = moment();
 
-
-
-        // const res = await UserService.loginApi(address);
-        // const nonce = res.data.nonce;
-        //
-        // if (!nonce) {
-        //   throw new Error(res.data.message);
-        // }
-
-        // let signature = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
-        // if (!signature) {
-        //   signature = await signNonce(account, nonce);
-        // }
-        //
-        // axios.setAuthorizationToken(signature);
-        // axios.setNonce(nonce);
         const [namespace, reference, address] = account.split(':');
 
         const duration = moment.duration(moment().diff(startTime)).asSeconds();
@@ -217,7 +229,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
         setAccount(account);
         localStorage.setItem(NDJ_ADDRESS, account);
+
         dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
+
       } catch (err: any) {
         localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
         toast.error(err.message);
@@ -227,6 +241,58 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       }
     },
     [client, session]
+  );
+
+  //TODO this should be used when we access the merchant app, as opposed to one step login when using the purchase app with no signature
+  const loginWithSignedNonce = useCallback(
+      async (account: string) => {
+        try {
+          setIsLoading(true);
+          const startTime = moment();
+
+          const [namespace, reference, address] = account.split(':');
+          const res = await UserService.loginApi(address);
+          const nonce = res.data.nonce;
+
+          if (!nonce) {
+            throw new Error(res.data.message);
+          }
+
+          let signature: string | null = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
+          if (!signature) {
+            signature = await signNonce(account, nonce) || null;
+          }
+
+          if (signature) {
+            axios.setAuthorizationToken(signature);
+            axios.setNonce(nonce);
+          } else {
+            toast("Invalid signature")
+          }
+
+          const duration = moment.duration(moment().diff(startTime)).asSeconds();
+          const waitTime = loadingTimeout - duration;
+
+          if (waitTime > 0) {
+            await sleep(waitTime * 1000);
+          }
+
+          setAccount(account);
+          localStorage.setItem(NDJ_ADDRESS, account);
+
+          dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
+          dispatch(userAction.merchantLoginSuccess({address: address}));
+
+        } catch (err: any) {
+          localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
+          console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
+          toast.error(`Error: ${err.message}.`);
+          // disconnect().then(() => console.log(`disconnect done.`));
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      [client, session]
   );
 
   const connect = useCallback(
@@ -276,7 +342,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       // Reset app state after disconnect.
       reset();
     } catch (err: any) {
-      toast.error(err.message);
+      console.log(`disconnect error ${err?.message}`)
+      //toast.error(err.message);
     }
   }, [client, session]);
 
@@ -392,7 +459,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         projectId: DEFAULT_PROJECT_ID,
         metadata: getAppMetadata() || DEFAULT_APP_METADATA,
       });
-
+      console.log("CREATED CLIENT: ", _client);
       setClient(_client);
       await _subscribeToEvents(_client);
       await _checkPersistedState(_client);
@@ -437,6 +504,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       refreshBalances,
       setChains,
       switchAccount,
+      merchantLogin,
     }),
     [
       pairings,
@@ -456,6 +524,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       refreshBalances,
       setChains,
       switchAccount,
+      merchantLogin
     ]
   );
 

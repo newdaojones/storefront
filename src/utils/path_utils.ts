@@ -1,13 +1,15 @@
-export interface IOrder {
-  orderId: string,
+export interface IOrderParams {
+  externalOrderId: string,
   amount: number,
+  orderTrackingId: string,
+  merchantAddress: string,
 }
 
-export interface ITransactionStatus extends IOrder {
+export interface ITransactionStatus extends IOrderParams {
   transactionId: string,
 }
 
-export const extractOrderFromUrl = (url: string) : IOrder => {
+export const extractOrderFromUrl = (url: string, requireStatusItems: boolean = false) : IOrderParams => {
   if (!url) {
     throw new Error("input url must be not empty");
   }
@@ -18,19 +20,22 @@ export const extractOrderFromUrl = (url: string) : IOrder => {
   const parsed = new URLSearchParams(queryString);
   console.log(`url: ${url} queryString: ${queryString} parsed: ${parsed}`);
   const amount = Number(parsed.get("amount"));
-  const orderId = parsed.get("orderId");
-  console.log(`orderId: ${orderId} amount: ${amount}`);
+  const externalOrderId = parsed.get("orderId");
+  const orderTrackingId = parsed.get("orderTrackingId");
+  const merchantAddress = parsed.get("merchantAddress");
+  console.log(`trackingId: ${orderTrackingId} orderId: ${externalOrderId} amount: ${amount}`);
 
-  if (!orderId || !amount) {
-    throw new Error("orderId or amount missing");
+  if (!requireStatusItems && (!externalOrderId|| !amount || !merchantAddress)) {
+    throw new Error("orderId, merchantAddress and amount are required.");
   }
 
   return {
-    orderId: orderId,
+    externalOrderId: externalOrderId || "",
     amount: amount,
+    orderTrackingId: orderTrackingId || "",
+    merchantAddress: merchantAddress || "",
   }
 }
-
 
 export const extractTransactionIdFromUrl = (url: string) : ITransactionStatus => {
   if (!url) {
@@ -43,14 +48,18 @@ export const extractTransactionIdFromUrl = (url: string) : ITransactionStatus =>
   const parsed = new URLSearchParams(queryString);
   console.log(`url: ${url} queryString: ${queryString} parsed: ${parsed}`);
   const transactionId = parsed.get("transactionId");
-  if (!transactionId) {
-    throw new Error("transaction id missing");
+  const orderTrackingId = parsed.get("orderTrackingId");
+
+  if (!transactionId || !orderTrackingId) {
+    throw new Error("transaction id or orderTrackingId are missing");
   }
 
-  const orderData = extractOrderFromUrl(url);
+  const orderData = extractOrderFromUrl(url, true);
   return {
+    externalOrderId: orderData.externalOrderId,
+    merchantAddress: orderData.merchantAddress,
     amount: orderData.amount,
-    orderId: orderData.orderId,
-    transactionId: transactionId
+    transactionId: transactionId,
+    orderTrackingId: orderTrackingId,
   }
 }

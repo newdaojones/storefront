@@ -1,6 +1,14 @@
 import { EUserActionTypes } from '../../enums';
-import {IAccountInfo, ITicker, ITransactionInfo, IUserInfo, TransactionState} from '../../models';
-import {ITransaction} from "../../helpers/tx";
+import {
+  IAccountInfo,
+  IMerchant,
+  IOrder,
+  ITicker,
+  ITransactionInfo,
+  ITransactionOrder,
+  IUserInfo,
+  TransactionState
+} from '../../models';
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -12,7 +20,14 @@ const loginSuccess = (payload: IAccountInfo) => {
 
 const getAccountInfoSuccess = (payload: IUserInfo) => {
   return {
-    type: EUserActionTypes.GET_ACCOUNT_INFO_SUCCESS,
+    type: EUserActionTypes.GET_USER_INFO_SUCCESS,
+    payload,
+  };
+};
+
+const getMerchantInfoSuccess = (payload: IMerchant) => {
+  return {
+    type: EUserActionTypes.GET_MERCHANT_INFO_SUCCESS,
     payload,
   };
 };
@@ -40,14 +55,14 @@ const setTransactionInProgress = (payload: TransactionState) => {
 };
 
 const setTransactionInfoWallet = (payload: ITransactionInfo) => {
-  console.info(`setting transaction as hash: ${payload.transactionHash} value: ${payload.value} toAddress: ${payload.toAddress}`)
+  console.info(`setting transaction as hash: ${payload.transactionHash} value: ${payload.transaction?.value} toAddress: ${payload.transaction?.to}`)
   return {
     type: EUserActionTypes.SET_TRANSACTION_INFO,
     payload,
   };
 };
 
-const setCreateTransaction = (payload: { amount: number;  account: string; orderId: string}) => {
+const setCreateTransaction = (payload: { amount: number;  account: string; orderTrackingId: string}) => {
   return {
     type: EUserActionTypes.SET_CREATE_TRANSACTION,
     payload
@@ -60,22 +75,73 @@ const unsetTransaction = () => {
   };
 };
 
-const setCreateTransactionSuccess = (payload: ITransaction | null) => {
+const setCreateTransactionSuccess = (payload: ITransactionOrder | null) => {
   return {
     type: EUserActionTypes.SET_TRANSACTION_SUCCESS,
     payload,
   };
 };
 
+const setCreateOrderSuccess = (payload: IOrder) => {
+  console.info(`setCreateOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
+  return {
+    type: EUserActionTypes.CREATE_ORDER_SUCCESS,
+    payload
+  };
+};
+
+const getOrderSuccess = (payload: IOrder) => {
+  console.info(`getOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
+  return {
+    type: EUserActionTypes.GET_ORDER_SUCCESS,
+    payload
+  };
+};
+
+const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string, nativeAmount: string }) => {
+  return {
+    type: EUserActionTypes.SET_ORDER_TRANSACTION_HASH,
+    payload
+  };
+};
+
+
+const merchantLoginSuccess = (payload: {address: string}) => {
+  return {
+    type: EUserActionTypes.MERCHANT_LOGIN_SUCCESS,
+    payload
+  };
+};
+
+const createOrder = (payload: IOrder) => {
+  return {
+    type: EUserActionTypes.CREATE_ORDER,
+    payload
+  };
+};
+
+const getOrder = (payload: { orderTrackingId: String }) => {
+  return {
+    type: EUserActionTypes.GET_ORDER,
+    payload
+  };
+};
 
 export const userAction = {
   loginSuccess,
   getAccountInfoSuccess,
+  getMerchantInfoSuccess,
+  getOrderSuccess,
   getEnsNameSuccess,
   getTickersSuccess,
   setTransactionInProgress,
   setTransactionInfoWallet,
   setCreateTransaction,
   unsetTransaction,
-  setCreateTransactionSuccess
+  setCreateTransactionSuccess,
+  setCreateOrderSuccess,
+  setOrderTransactionHash,
+  createOrder,
+  getOrder,
+  merchantLoginSuccess
 };

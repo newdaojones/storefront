@@ -23,6 +23,7 @@ export const Menu = ({
           console.info(`not implemented`)
       }
       const onHomeClicked = () => {
+          console.info(`home clicked`);
           history.replace("/home")
       }
 

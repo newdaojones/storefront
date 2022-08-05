@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {BigNumber, utils} from "ethers";
 import QRIcon from '../assets/images/qrCodeIcon.svg';
 import {useDispatch, useSelector} from "react-redux";
@@ -9,6 +9,8 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {userAction} from "../store/actions";
 import logoIcon from "../assets/images/logo.svg";
 import QRCodeStyling from "qr-code-styling";
+import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
+import {transactionStatusLink} from "../utils/link_utils";
 
 export const ConfirmationPage = () => {
   const history = useHistory();
@@ -19,13 +21,32 @@ export const ConfirmationPage = () => {
   } = useWalletConnectClient();
 
   let transactionInfo = useSelector(selectBuyTransaction)
+  const [linkUrl, setLinkUrl] = useState('');
 
-    if (!transactionInfo) {
+    //TODO link transaction
+    if (!transactionInfo?.transactionHash) {
         history.replace("/")
     }
 
-  const onHomeClick = async () => {
+    let weiNumber = convertHexToNumber(transactionInfo?.transaction?.value!!) || 0;
+    const bigN = BigNumber.from(weiNumber.toString())
+    const formatted = utils.formatUnits(bigN, "ether")
+    console.info(`wei number ${weiNumber} bigN: ${bigN} formatted: ${formatted}`)
+
+    if (!transactionInfo?.orderTrackingId) {
+        console.error(`can't set order transaction hash since orderTrackingId not valid.`)
+    } else {
+        dispatch(userAction.setOrderTransactionHash({
+            orderTrackingId: transactionInfo?.orderTrackingId,
+            transactionHash: transactionInfo?.transactionHash!!,
+            nativeAmount: formatted,
+        }));
+    }
+
+
+    const onHomeClick = async () => {
       await refreshBalances(accounts).then(r => {
+          console.info(`refreshing balances on home click`)
           dispatch(userAction.unsetTransaction());
           history.go(-2)
           history.replace("/home");
@@ -37,20 +58,16 @@ export const ConfirmationPage = () => {
     console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${transactionInfo?.transactionHash}`)
   };
 
-  let weiNumber = convertHexToNumber(transactionInfo?.value!!);
-  console.info(`wei number ${weiNumber}`)
-  const bigN = BigNumber.from(weiNumber.toString())
-  const formatted = utils.formatUnits(bigN, "ether")
-
-  let trxLink = `https://kovan.etherscan.io/tx/${transactionInfo?.transactionHash}`;
 
    React.useEffect(() => {
-        if (!transactionInfo) {
+        if (transactionInfo) {
+            const link = transactionStatusLink(transactionInfo?.transactionHash, transactionInfo?.orderTrackingId!!);
+            setLinkUrl(link);
             const qrCode = new QRCodeStyling({
                 width: 255,
                 height: 255,
                 type: 'svg',
-                data: trxLink,
+                data: link,
                 dotsOptions: {
                     type: 'dots',
                     gradient: {
@@ -86,7 +103,7 @@ export const ConfirmationPage = () => {
       <div className="w-3/4 m-10">
         <p className="text-white text-secondary font-bold">Payment Successful</p>
         {/*QR CODE*/}
-          <a target="_blank" rel='noreferrer' className="p-10 link cursor-pointer" href={trxLink}>
+          <a target="_blank" rel='noreferrer' className="p-10 link cursor-pointer" href={linkUrl}>
               <div className="flex items-center justify-center">
                   <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
                   </div>
@@ -122,7 +139,7 @@ export const ConfirmationPage = () => {
                   <div className="w-full flex justify-between p-4">
                       <p className="text-white text-start text-xs mr-2 mt-2">Transaction Hash</p>
                       <a target="_blank" rel='noreferrer' className="link cursor-pointer"
-                         href={trxLink}>
+                         href={linkUrl}>
                           {/*<img className="w-8 h-8 mt-2 justify-center" src={SearchIcon} alt=""/>*/}
                           <p className="text-white text-start text-xs mr-2 mt-2">{ellipseAddress(transactionInfo?.transactionHash)}</p>
                       </a>
@@ -130,11 +147,11 @@ export const ConfirmationPage = () => {
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4">
                       <p className="text-white text-start text-xs mr-2">From Address</p>
-                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.fromAddress)}</p>
+                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.from)}</p>
                   </div>
                   <div className="w-full flex justify-between p-4">
                       <p className="text-white text-start text-xs mr-2">To Address</p>
-                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.toAddress)}</p>
+                      <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.to)}</p>
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4 pb-6">
                       <p className="text-white text-start text-xs mr-2">Amount</p>

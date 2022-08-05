@@ -3,9 +3,8 @@ import QRCodeStyling from 'qr-code-styling';
 import logoIcon from '../assets/images/logo.svg';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
-import {storefrontPayButton} from "../StorefrontPaySdk";
 
-export const Login = () => {
+export const MerchantLogin = () => {
     const {qrCodeUri} = useWalletConnectClient();
 
     React.useEffect(() => {
@@ -53,25 +52,33 @@ export const Login = () => {
         })
     }
 
-    const payButton = storefrontPayButton('0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004', "12323", 0.45);
-
     return (
-        <div className="w-full h-full flex items-center justify-center flex-col">
-            <h4 className="font-righteous text-white mt-4">Welcome to the StoreFront DApp</h4>
-            <a href={qrCodeUri} className="">
-                <div className="flex items-center justify-center pt-2">
-                    <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
+        <div className="h-screen w-screen flex">
+            <div className="w-full flex flex-col items-center justify-center pt-10">
+                <div className="flex items-center justify-center ">
+                    <img className="w-12 h-12" src={logoIcon} alt=""/>
+                    <div className="w-full flex flex-col p-4">
+                        <h1 className="text-xl text-white font-righteous">Storefront Pay</h1>
+                        <h4 className="font-righteous text-white">Merchant Login</h4>
                     </div>
-                    <img className="w-20 h-20 absolute z-10" src={logoIcon} alt="" />
                 </div>
-            </a>
-            <p onClick={onCopyLinkClicked}
-               className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
-            <p className="font-montserrat text-center text-white mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
 
-            {/*Storefront Pay Button*/}
-            {payButton}
-            <p className="font-montserrat text-center text-white mt-2 mb-4">Add a Pay with Storefront button to your site, or use our sdk.</p>
+
+                <div className="w-full flex flex-col items-center justify-center py-4">
+
+                    <a href={qrCodeUri} className="">
+                        <div className="flex items-center justify-center pt-2">
+                            <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
+                            </div>
+                            <img className="w-20 h-20 absolute z-10" src={logoIcon} alt="" />
+                        </div>
+                    </a>
+                    <p onClick={onCopyLinkClicked}
+                       className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
+                    <p className="font-montserrat text-center text-white mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
+
+                </div>
+            </div>
         </div>
     );
 };

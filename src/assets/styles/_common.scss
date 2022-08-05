@@ -5,8 +5,9 @@ body {
   font-family: Montserrat, 'Roboto', 'Ubuntu';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  //background-image: url(../images/background.png);
+  background-image: url(../images/background.png);
   background-color: #30314c;
+  //background-color: #30314c;
 }
 
 creditcard {
@@ -66,6 +67,11 @@ code {
     position: relative;
     -webkit-transform: rotateZ(45deg);
     transform: rotateZ(45deg);
+  }
+
+  .rotateLoading {
+    transform: rotateZ(45deg);
+    animation: 2.4s infinite linear both;
   }
 
   .cube {
@@ -145,6 +151,11 @@ code {
     }
   }
 }
+@keyframes spin {
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+}
+
 
 
 .select {

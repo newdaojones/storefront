@@ -12,7 +12,7 @@ module.exports = {
       },
       size: {
         'h30': '20px',
-        'w30': '30px',
+        'w-30': '30px',
       },
       borderRadius: {
         '16xl': '64px',
@@ -25,6 +25,7 @@ module.exports = {
       colors: {
         primary: '#13053D',
         secondary: '#FFB01D',
+        terciary: '#ff00c4',
         footer: '#212134',
       },
       boxShadow: {

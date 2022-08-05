@@ -1,8 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1228 2000">
-  <path d="M613.82 0l-13.4 45.58V1368l13.4 13.38 613.82-362.82z" fill="#343434"/>
-  <path d="M613.82 0L0 1018.56l613.82 362.84V0z" fill="#8c8c8c"/>
-  <path d="M613.82 1497.64l-7.56 9.22V1978l7.56 22L1228 1135z" fill="#3c3c3b"/>
-  <path d="M613.82 2000v-502.38L0 1135z" fill="#8c8c8c"/>
-  <path d="M613.82 1381.4l613.8-362.84-613.8-279v641.84" fill="#141414"/>
-  <path d="M0 1018.56l613.8 362.84V739.54" fill="#393939"/>
+    <path
+            d="M14 28C21.732 28 28 21.732 28 14C28 6.26801 21.732 0 14 0C6.26801 0 0 6.26801 0 14C0 21.732 6.26801 28 14 28Z"
+            fill="url(#rd02)"/>
+    <path d="M613.82 0l-13.4 45.58V1368l13.4 13.38 613.82-362.82z" fill="#343434"/>
+    <path d="M613.82 0L0 1018.56l613.82 362.84V0z" fill="#8c8c8c"/>
+    <path d="M613.82 1497.64l-7.56 9.22V1978l7.56 22L1228 1135z" fill="#3c3c3b"/>
+    <path d="M613.82 2000v-502.38L0 1135z" fill="#8c8c8c"/>
+    <path d="M613.82 1381.4l613.8-362.84-613.8-279v641.84" fill="#141414"/>
+    <path d="M0 1018.56l613.8 362.84V739.54" fill="#393939"/>
+    <defs>
+        <radialGradient id="rd02" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+                        gradientTransform="translate(14 14) rotate(90) scale(14)">
+            <stop stop-color="#FF00C7"/>
+            <stop offset="0.848958" stop-color="#FF00C7" stop-opacity="0.2"/>
+        </radialGradient>
+    </defs>
 </svg>

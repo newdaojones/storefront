@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+// PROD
 // axios.defaults.baseURL = 'https://api.jxndao.com/';
+
+// DEV
+//TODO url
 // axios.defaults.baseURL = 'http://localhost:5000/';
+
+// Test (http/https)
 // axios.defaults.baseURL = 'http://fundapi-test.us-east-2.elasticbeanstalk.com/';
 axios.defaults.baseURL = 'https://test-api.jxndao.com/';
 

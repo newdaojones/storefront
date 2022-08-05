@@ -1,5 +1,5 @@
 import axios, {AxiosInstance} from "axios";
-import {AssetData} from "../helpers/types";
+import {AssetData, TxDetails} from "../helpers/types";
 
 // Infura-Api only used for kovan & polygon at the moment
 // FIXME the url should be read from the config, as everywhere else,
@@ -76,6 +76,43 @@ async function infuraGetPolygonAccountBalance(data: any): Promise<AssetData> {
     }
     return assetData;
 }
+
+/**
+ * https://docs.infura.io/infura/networks/ethereum/json-rpc-methods/parity_nextnonce
+ * @param address
+ * @param chainId
+ */
+export const infuraGetAccountTransactions = async (address: string, chainId: string): Promise<number> => {
+    const data = {
+        "jsonrpc": "2.0",
+        "method": "eth_getTransactionByHash",
+        "params": [address],
+        "id": 1
+    };
+    const response = await ethInstance.post(
+        "",
+        data
+    );
+    const { result } = response.data;
+    console.info(`got nonce: ${result}`)
+    return result;
+};
+
+export const infuraGetTransactionByHash = async (hash: string, chainId: string): Promise<TxDetails> => {
+    const data = {
+        "jsonrpc": "2.0",
+        "method": "eth_getTransactionByHash",
+        "params": [hash],
+        "id": 1
+    };
+    const response = await ethInstance.post(
+        "",
+        data
+    );
+    const { result } = response.data;
+    console.info(`got trx details: ${result}`)
+    return result;
+};
 
 /**
  * https://docs.infura.io/infura/networks/ethereum/json-rpc-methods/parity_nextnonce
