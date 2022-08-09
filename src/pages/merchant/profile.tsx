@@ -22,7 +22,7 @@ export const ProfilePage = () => {
   };
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 bg-black bg-opacity-25 border-2 border-terciary rounded-16xl shadow-md p-10">
+      <div className="flex flex-col w-3/4 h-3/4 bg-black bg-opacity-25 border-2 border-terciary rounded-16xl shadow-md p-10 bg-white overflow-hidden">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Dashboard</p>
         <div className="mt-8">
           <p className="text-center text-white">Total payments</p>
@@ -47,7 +47,7 @@ export const ProfilePage = () => {
           </div>
 
           <div className="flex items-center justify-around px-2">
-            <div className="h-full grid w-full min-w-max overflow-auto">
+            <div className="grid h-full min-w-max w-full overflow-auto bg-black" style={{maxHeight: '25rem'}}>
               {
                 orders && orders.length > 0 ?
                     orders.map(token => (

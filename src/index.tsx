@@ -9,11 +9,11 @@ import { Main } from './pages';
 import reportWebVitals from './reportWebVitals';
 import { store } from './store';
 import {JsonRpcContextProvider} from "./contexts/JsonRpcContext";
-import {Pay} from "./pages/pay";
+import {Pay} from "./pages/storefrontpay/pay";
 import {WalletConnectProvider} from "./contexts/walletConnect";
 import {ErrorPage} from "./pages/storefrontpay/error";
 import {TransactionStatus} from "./pages/storefrontpay/transactionStatus";
-import {MerchantMain} from "./pages/merchantIndex";
+import {MerchantMain} from "./pages/merchant/merchantIndex";
 
 ReactDOM.render(
   <Provider store={store}>

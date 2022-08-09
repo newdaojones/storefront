@@ -1,20 +1,20 @@
 import React, {useState} from 'react';
 import QRCodeStyling from 'qr-code-styling';
-import logoIcon from '../assets/images/logo.svg';
-import promo1 from '../assets/images/promo_image_1.svg';
-import promo2 from '../assets/images/promo_image_2.svg';
-import promo3 from '../assets/images/promo_image_3.svg';
+import logoIcon from '../../assets/images/logo.svg';
+import promo1 from '../../assets/images/promo_image_1.svg';
+import promo2 from '../../assets/images/promo_image_2.svg';
+import promo3 from '../../assets/images/promo_image_3.svg';
 import {useLocation} from "react-use";
-import {extractOrderFromUrl} from "../utils/path_utils";
+import {extractOrderFromUrl} from "../../utils/path_utils";
 import {useHistory} from "react-router-dom";
 import QRCode from 'react-qr-code';
-import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
+import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
 import {useDispatch, useSelector} from "react-redux";
-import {userAction} from "../store/actions";
-import {IOrder} from "../models";
-import {selectBuyTransaction, selectCurrentOrder} from "../store/selector";
+import {userAction} from "../../store/actions";
+import {IOrder} from "../../models";
+import {selectBuyTransaction, selectCurrentOrder} from "../../store/selector";
 import {toast} from "react-toastify";
-import {ellipseAddress} from "../helpers";
+import {ellipseAddress} from "../../helpers";
 
 
 /**
