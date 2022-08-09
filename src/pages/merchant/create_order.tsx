@@ -40,7 +40,6 @@ export const CreateOrderPage = () => {
       console.info(`setting amount ${event.target.value}`);
       setAmount(event.target.value);
     }
-
   }
 
   return (

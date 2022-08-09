@@ -12,7 +12,7 @@ import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
 import {useDispatch, useSelector} from "react-redux";
 import {userAction} from "../../store/actions";
 import {IOrder} from "../../models";
-import {selectBuyTransaction, selectCurrentOrder} from "../../store/selector";
+import {selectCurrentOrder} from "../../store/selector";
 import {toast} from "react-toastify";
 import {ellipseAddress} from "../../helpers";
 
@@ -51,7 +51,6 @@ export const Pay = () => {
         }
     }
 
-    //TODO create the order and populate the qr with that tracking Id, to let it fetch data.
 
     if (!order?.externalOrderId) {
         console.log(`Invalid query data, redirecting`);
@@ -69,13 +68,14 @@ export const Pay = () => {
                 transactionHash: null,
                 nativeAmount: null
             };
+            // create the order and populate the qr with that tracking Id, to let it fetch data.
             dispatch(userAction.createOrder(orderInstance));
         } else {
             console.log(`order created trackingId: ${currentOrder.trackingId}`)
         }
     }
 
-    var qrCodeUri = currentOrder ? `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder.trackingId}` : '';
+    const qrCodeUri = currentOrder ? `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder.trackingId}` : '';
     React.useEffect(() => {
         if (currentOrder) {
             //const qrCodeUri = `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder?.trackingId}`

@@ -90,6 +90,15 @@ const setCreateOrderSuccess = (payload: IOrder) => {
   };
 };
 
+
+const setCreateMerchantSuccess = (payload: IMerchant) => {
+  console.info(`setCreateMerchantSuccess order ${payload.merchantName} ${payload.memberAddress}`)
+  return {
+    type: EUserActionTypes.CREATE_MERCHANT_SUCCESS,
+    payload
+  };
+};
+
 const getOrderSuccess = (payload: IOrder) => {
   console.info(`getOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
   return {
@@ -120,6 +129,13 @@ const createOrder = (payload: IOrder) => {
   };
 };
 
+const createMerchant = (payload: IMerchant) => {
+  return {
+    type: EUserActionTypes.CREATE_MERCHANT,
+    payload
+  };
+};
+
 const getOrder = (payload: { orderTrackingId: String }) => {
   return {
     type: EUserActionTypes.GET_ORDER,
@@ -143,5 +159,7 @@ export const userAction = {
   setOrderTransactionHash,
   createOrder,
   getOrder,
-  merchantLoginSuccess
+  merchantLoginSuccess,
+  createMerchant,
+  setCreateMerchantSuccess
 };

@@ -14,6 +14,7 @@ import { selectAccountInfo, selectEnsName } from '../../store/selector';
 import { useWalletConnectClient } from '../../contexts/walletConnect';
 import {OrbitalMenu} from "../../components/menu/circular";
 import {MerchantLogin} from "./merchant_login";
+import {RegisterMerchant} from "../storefrontpay/register";
 
 
 /**
@@ -77,7 +78,7 @@ export const MerchantMain = () => {
             size={450}
             key={'orbMenu'}
         />
-        {isLoading || isInitializing ? <Landing /> : account && merchantLogin ? <MerchantDashboard /> : <MerchantLogin />}
+        {isLoading || isInitializing ? <Landing /> : account ? (merchantLogin ? <MerchantDashboard />: <RegisterMerchant/>) : <MerchantLogin />}
         <AccountModal
             account={account}
             accounts={accounts}

@@ -1,5 +1,5 @@
 import axios from './axios';
-import {IOrder} from "../models";
+import {IMerchant, IOrder} from "../models";
 
 export const UserService = (function () {
   const loginApi = async (payload: string) => {
@@ -26,6 +26,10 @@ export const UserService = (function () {
     return axios.post(`/merchants/${address}/orders`, order);
   };
 
+  const createNewMerchant = async (order: IMerchant) => {
+    return axios.post(`/merchants`, order, {}, false);
+  };
+
   const linkOrderTransaction = async (orderTrackingId: string, transactionHash: string, nativeAmount: number) => {
     return axios.post(`/merchants/orders/${orderTrackingId}/transaction`, {transactionHash: transactionHash, nativeAmount: nativeAmount});
   };
@@ -37,6 +41,7 @@ export const UserService = (function () {
     getMerchantInfoApi,
     createNewOrder,
     getOrderApi,
-    linkOrderTransaction
+    linkOrderTransaction,
+    createNewMerchant
   };
 })();

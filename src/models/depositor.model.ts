@@ -109,7 +109,7 @@ export interface IMerchant {
   allowedUrl: string;
   id: number;
   orders: IOrder[];
- defaultToken: string,
+  defaultToken: string,
 }
 
 

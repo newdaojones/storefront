@@ -14,6 +14,7 @@ import {WalletConnectProvider} from "./contexts/walletConnect";
 import {ErrorPage} from "./pages/storefrontpay/error";
 import {TransactionStatus} from "./pages/storefrontpay/transactionStatus";
 import {MerchantMain} from "./pages/merchant/merchantIndex";
+import {RegisterMerchant} from "./pages/storefrontpay/register";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -24,6 +25,7 @@ ReactDOM.render(
                   <Route path={'/pay'} component={Pay}></Route>
                   <Route path={'/status'} component={TransactionStatus}></Route>
                   <Route path={'/error'} component={ErrorPage}></Route>
+                  <Route path={'/merchant/register'} component={RegisterMerchant}></Route>
                   <Route path={'/merchant'} component={MerchantMain}></Route>
                   <Route path={'/'} component={Main}></Route>
               </Switch>
