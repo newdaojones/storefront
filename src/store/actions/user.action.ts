@@ -9,6 +9,7 @@ import {
   IUserInfo,
   TransactionState
 } from '../../models';
+import * as H from "history";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -129,10 +130,10 @@ const createOrder = (payload: IOrder) => {
   };
 };
 
-const createMerchant = (payload: IMerchant) => {
+const createMerchant = (payload: IMerchant, history: H.History) => {
   return {
     type: EUserActionTypes.CREATE_MERCHANT,
-    payload
+    payload: {merchant: payload, history: history}
   };
 };
 

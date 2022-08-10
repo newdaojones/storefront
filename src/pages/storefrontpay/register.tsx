@@ -11,6 +11,7 @@ import {getAddressFromAccount} from "@walletconnect/utils";
 import {IMerchant} from "../../models";
 import {userAction} from "../../store/actions";
 import {toast} from "react-toastify";
+import {useHistory} from "react-router-dom";
 
 /**
  * Example URL
@@ -26,6 +27,8 @@ const defaultMerchant: IMerchant = {
 
 export const RegisterMerchant = () => {
     const dispatch = useDispatch();
+    const history = useHistory();
+
     const { account, accounts, balances } = useWalletConnectClient();
     const accountBalance = getNonZeroAccountBalance(accounts, balances);
 
@@ -85,7 +88,7 @@ export const RegisterMerchant = () => {
         }
 
         console.log(`creating merchant ${merchant}`)
-        dispatch(userAction.createMerchant(merchant));
+        dispatch(userAction.createMerchant(merchant, history));
     }
 
     React.useEffect(() => {

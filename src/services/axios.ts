@@ -16,8 +16,8 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.interceptors.response.use(
   response => response,
   err => {
+    console.info(`error_code :${err.response.data.code} message: ${err.response.data.message}`)
     const error = err.response;
-
     throw error || err;
   }
 );
