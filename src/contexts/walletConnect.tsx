@@ -25,6 +25,7 @@ import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
+import {useHistory} from "react-router-dom";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -51,7 +52,12 @@ interface IContext {
   solanaPublicKeys?: Record<string, PublicKey>;
   balances: AccountBalances;
   setChains: any;
-  merchantLogin: boolean;
+  merchantLogin: MerchantLoginStatus;
+}
+
+export interface MerchantLoginStatus {
+  isMerchantUser: boolean;
+  merchantExists: boolean;
 }
 
 /**
@@ -81,8 +87,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   const [balances, setBalances] = useState<AccountBalances>({});
 
-  const [merchantLogin, setMerchantLogin] = useState<boolean>(false);
-
+  const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>({isMerchantUser: false, merchantExists: false});
 
   let pathname = useLocation().pathname;
 
@@ -151,15 +156,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       return;
     }
     if (pathname.startsWith('/storefront/merchant')) {
-      setMerchantLogin(true);
+      merchantLogin.isMerchantUser = true
     } else {
-      setMerchantLogin(false);
+      merchantLogin.isMerchantUser = true
     }
+    setMerchantLogin(merchantLogin);
 
   }, [pathname]);
 
-  function loginWithAccount(account: string, merchantLogin: boolean) {
-    if (!merchantLogin) {
+  function loginWithAccount(account: string, merchantLogin: MerchantLoginStatus) {
+    if (!merchantLogin.isMerchantUser) {
       login(account);
     } else {
       loginWithSignedNonce(account);
@@ -235,6 +241,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       } catch (err: any) {
         localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
         toast.error(err.message);
+        console.error(`login exception: ${err} ${err?.message}. Disconnecting...`)
         disconnect();
       } finally {
         setIsLoading(false);
@@ -255,7 +262,18 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           const nonce = res.data.nonce;
 
           if (!nonce) {
-            throw new Error(res.data.message);
+            console.warn(`nonce invalid. msg ${res.data.message}`)
+            if (res.data.message && res.data.message.includes('Member with address') && res.data.message.includes('not found')) {
+              //TODO if the user is member not found, it should redirect to register page
+              //history.replace("/merchant/register")
+              console.log(`setting register flag`);
+              merchantLogin.merchantExists = false;
+              setMerchantLogin(merchantLogin);
+              disconnect();
+              throw new Error(res.data.message);
+            } else throw new Error(res.data.message);
+
+            return;
           }
 
           let signature: string | null = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
@@ -292,7 +310,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           setIsLoading(false);
         }
       },
-      [client, session]
+      [client, session, merchantLogin]
   );
 
   const connect = useCallback(

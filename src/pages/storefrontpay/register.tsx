@@ -3,15 +3,15 @@ import logoIcon from '../../assets/images/logo.svg';
 import promo1 from '../../assets/images/promo_image_1.svg';
 import promo2 from '../../assets/images/promo_image_2.svg';
 import promo3 from '../../assets/images/promo_image_3.svg';
-import {getNonZeroAccountBalance} from "../../helpers/tx";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {ellipseAddress} from "../../helpers";
 import {getAddressFromAccount} from "@walletconnect/utils";
 import {IMerchant} from "../../models";
 import {userAction} from "../../store/actions";
 import {toast} from "react-toastify";
 import {useHistory} from "react-router-dom";
+import {selectMerchantInfo} from "../../store/selector";
 
 /**
  * Example URL
@@ -29,18 +29,19 @@ export const RegisterMerchant = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-    const { account, accounts, balances } = useWalletConnectClient();
-    const accountBalance = getNonZeroAccountBalance(accounts, balances);
+    const { accounts, balances, merchantLogin } = useWalletConnectClient();
 
     const [ policy, setPolicy ] = useState(false)
     const [ merchant, setMerchant ] = useState<IMerchant>(defaultMerchant)
 
+    const merchantInfo = useSelector(selectMerchantInfo);
+
     const getWalletAddress = (): string => {
-        if (account) {
-            let accountAddress = getAddressFromAccount(account!!)||"";
-            console.log(`merchant Account ${account} add ${accountAddress}`)
-            const walletAddress = ellipseAddress(accountAddress)
-            return walletAddress;
+        if (accounts && accounts.length > 0) {
+            const first = accounts[0];
+            let accountAddress = getAddressFromAccount(first!!)||"";
+            console.log(`merchant Account ${first} add ${accountAddress}`)
+            return accountAddress;
         }
         return ''
     }
@@ -88,14 +89,24 @@ export const RegisterMerchant = () => {
         }
 
         console.log(`creating merchant ${merchant}`)
+        merchant.memberAddress = getWalletAddress();
+        setMerchant(merchant);
+
+
         dispatch(userAction.createMerchant(merchant, history));
     }
 
     React.useEffect(() => {
         getWalletAddress();
-    }, [account]);
+    }, [accounts]);
 
-
+    React.useEffect(() => {
+        if (merchantInfo) {
+            console.log(`merchant info available, replacing with profile`)
+            merchantLogin.merchantExists = true;
+            history.replace("/merchant/profile")
+        }
+    }, [merchantInfo]);
 
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
@@ -122,7 +133,7 @@ export const RegisterMerchant = () => {
 
                         <div className="w-full flex flex-col p-4">
                             <p className="text-sm ">Wallet Address</p>
-                            <input className="border-2 border-secondary rounded-16xl shadow-md px-4 py-2 my-2" type='text' readOnly={true} value={getWalletAddress()}/>
+                            <input className="border-2 border-secondary rounded-16xl shadow-md px-4 py-2 my-2" type='text' readOnly={true} value={ellipseAddress(getWalletAddress())}/>
                         </div>
                         <div className="flex items-center justify-center mt-8">
                             <input className="mx-2" name="policy" type="checkbox" readOnly={true} value='true' onChange={handleChange}/>

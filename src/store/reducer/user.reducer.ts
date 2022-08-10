@@ -25,6 +25,7 @@ export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.SET_TRANSACTION_SUCCESS]: setTransactionData,
   [userActionTypes.CREATE_ORDER_SUCCESS]: setOrderData,
   [userActionTypes.GET_ORDER_SUCCESS]: setOrderData,
+  [userActionTypes.CREATE_MERCHANT_SUCCESS]: setMerchantInfo,
 });
 
 function setLoginSuccessStatus(state: IUserState, { payload }: IAction<IAccountInfo>) {

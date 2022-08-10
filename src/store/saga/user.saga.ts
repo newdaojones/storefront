@@ -137,13 +137,22 @@ function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
 
 function* watchCreateMerchant(action: { type: EUserActionTypes; payload: {merchant: IMerchant, history: H.History}}) {
   try {
-    const res: AxiosResponse = yield call(() => UserService.createNewMerchant(action.payload.merchant));
+    const res: AxiosResponse = yield call(() => UserService.createNewMerchant(action.payload.merchant)
+        // .catch(
+        // onrejectionhandled => {
+        //   console.warn(`called failed ${onrejectionhandled.response.data} ${onrejectionhandled.data}`);
+        //   if (onrejectionhandled && onrejectionhandled.includes("There's already a merchant for the same member")) {
+        //     action.payload.history.replace("/merchant/profile");
+        //   }
+        // }
+    // )
+  );
     console.info(`createMerchant response ${res} ${res.status} ${res.data}`)
     if (res.status !== 200) {
-      console.error(`error result in create new order`);
+      console.error(`error result in create new merchant`);
     }
     yield put(userAction.setCreateMerchantSuccess(res.data));
-    action.payload.history.replace("/merchant/profile")
+    action.payload.history.replace("/merchant/profile");
   } catch (err: any) {
     console.error(`error while creating merchant ${err}`)
     toast.error(err.data.message ? `${err.data.message}` : `Error ${err.status}`);

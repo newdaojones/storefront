@@ -10,13 +10,11 @@ import FindIcon from '../../assets/images/find.svg';
 import StorefrontIcon from '../../assets/images/storefront.svg';
 import SettingsIcon from '../../assets/images/settings.svg';
 
-import { selectAccountInfo, selectEnsName } from '../../store/selector';
+import {selectEnsName, selectMerchantInfo} from '../../store/selector';
 import { useWalletConnectClient } from '../../contexts/walletConnect';
 import {OrbitalMenu} from "../../components/menu/circular";
 import {MerchantLogin} from "./merchant_login";
 import {RegisterMerchant} from "../storefrontpay/register";
-
-
 /**
  * http://localhost:3000/storefront/merchant
  * @constructor
@@ -25,6 +23,7 @@ export const MerchantMain = () => {
   const ensName = useSelector(selectEnsName);
   // const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
+  const merchantInfo = useSelector(selectMerchantInfo);
 
   // Initialize the WalletConnect client.
   const {
@@ -68,7 +67,7 @@ export const MerchantMain = () => {
 
   return (
       <div className="h-screen w-screen flex">
-        <OrbitalMenu
+        {account && <OrbitalMenu
             status={isLoading ? 'Connecting...' : account ? 'Connected' : 'Disconnected'}
             onDisconnect={onDisconnect}
             onSelectAccount={() => setOpenSwitchAccount(true)}
@@ -77,8 +76,8 @@ export const MerchantMain = () => {
             items={menuItems}
             size={450}
             key={'orbMenu'}
-        />
-        {isLoading || isInitializing ? <Landing /> : account ? (merchantLogin ? <MerchantDashboard />: <RegisterMerchant/>) : <MerchantLogin />}
+        />}
+        {isLoading || isInitializing ? <Landing /> : account ? <MerchantDashboard /> :<MerchantLogin /> }
         <AccountModal
             account={account}
             accounts={accounts}
