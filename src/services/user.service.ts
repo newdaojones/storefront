@@ -14,6 +14,10 @@ export const UserService = (function () {
     return axios.get('/tickers');
   };
 
+  const nonceApi = async (payload: string) => {
+    return axios.get(`/merchants/${payload}/nonce`);
+  };
+
   const getMerchantInfoApi = async (address: string) => {
     return axios.get(`/merchants/${address}`);
   };
@@ -27,7 +31,7 @@ export const UserService = (function () {
   };
 
   const createNewMerchant = async (order: IMerchant) => {
-    return axios.post(`/merchants`, order, {}, false);
+    return axios.post(`/merchants?nonce=${axios.getNonce()}&signature=${axios.getSignature()}`, order, {}, false);
   };
 
   const linkOrderTransaction = async (orderTrackingId: string, transactionHash: string, nativeAmount: number) => {
@@ -42,6 +46,7 @@ export const UserService = (function () {
     createNewOrder,
     getOrderApi,
     linkOrderTransaction,
-    createNewMerchant
+    createNewMerchant,
+    nonceApi
   };
 })();

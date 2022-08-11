@@ -158,7 +158,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     if (pathname.startsWith('/storefront/merchant')) {
       merchantLogin.isMerchantUser = true
     } else {
-      merchantLogin.isMerchantUser = true
+      merchantLogin.isMerchantUser = false
     }
     setMerchantLogin(merchantLogin);
 
@@ -178,7 +178,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     }
 
     const account = localStorage.getItem(NDJ_ADDRESS);
-    //TODO this should use some kind of route param to tell if it is a merchant login or buyer login
     if (!accounts.length) {
       return;
     }
@@ -258,22 +257,29 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           const startTime = moment();
 
           const [namespace, reference, address] = account.split(':');
-          const res = await UserService.loginApi(address);
-          const nonce = res.data.nonce;
+
+          try {
+            const loginRes = await UserService.loginApi(address);
+            const memberNonce = loginRes.data.nonce;
+            if (!memberNonce) {
+              console.warn("not a member")
+              merchantLogin.merchantExists = false
+            } else {
+              console.warn("merchant does exist a member")
+              merchantLogin.merchantExists = true
+            }
+            setMerchantLogin(merchantLogin)
+          } catch (e) {
+            console.log(e)
+          }
+
+
+          const res = await UserService.nonceApi(address);
+          let nonce = res.data.nonce;
 
           if (!nonce) {
-            console.warn(`nonce invalid. msg ${res.data.message}`)
-            if (res.data.message && res.data.message.includes('Member with address') && res.data.message.includes('not found')) {
-              //TODO if the user is member not found, it should redirect to register page
-              //history.replace("/merchant/register")
-              console.log(`setting register flag`);
-              merchantLogin.merchantExists = false;
-              setMerchantLogin(merchantLogin);
-              disconnect();
-              throw new Error(res.data.message);
-            } else throw new Error(res.data.message);
-
-            return;
+            console.warn(`registration nonce is not valid. exit`)
+            throw new Error(res.data.message);
           }
 
           let signature: string | null = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
@@ -301,10 +307,14 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
           dispatch(userAction.merchantLoginSuccess({address: address}));
 
+
+
         } catch (err: any) {
           localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
           console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
           toast.error(`Error: ${err.message}.`);
+
+          //TODO check if disconnect or not
           // disconnect().then(() => console.log(`disconnect done.`));
         } finally {
           setIsLoading(false);

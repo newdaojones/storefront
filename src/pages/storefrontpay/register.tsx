@@ -36,6 +36,14 @@ export const RegisterMerchant = () => {
 
     const merchantInfo = useSelector(selectMerchantInfo);
 
+    React.useEffect(() => {
+        if (merchantInfo) {
+            console.log(`merchant info available, replacing with profile`)
+            merchantLogin.merchantExists = true;
+            history.replace("/merchant/profile")
+        }
+    }, [merchantInfo]);
+
     const getWalletAddress = (): string => {
         if (accounts && accounts.length > 0) {
             const first = accounts[0];
@@ -100,13 +108,7 @@ export const RegisterMerchant = () => {
         getWalletAddress();
     }, [accounts]);
 
-    React.useEffect(() => {
-        if (merchantInfo) {
-            console.log(`merchant info available, replacing with profile`)
-            merchantLogin.merchantExists = true;
-            history.replace("/merchant/profile")
-        }
-    }, [merchantInfo]);
+
 
     return (
         <div className="h-screen w-screen flex twoColumnContainer">

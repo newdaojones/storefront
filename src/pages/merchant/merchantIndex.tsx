@@ -67,7 +67,7 @@ export const MerchantMain = () => {
 
   return (
       <div className="h-screen w-screen flex">
-        {account && <OrbitalMenu
+        {account && merchantLogin.merchantExists && <OrbitalMenu
             status={isLoading ? 'Connecting...' : account ? 'Connected' : 'Disconnected'}
             onDisconnect={onDisconnect}
             onSelectAccount={() => setOpenSwitchAccount(true)}
@@ -77,7 +77,7 @@ export const MerchantMain = () => {
             size={450}
             key={'orbMenu'}
         />}
-        {isLoading || isInitializing ? <Landing /> : account ? <MerchantDashboard /> :<MerchantLogin /> }
+        {isLoading || isInitializing ? <Landing /> : account ? merchantLogin.merchantExists ? <MerchantDashboard />: <RegisterMerchant/> :<MerchantLogin /> }
         <AccountModal
             account={account}
             accounts={accounts}

@@ -1,15 +1,19 @@
 import axios from 'axios';
+import {isDevMode} from "../config/AppConfig";
 
+// DEV
+axios.defaults.baseURL = 'http://localhost:5000/';
+
+// DEV
+const devUrl = 'http://localhost:5000/';
+// Test (http/https)
+//const testNoSslUrl = 'http://fundapi-test.us-east-2.elasticbeanstalk.com/';
+const testUrl = 'https://test-api.jxndao.com/';
 // PROD
 // axios.defaults.baseURL = 'https://api.jxndao.com/';
 
-// DEV
-//TODO url
-// axios.defaults.baseURL = 'http://localhost:5000/';
-
-// Test (http/https)
-// axios.defaults.baseURL = 'http://fundapi-test.us-east-2.elasticbeanstalk.com/';
-axios.defaults.baseURL = 'https://test-api.jxndao.com/';
+export const apiBaseUrl = isDevMode() ? devUrl : testUrl;
+axios.defaults.baseURL = apiBaseUrl;
 
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
@@ -58,6 +62,15 @@ const AxiosService = function () {
     Nonce = nonce;
   }
 
+  function getNonce() : string {
+    return Nonce;
+  }
+
+  function getSignature() : string {
+    return AuthorizationToken;
+  }
+
+
   // GET method
   function get(endPoint: string, userConfig = {}) {
     return axios.get(endPoint, addHeaders(userConfig));
@@ -89,6 +102,8 @@ const AxiosService = function () {
     put,
     patch,
     del,
+    getNonce,
+    getSignature
   };
 };
 
