@@ -1,6 +1,6 @@
 import React from "react";
 import logoIcon from "./assets/images/logo.svg";
-import {isDevMode} from "./config/AppConfig";
+import {isDevMode} from "./config/appconfig";
 
 const devUrl = 'http://localhost:3000';
 const baseUrl = 'https://test.jxndao.com';

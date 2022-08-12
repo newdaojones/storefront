@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {isDevMode} from "../config/AppConfig";
+import {isDevMode} from "../config/appconfig";
 
 // DEV
 axios.defaults.baseURL = 'http://localhost:5000/';
