@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import numeral from 'numeral';
 
 import BTCIcon from '../../assets/images/btcIcon.svg';
@@ -6,17 +6,26 @@ import DollarIcon from '../../assets/images/dollarIcon.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
 import TransactionRow from "../../components/transactionRow";
 import {ITransactionInfo} from "../../models";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {selectMerchantInfo} from "../../store/selector";
 import OrderRow from "../../components/orderRow";
+import useInterval from "@use-it/interval";
+import {userAction} from "../../store/actions";
 
 export const ProfilePage = () => {
-
-  // const depositors = [{transactionHash: 0x212123abd, amount: 0.55}, {transactionHash: 0x212123abd, amount: 0.55}];
-
+  const dispatch = useDispatch();
   let merchantInfo = useSelector(selectMerchantInfo);
+
+  const [count, setCount] = useState(0);
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
-  const orders = merchantInfo?.orders
+
+  useInterval(() => {
+    if (merchantInfo) {
+      console.log(`refreshing merchantInfo`)
+      setCount((currentCount) => currentCount + 1);
+      dispatch(userAction.merchantLoginSuccess({address: merchantInfo.memberAddress}))
+    }
+  }, 30000);
 
   let onEdit = () => {
   };
@@ -49,8 +58,8 @@ export const ProfilePage = () => {
           <div className="flex items-center justify-around px-2">
             <div className="grid h-full min-w-max w-full overflow-auto" style={{maxHeight: '25rem'}}>
               {
-                orders && orders.length > 0 ?
-                    orders.map(token => (
+                merchantInfo?.orders && merchantInfo?.orders.length > 0 ?
+                    merchantInfo?.orders.map(token => (
                         <div className="pt-1">
                           <OrderRow key={token.transactionHash} asset={token} onEdit={onEdit}/>
                         </div>)

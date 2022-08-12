@@ -25,7 +25,7 @@ export default function* root() {
 
     takeLatest(EUserActionTypes.SET_ORDER_TRANSACTION_HASH as any, watchLinkOrderTransaction),
 
-    takeLatest(EUserActionTypes.MERCHANT_LOGIN_SUCCESS as any, watchGetMerchantInfo),
+    takeLatest(EUserActionTypes.GET_MERCHANT_INFO as any, watchGetMerchantInfo),
 
     takeLatest(EUserActionTypes.GET_ORDER as any, watchGetOrderInfo),
 

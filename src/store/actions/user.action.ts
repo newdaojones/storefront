@@ -118,7 +118,7 @@ const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionH
 
 const merchantLoginSuccess = (payload: {address: string}) => {
   return {
-    type: EUserActionTypes.MERCHANT_LOGIN_SUCCESS,
+    type: EUserActionTypes.GET_MERCHANT_INFO,
     payload
   };
 };
