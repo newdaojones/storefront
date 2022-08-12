@@ -1,11 +1,9 @@
 import React, {useState} from 'react';
 import numeral from 'numeral';
 
-import BTCIcon from '../../assets/images/btcIcon.svg';
+import BTCIcon from '../../assets/images/ethIcon.svg';
 import DollarIcon from '../../assets/images/dollarIcon.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
-import TransactionRow from "../../components/transactionRow";
-import {ITransactionInfo} from "../../models";
 import {useDispatch, useSelector} from "react-redux";
 import {selectMerchantInfo} from "../../store/selector";
 import OrderRow from "../../components/orderRow";
@@ -17,7 +15,7 @@ export const ProfilePage = () => {
   let merchantInfo = useSelector(selectMerchantInfo);
 
   const [count, setCount] = useState(0);
-  console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
+  console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName} totalUsd: ${merchantInfo?.totalInUsd}`);
 
   useInterval(() => {
     if (merchantInfo) {
@@ -38,11 +36,11 @@ export const ProfilePage = () => {
           <div className="flex items-center justify-center mt-2">
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
               <img className="w-8 h-8 mr-2" src={BTCIcon} alt="" />
-              {numeral(2.3434 || 0).format('0,0.00')}
+              {`${numeral(merchantInfo?.totalInEth || 0).format('0,0.000000')}`}
             </div>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-6">
               <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
-              {numeral(3434.3 || 0).format('0,0')}
+              {`${numeral(merchantInfo?.totalInUsd || 0).format(',0.00')}`}
             </div>
           </div>
         </div>

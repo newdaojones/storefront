@@ -110,6 +110,8 @@ export interface IMerchant {
   id: number;
   orders: IOrder[];
   defaultToken: string,
+  totalInEth?: number,
+  totalInUsd?: number,
 }
 
 
