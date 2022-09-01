@@ -32,16 +32,13 @@ export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
     const dispatch = useDispatch();
-    const [ showBlackWhite, setShowBlackWhite ] = useState(false)
+    const [ showBlackWhite, setShowBlackWhite ] = useState(true)
     const [background] = useState('#FFFFFF');
     const [foreground] = useState('#000000');
     const [size] = useState(300);
 
     let currentOrder = useSelector(selectCurrentOrder)
     const [count, setCount] = useState(0);
-
-
-
 
     React.useEffect(() => {
         if (query) {

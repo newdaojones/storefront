@@ -86,7 +86,7 @@ export const OrbitalMenu = ({
                 <div className="absolute z-10">
                     <p className="text-white mt-12 ml-4">
                         {status}
-                        {!disabled && name ? ' as..' : ''}
+                        {!disabled && name ? ' as' : ''}
                     </p>
                     {!disabled && name && <p className="text-white font-bold ml-4 z-10">{name}</p>}
                 </div>

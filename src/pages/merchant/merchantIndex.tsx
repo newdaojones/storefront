@@ -55,9 +55,9 @@ export const MerchantMain = () => {
   }, [initialized, connect, session]);
 
   let menuItems = [
-    { route: '/merchant/profile', icon: StorefrontIcon },
-    { route: '/merchant/order', icon: FindIcon },
-    { route: '/merchant/settings', icon: SettingsIcon },
+    { route: '/merchant/profile', icon: StorefrontIcon, text: "Home" },
+    { route: '/merchant/order', icon: FindIcon, text: "Orders" },
+    { route: '/merchant/settings', icon: SettingsIcon, text: "Settings" },
   ];
 
   let ens = ensName;

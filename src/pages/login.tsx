@@ -55,7 +55,7 @@ export const Login = () => {
     }
 
     const payButton = storefrontPayButton('0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004', "12323", 0.45);
-    const backpackDeeplink = qrCodeUri ? `ndj-backpack://${qrCodeUri}` : '';
+    const backpackDeeplink = qrCodeUri ? `ndj-backpack://wc?uri=${qrCodeUri}` : '';
     return (
         <div className="w-full h-full flex items-center justify-center flex-col">
             <a href={qrCodeUri} className="">
