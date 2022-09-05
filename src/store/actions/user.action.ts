@@ -100,6 +100,14 @@ const setCreateMerchantSuccess = (payload: IMerchant) => {
   };
 };
 
+const updateMerchantSuccess = (payload: IMerchant) => {
+  console.info(`updateMerchantSuccess order ${payload.merchantName} ${payload.memberAddress}`)
+  return {
+    type: EUserActionTypes.UPDATE_MERCHANT_SUCCESS,
+    payload
+  };
+};
+
 const getOrderSuccess = (payload: IOrder) => {
   console.info(`getOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
   return {
@@ -137,6 +145,13 @@ const createMerchant = (payload: IMerchant, history: H.History) => {
   };
 };
 
+const updateMerchant = (payload: IMerchant, history: H.History) => {
+  return {
+    type: EUserActionTypes.UPDATE_MERCHANT_SETTINGS,
+    payload: {merchant: payload, history: history}
+  };
+};
+
 const getOrder = (payload: { orderTrackingId: String }) => {
   return {
     type: EUserActionTypes.GET_ORDER,
@@ -162,5 +177,6 @@ export const userAction = {
   getOrder,
   merchantLoginSuccess,
   createMerchant,
-  setCreateMerchantSuccess
+  setCreateMerchantSuccess,
+  updateMerchantSuccess
 };

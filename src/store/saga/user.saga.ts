@@ -30,6 +30,11 @@ export default function* root() {
     takeLatest(EUserActionTypes.GET_ORDER as any, watchGetOrderInfo),
 
     takeLatest(EUserActionTypes.CREATE_MERCHANT as any, watchCreateMerchant),
+
+    takeLatest(EUserActionTypes.UPDATE_MERCHANT_SETTINGS as any, watchUpdateMerchant),
+
+    // maybe not needed
+    //takeLatest(EUserActionTypes.UPDATE_MERCHANT_SUCCESS as any, watchGetMerchantInfo)
   ]);
 }
 
@@ -153,6 +158,20 @@ function* watchCreateMerchant(action: { type: EUserActionTypes; payload: {mercha
     }
     yield put(userAction.setCreateMerchantSuccess(res.data));
     action.payload.history.replace("/merchant/profile");
+  } catch (err: any) {
+    console.error(`error while creating merchant ${err}`)
+    toast.error(err.data.message ? `${err.data.message}` : `Error ${err.status}`);
+  }
+}
+
+function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: {merchant: IMerchant}}) {
+  try {
+    const res: AxiosResponse = yield call(() => UserService.updateMerchantSettings(action.payload.merchant));
+    console.info(`updateMerchant response ${res} ${res.status} ${res.data}`)
+    if (res.status !== 200) {
+      console.error(`error result in create new merchant`);
+    }
+    yield put(userAction.updateMerchantSuccess(res.data));
   } catch (err: any) {
     console.error(`error while creating merchant ${err}`)
     toast.error(err.data.message ? `${err.data.message}` : `Error ${err.status}`);

@@ -34,6 +34,10 @@ export const UserService = (function () {
     return axios.post(`/merchants?nonce=${axios.getNonce()}&signature=${axios.getSignature()}`, order, {}, false);
   };
 
+  const updateMerchantSettings = async (order: IMerchant) => {
+    return axios.put(`/merchants/${order.id}/settings`, order, {});
+  };
+
   const linkOrderTransaction = async (orderTrackingId: string, transactionHash: string, nativeAmount: number) => {
     return axios.post(`/merchants/orders/${orderTrackingId}/transaction`, {transactionHash: transactionHash, nativeAmount: nativeAmount});
   };
@@ -47,6 +51,7 @@ export const UserService = (function () {
     getOrderApi,
     linkOrderTransaction,
     createNewMerchant,
+    updateMerchantSettings,
     nonceApi
   };
 })();
