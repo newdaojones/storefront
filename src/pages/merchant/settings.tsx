@@ -5,12 +5,12 @@ import {selectMerchantInfo} from "../../store/selector";
 import {getAddressFromAccount} from "@walletconnect/utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {ellipseAddress} from "../../helpers";
-import Toggle from "../../components/ui/toggle";
 
 export const SettingsPage = () => {
   const { account} = useWalletConnectClient();
   let merchantInfo = useSelector(selectMerchantInfo);
-  const [enabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState(true);
+  const [polygonEnabled, setPolygonEnabled] = useState(true);
 
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
   console.log(`merchant Account ${account} add ${getAddressFromAccount(account!!)||""}`)
@@ -53,8 +53,8 @@ export const SettingsPage = () => {
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="text-center text-white  mr-8">Fake Money</p>
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded" >
-              <label htmlFor="toggle-example" className="flex items-center cursor-pointer relative mb-4" >
+            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
+              <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative" >
                 <input type="checkbox" id="toggle-example" className="sr-only" checked={enabled}/>
                   <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" onClick={() => {
                     setEnabled(!enabled);
@@ -66,14 +66,25 @@ export const SettingsPage = () => {
 
           <div className="w-full flex justify-between mt-10">
             <p className="text-center text-white  mr-8">Supported Chains</p>
-            <div className="flex flex-col justify-center bg-white bg-opacity-25 py-1 px-2 rounded">
+
+            <div className="flex flex-col justify-end bg-white bg-opacity-25 py-1 px-2 rounded">
+
               <div className="flex items-center justify-end text-white py-1 px-2 rounded">
-                {'Ethereum'}
-                <input className="m-2" type="checkbox" readOnly={true} value='true'/>
+                <div>{'Ethereum'}</div>
+                <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4" >
+                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={true}/>
+                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" ></div>
+                </label>
               </div>
-              <div className="flex items-center justify-center text-white py-1 px-2 rounded mt-2">
-                {'Polygon'}
-                <input className="m-2" type="checkbox" value='true'/>
+
+              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+                <div>{'Polygon'}</div>
+                <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative ml-4" >
+                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={polygonEnabled}/>
+                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" onClick={() => {
+                    setPolygonEnabled(!polygonEnabled);
+                  }}></div>
+                </label>
               </div>
             </div>
           </div>
