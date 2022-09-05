@@ -145,10 +145,10 @@ const createMerchant = (payload: IMerchant, history: H.History) => {
   };
 };
 
-const updateMerchant = (payload: IMerchant, history: H.History) => {
+const updateMerchant = (payload: IMerchant) => {
   return {
     type: EUserActionTypes.UPDATE_MERCHANT_SETTINGS,
-    payload: {merchant: payload, history: history}
+    payload: {merchant: payload}
   };
 };
 
@@ -178,5 +178,6 @@ export const userAction = {
   merchantLoginSuccess,
   createMerchant,
   setCreateMerchantSuccess,
+  updateMerchant,
   updateMerchantSuccess
 };

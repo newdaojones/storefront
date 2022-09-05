@@ -1,12 +1,15 @@
 import React, {useState} from 'react';
 import {storefrontPayButton} from "../../StorefrontPaySdk";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {selectMerchantInfo} from "../../store/selector";
 import {getAddressFromAccount} from "@walletconnect/utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {ellipseAddress} from "../../helpers";
+import {userAction} from "../../store/actions";
+import {IMerchant} from "../../models";
 
 export const SettingsPage = () => {
+  const dispatch = useDispatch();
   const { account} = useWalletConnectClient();
   let merchantInfo = useSelector(selectMerchantInfo);
   const [enabled, setEnabled] = useState(true);
@@ -17,15 +20,40 @@ export const SettingsPage = () => {
 
   let payButton = storefrontPayButton(getAddressFromAccount(account!!) || "", "1", 0.15);
 
-
   React.useEffect(() => {
     if (account) {
       payButton = storefrontPayButton(getAddressFromAccount(account), "1", 0.15);
     }
   }, [account]);
 
+  React.useEffect(() => {
+    if (merchantInfo) {
+      setEnabled(merchantInfo.testnet);
+    }
+  }, [merchantInfo]);
+
   let onEdit = () => {
   };
+
+  const onSaveSettings = () => {
+    if (!merchantInfo) {
+      return;
+    }
+    const updatedMerchant: IMerchant = {
+      allowedUrl: merchantInfo.allowedUrl,
+      defaultToken: merchantInfo.defaultToken,
+      id: merchantInfo.id,
+      memberAddress: merchantInfo.memberAddress,
+      memberENSAddress: merchantInfo.memberENSAddress,
+      memberSecondaryAddress: merchantInfo.memberENSAddress,
+      merchantName: merchantInfo.merchantName,
+      orders: [],
+      storeName: "",
+      testnet: enabled
+    };
+    dispatch(userAction.updateMerchant(updatedMerchant));
+  }
+
   return (
     <div className="w-full h-full flex items-center justify-center">
       <div className="w-3/4 items-center justify-center bg-black bg-opacity-10 border-2 border-secondary rounded-16xl shadow-md p-20">
@@ -89,10 +117,15 @@ export const SettingsPage = () => {
             </div>
           </div>
 
+          <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4"
+                  onClick={onSaveSettings}>
+            <p className="font-righteous">Save</p>
+          </button>
+
           {/*Storefront Pay Button*/}
-          <div className="w-full flex flex-col items-center justify-around pt-10">
+          <div className="w-full flex flex-col items-center justify-around pt-8">
+            <p className="font-montserrat text-white text-center text-sm mt-2">Add a Pay with Storefront button to your site, or use our sdk.</p>
             {payButton}
-            <p className="font-montserrat text-white text-center text-sm mt-2 mb-4">Add a Pay with Storefront button to your site, or use our sdk.</p>
           </div>
         </div>
       </div>

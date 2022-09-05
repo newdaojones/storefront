@@ -21,7 +21,7 @@ import {selectMerchantInfo} from "../../store/selector";
  */
 const defaultMerchant: IMerchant = {
     defaultToken: "ETH", id: 0, memberENSAddress: "", orders: [],
-    allowedUrl: "*", memberSecondaryAddress: "",
+    allowedUrl: "*", memberSecondaryAddress: "",testnet: true,
     memberAddress: '', merchantName: '', storeName: ''
 };
 
