@@ -44,6 +44,8 @@ export const Pay = () => {
         if (query) {
             let order = null;
             try {
+                //FIXME the address should come from a backend call to fetch the merchant info, instead of what's in the url
+                //url should only contain basic info
                 order = extractOrderFromUrl(query);
                 console.log(`orderId: ${order.externalOrderId} amount: ${order.amount}`);
             } catch (e: any) {
@@ -60,8 +62,9 @@ export const Pay = () => {
                         amount: order.amount,
                         externalOrderId: order?.externalOrderId,
                         //FIXME hardcoded merchant data like testnet = true
-                        testnet: true,
+                        testnet: merchantInfo.testnet,
                         token: "USD",
+                        //FIXME merchant address should come from backend, not what's in the url params
                         toAddress: order.merchantAddress,
                         transactionHash: null,
                         nativeAmount: null
