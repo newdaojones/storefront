@@ -196,17 +196,19 @@ export const Pay = () => {
                     </a>
                 )}
                 {currentOrder && showBlackWhite && (
-                    <div className="flex items-center justify-center">
-                        <QRCode
-                            title="Storefront Pay"
-                            value={qrCodeUri}
-                            bgColor={background}
-                            fgColor={foreground}
-                            size={!size ? 0 : size}
-                        >
-                        </QRCode>
-                        <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
-                    </div>
+                    <a href={qrCodeUri} target={'_blank'}>
+                        <div className="flex items-center justify-center">
+                            <QRCode
+                                title="Storefront Pay"
+                                value={qrCodeUri}
+                                bgColor={background}
+                                fgColor={foreground}
+                                size={!size ? 0 : size}
+                            >
+                            </QRCode>
+                            <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
+                        </div>
+                    </a>
                 )}
 
                 <p onClick={onTroubleScanningClicked}
