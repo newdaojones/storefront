@@ -1,5 +1,5 @@
 import Client from '@walletconnect/sign-client';
-import { PairingTypes, SessionTypes } from '@walletconnect/types';
+import {PairingTypes, SessionTypes} from '@walletconnect/types';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import moment from 'moment';
@@ -11,7 +11,7 @@ import {
   DEFAULT_EIP155_METHODS,
   DEFAULT_LOGGER,
   DEFAULT_PROJECT_ID,
-  DEFAULT_RELAY_URL,
+  DEFAULT_RELAY_URL, REQUIRED_CHAINS,
 } from '../consts';
 import { getAppMetadata, getSdkError } from "@walletconnect/utils";
 import { getPublicKeysFromAccounts } from '../helpers/solana';
@@ -25,6 +25,7 @@ import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
+import {useHistory} from "react-router-dom";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -51,7 +52,12 @@ interface IContext {
   solanaPublicKeys?: Record<string, PublicKey>;
   balances: AccountBalances;
   setChains: any;
-  merchantLogin: boolean;
+  merchantLogin: MerchantLoginStatus;
+}
+
+export interface MerchantLoginStatus {
+  isMerchantUser: boolean;
+  merchantExists: boolean;
 }
 
 /**
@@ -77,12 +83,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [account, setAccount] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [solanaPublicKeys, setSolanaPublicKeys] = useState<Record<string, PublicKey>>();
-  const [chains, setChains] = useState<string[]>(DEFAULT_CHAINS);
+  const [chains, setChains] = useState<string[]>(REQUIRED_CHAINS);
 
   const [balances, setBalances] = useState<AccountBalances>({});
 
-  const [merchantLogin, setMerchantLogin] = useState<boolean>(false);
-
+  const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>({isMerchantUser: false, merchantExists: false});
 
   let pathname = useLocation().pathname;
 
@@ -94,7 +99,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     setSession(undefined);
     setAccount(undefined);
     setAccounts([]);
-    setChains(DEFAULT_CHAINS);
+    setChains([]);
 
     for (var i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -151,15 +156,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       return;
     }
     if (pathname.startsWith('/storefront/merchant')) {
-      setMerchantLogin(true);
+      merchantLogin.isMerchantUser = true
     } else {
-      setMerchantLogin(false);
+      merchantLogin.isMerchantUser = false
     }
+    setMerchantLogin(merchantLogin);
 
   }, [pathname]);
 
-  function loginWithAccount(account: string, merchantLogin: boolean) {
-    if (!merchantLogin) {
+  function loginWithAccount(account: string, merchantLogin: MerchantLoginStatus) {
+    if (!merchantLogin.isMerchantUser) {
       login(account);
     } else {
       loginWithSignedNonce(account);
@@ -172,7 +178,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     }
 
     const account = localStorage.getItem(NDJ_ADDRESS);
-    //TODO this should use some kind of route param to tell if it is a merchant login or buyer login
     if (!accounts.length) {
       return;
     }
@@ -235,6 +240,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       } catch (err: any) {
         localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
         toast.error(err.message);
+        console.error(`login exception: ${err} ${err?.message}. Disconnecting...`)
         disconnect();
       } finally {
         setIsLoading(false);
@@ -251,10 +257,28 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           const startTime = moment();
 
           const [namespace, reference, address] = account.split(':');
-          const res = await UserService.loginApi(address);
-          const nonce = res.data.nonce;
+
+          try {
+            const loginRes = await UserService.loginApi(address);
+            const memberNonce = loginRes.data.nonce;
+            if (!memberNonce) {
+              console.warn("not a member")
+              merchantLogin.merchantExists = false
+            } else {
+              console.warn("merchant does exist a member")
+              merchantLogin.merchantExists = true
+            }
+            setMerchantLogin(merchantLogin)
+          } catch (e) {
+            console.log(e)
+          }
+
+
+          const res = await UserService.nonceApi(address);
+          let nonce = res.data.nonce;
 
           if (!nonce) {
+            console.warn(`registration nonce is not valid. exit`)
             throw new Error(res.data.message);
           }
 
@@ -283,16 +307,20 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
           dispatch(userAction.merchantLoginSuccess({address: address}));
 
+
+
         } catch (err: any) {
           localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
           console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
           toast.error(`Error: ${err.message}.`);
+
+          //TODO check if disconnect or not
           // disconnect().then(() => console.log(`disconnect done.`));
         } finally {
           setIsLoading(false);
         }
       },
-      [client, session]
+      [client, session, merchantLogin]
   );
 
   const connect = useCallback(
@@ -305,10 +333,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         const requiredNamespaces = getRequiredNamespaces(chains);
         console.log("requiredNamespaces config for connect:", requiredNamespaces);
 
-        const { uri, approval } = await client.connect({
+        let connectParams = {
           pairingTopic: pairing?.topic,
           requiredNamespaces,
-        });
+        };
+        const { uri, approval } = await client.connect(connectParams);
 
         // Open QRCode modal if a URI was returned (i.e. we're not connecting an existing pairing).
         if (uri) {

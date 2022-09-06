@@ -107,9 +107,12 @@ export interface IMerchant {
   memberSecondaryAddress: string;
   storeName: string;
   allowedUrl: string;
+  testnet: boolean;
   id: number;
   orders: IOrder[];
- defaultToken: string,
+  defaultToken: string,
+  totalInEth?: number,
+  totalInUsd?: number,
 }
 
 

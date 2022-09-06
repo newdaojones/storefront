@@ -5,8 +5,9 @@ body {
   font-family: Montserrat, 'Roboto', 'Ubuntu';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  //background-image: url(../images/background.avif); //not supported in safari < 16 or opera
   background-image: url(../images/background.png);
-  background-color: #30314c;
+  //background-color: #30314c;
   //background-color: #30314c;
 }
 
@@ -187,6 +188,10 @@ code {
   display: flex;
 }
 
+.wfullm {
+  width: 50%;
+}
+
 @media only screen and (max-width: 900px) {
   .twoColumnContainer {
     /* it place the items in vertical direction */
@@ -196,4 +201,21 @@ code {
   .box {
     margin: 0 0 1rem;
   }
+
+  .wfullm {
+    width: 100%;
+  }
 }
+
+/*
+Toggle comp
+ */
+.toggle-bg:after {
+  content: '';
+  @apply absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 transition shadow-sm;
+}input:checked + .toggle-bg:after {
+   transform: translateX(100%);
+   @apply border-white;
+ }input:checked + .toggle-bg {
+    @apply bg-secondary border-secondary;
+  }

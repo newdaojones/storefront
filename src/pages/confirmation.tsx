@@ -101,7 +101,7 @@ export const ConfirmationPage = () => {
     return (
     <div className="w-full h-full flex justify-center">
       <div className="w-3/4 m-10">
-        <p className="text-white text-secondary font-bold">Payment Successful</p>
+        <p className="text-white text-terciary font-bold">Payment Successful</p>
         {/*QR CODE*/}
           <a target="_blank" rel='noreferrer' className="p-10 link cursor-pointer" href={linkUrl}>
               <div className="flex items-center justify-center">
@@ -128,8 +128,8 @@ export const ConfirmationPage = () => {
                       <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4 pb-6">
-                      <p className="text-white text-start text-xs mr-2">Total Price</p>
-                      <p className="text-start text-secondary text-xs mr-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
+                      <p className="text-white text-start text-base mr-2">Total Price</p>
+                      <p className="text-start text-terciary text-base mr-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
                   </div>
               </div>
           </div>
@@ -155,7 +155,7 @@ export const ConfirmationPage = () => {
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4 pb-6">
                       <p className="text-white text-start text-xs mr-2">Amount</p>
-                      <p className="text-start text-secondary text-xs mr-2">{`${formatted.substring(0,8)} ETH`}</p>
+                      <p className="text-start text-terciary text-xs mr-2">{`${formatted.substring(0,8)} ETH`}</p>
                   </div>
               </div>
           </div>

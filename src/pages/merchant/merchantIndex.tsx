@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { AccountModal } from '../components';
+import { AccountModal } from '../../components';
 
-import { MerchantDashboard} from './merchant/merchant_dashboard';
-import { Landing } from './landing';
+import { MerchantDashboard} from './merchant_dashboard';
+import { Landing } from '../landing';
 
-import FindIcon from '../assets/images/find.svg';
-import StorefrontIcon from '../assets/images/storefront.svg';
-import SettingsIcon from '../assets/images/settings.svg';
+import FindIcon from '../../assets/images/find.svg';
+import StorefrontIcon from '../../assets/images/storefront.svg';
+import SettingsIcon from '../../assets/images/settings.svg';
 
-import { selectAccountInfo, selectEnsName } from '../store/selector';
-import { useWalletConnectClient } from '../contexts/walletConnect';
-import {OrbitalMenu} from "../components/menu/circular";
+import {selectEnsName, selectMerchantInfo} from '../../store/selector';
+import { useWalletConnectClient } from '../../contexts/walletConnect';
+import {OrbitalMenu} from "../../components/menu/circular";
 import {MerchantLogin} from "./merchant_login";
-
-
+import {RegisterMerchant} from "../storefrontpay/register";
 /**
  * http://localhost:3000/storefront/merchant
  * @constructor
@@ -24,8 +23,8 @@ export const MerchantMain = () => {
   const ensName = useSelector(selectEnsName);
   // const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
+  const merchantInfo = useSelector(selectMerchantInfo);
 
-  console.info(`loading MerchantMain`);
   // Initialize the WalletConnect client.
   const {
     session,
@@ -56,9 +55,9 @@ export const MerchantMain = () => {
   }, [initialized, connect, session]);
 
   let menuItems = [
-    { route: '/merchant/profile', icon: StorefrontIcon },
-    { route: '/merchant/order', icon: FindIcon },
-    { route: '/merchant/settings', icon: SettingsIcon },
+    { route: '/merchant/profile', icon: StorefrontIcon, text: "Home" },
+    { route: '/merchant/order', icon: FindIcon, text: "Orders" },
+    { route: '/merchant/settings', icon: SettingsIcon, text: "Settings" },
   ];
 
   let ens = ensName;
@@ -68,7 +67,7 @@ export const MerchantMain = () => {
 
   return (
       <div className="h-screen w-screen flex">
-        <OrbitalMenu
+        {account && merchantLogin.merchantExists && <OrbitalMenu
             status={isLoading ? 'Connecting...' : account ? 'Connected' : 'Disconnected'}
             onDisconnect={onDisconnect}
             onSelectAccount={() => setOpenSwitchAccount(true)}
@@ -77,8 +76,8 @@ export const MerchantMain = () => {
             items={menuItems}
             size={450}
             key={'orbMenu'}
-        />
-        {isLoading || isInitializing ? <Landing /> : account && merchantLogin ? <MerchantDashboard /> : <MerchantLogin />}
+        />}
+        {isLoading || isInitializing ? <Landing /> : account ? merchantLogin.merchantExists ? <MerchantDashboard />: <RegisterMerchant/> :<MerchantLogin /> }
         <AccountModal
             account={account}
             accounts={accounts}

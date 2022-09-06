@@ -3,7 +3,6 @@ import promo1 from '../../assets/images/promo_image_1.svg';
 import promo2 from '../../assets/images/promo_image_2.svg';
 import promo3 from '../../assets/images/promo_image_3.svg';
 import React from "react";
-import {storefrontPayButton} from "../../StorefrontPaySdk";
 
 export const ErrorPage = () => {
 

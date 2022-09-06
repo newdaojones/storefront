@@ -1,20 +1,21 @@
 import React, {useState} from 'react';
 import QRCodeStyling from 'qr-code-styling';
-import logoIcon from '../assets/images/logo.svg';
-import promo1 from '../assets/images/promo_image_1.svg';
-import promo2 from '../assets/images/promo_image_2.svg';
-import promo3 from '../assets/images/promo_image_3.svg';
+import logoIcon from '../../assets/images/logo.svg';
+import promo1 from '../../assets/images/promo_image_1.svg';
+import promo2 from '../../assets/images/promo_image_2.svg';
+import promo3 from '../../assets/images/promo_image_3.svg';
 import {useLocation} from "react-use";
-import {extractOrderFromUrl} from "../utils/path_utils";
+import {extractOrderFromUrl} from "../../utils/path_utils";
 import {useHistory} from "react-router-dom";
 import QRCode from 'react-qr-code';
-import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
+import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
 import {useDispatch, useSelector} from "react-redux";
-import {userAction} from "../store/actions";
-import {IOrder} from "../models";
-import {selectBuyTransaction, selectCurrentOrder} from "../store/selector";
+import {userAction} from "../../store/actions";
+import {IOrder} from "../../models";
+import {selectCurrentOrder} from "../../store/selector";
 import {toast} from "react-toastify";
-import {ellipseAddress} from "../helpers";
+import {ellipseAddress} from "../../helpers";
+import useInterval from "@use-it/interval";
 
 
 /**
@@ -31,54 +32,80 @@ export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
     const dispatch = useDispatch();
-    const [ showBlackWhite, setShowBlackWhite ] = useState(false)
+    const [ showBlackWhite, setShowBlackWhite ] = useState(true)
     const [background] = useState('#FFFFFF');
     const [foreground] = useState('#000000');
     const [size] = useState(300);
 
     let currentOrder = useSelector(selectCurrentOrder)
+    const [count, setCount] = useState(0);
 
-    let order = null;
-    if (!query) {
-        console.log(`Invalid query data, redirecting`);
-        history.replace("/error?msg=Invalid data query");
-    } else {
-        try {
-            order = extractOrderFromUrl(query);
-            console.log(`orderId: ${order.externalOrderId} amount: ${order.amount}`);
-        } catch (e: any) {
-            toast.error(`${e?.message}`)
+    React.useEffect(() => {
+        if (query) {
+            let order = null;
+            try {
+                //FIXME the address should come from a backend call to fetch the merchant info, instead of what's in the url
+                //url should only contain basic info
+                order = extractOrderFromUrl(query);
+                console.log(`orderId: ${order.externalOrderId} amount: ${order.amount}`);
+            } catch (e: any) {
+                toast.error(`${e?.message}`)
+            }
+
+            if (!order?.externalOrderId) {
+                console.log(`Invalid query data, redirecting`);
+                history.replace("/error");
+            } else {
+                if (!currentOrder) {
+                    console.log(`creating order...`)
+                    let orderInstance: IOrder = {
+                        amount: order.amount,
+                        externalOrderId: order?.externalOrderId,
+                        //FIXME hardcoded merchant data like testnet = true
+                        //testnet: merchantInfo.testnet,//TODO instead of sending this here, just use it in the backend
+                        testnet: true,
+                        token: "USD",
+                        //FIXME merchant address should come from backend, not what's in the url params
+                        toAddress: order.merchantAddress,
+                        transactionHash: null,
+                        nativeAmount: null
+                    };
+                    // create the order and populate the qr with that tracking Id, to let it fetch data.
+                    dispatch(userAction.createOrder(orderInstance));
+                } else {
+                    console.log(`order already created trackingId: ${currentOrder.trackingId}`)
+                }
+            }
+        } else  {
+            console.log(`Invalid query data, redirecting`);
+            history.replace("/error?msg=Invalid data query");
         }
-    }
+    }, [currentOrder]);
 
-    //TODO create the order and populate the qr with that tracking Id, to let it fetch data.
 
-    if (!order?.externalOrderId) {
-        console.log(`Invalid query data, redirecting`);
-        history.replace("/error");
-    } else {
-        if (!currentOrder) {
-            console.log(`creating order`)
-            let orderInstance: IOrder = {
-                amount: order.amount,
-                externalOrderId: order?.externalOrderId,
-                //FIXME hardcoded merchant data like testnet = true
-                testnet: true,
-                token: "USD",
-                toAddress: order.merchantAddress,
-                transactionHash: null,
-                nativeAmount: null
-            };
-            dispatch(userAction.createOrder(orderInstance));
-        } else {
-            console.log(`order created trackingId: ${currentOrder.trackingId}`)
+    const qrCodeUri = currentOrder ? `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder.trackingId}` : '';
+
+    useInterval(() => {
+        if (currentOrder) {
+            if (currentOrder.transactionHash) {
+                const relativePath = `status?transactionId=${currentOrder.transactionHash}&orderTrackingId=${currentOrder.trackingId}`
+                console.log(`found transaction hash, moving to status page. `);
+                history.replace(relativePath);
+                return
+            }
+
+            console.log(`refreshing order data... ${count}`)
+            setCount((currentCount) => currentCount + 1);
+            if (currentOrder.trackingId) {
+                dispatch(userAction.getOrder({orderTrackingId: currentOrder.trackingId}))
+            } else {
+                console.error("invalid order trackingId. cannot refresh. ");
+            }
         }
-    }
+    }, 30000);
 
-    var qrCodeUri = currentOrder ? `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder.trackingId}` : '';
     React.useEffect(() => {
         if (currentOrder) {
-            //const qrCodeUri = `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder?.trackingId}`
             let black = 'rgb(0,0,0)';
             const qrCode = new QRCodeStyling({
                 width: size,
@@ -128,7 +155,7 @@ export const Pay = () => {
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
                         <h1 className="text-xl font-righteous">Storefront Pay</h1>
-                        <h1 className="text-sm ">Paper money</h1>
+                        <h1 className="text-sm ">{currentOrder ? currentOrder?.testnet ? 'Test Money': 'Real Money' : ''}</h1>
                     </div>
                 </div>
 
@@ -151,11 +178,11 @@ export const Pay = () => {
                 <div className="w-3/4 flex justify-around pb-4">
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Order Id</p>
-                        <p className="font-bold text-xl pl-4">{`${order?.externalOrderId}`}</p>
+                        <p className="font-bold text-xl pl-4">{`${currentOrder?.externalOrderId}`}</p>
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>
-                        <p className="font-bold text-xl">{`USD $${order?.amount}`}</p>
+                        <p className="font-bold text-xl">{`USD $${currentOrder?.amount}`}</p>
                     </div>
                 </div>
 
@@ -169,23 +196,27 @@ export const Pay = () => {
                     </a>
                 )}
                 {currentOrder && showBlackWhite && (
-                    <div className="flex items-center justify-center">
-                        <QRCode
-                            title="Storefront Pay"
-                            value={qrCodeUri}
-                            bgColor={background}
-                            fgColor={foreground}
-                            size={!size ? 0 : size}
-                        >
-                        </QRCode>
-                        <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
-                    </div>
+                    <a href={qrCodeUri} target={'_blank'}>
+                        <div className="flex items-center justify-center">
+                            <QRCode
+                                title="Storefront Pay"
+                                value={qrCodeUri}
+                                bgColor={background}
+                                fgColor={foreground}
+                                size={!size ? 0 : size}
+                            >
+                            </QRCode>
+                            <img className="w-20 h-20 absolute z-12" src={logoIcon} alt="" />
+                        </div>
+                    </a>
                 )}
 
                 <p onClick={onTroubleScanningClicked}
                    className="text-xs mt-1 cursor-pointer">Trouble Scanning?</p>
 
-                <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
+                {!currentOrder?.transactionHash ?
+                    <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous font-bold" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
+                    : <p className="font-righteous mt-4 mb-40 text-secondary">This order has already been paid</p>}
 
             </div>
 

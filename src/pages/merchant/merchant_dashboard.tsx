@@ -15,7 +15,7 @@ export const MerchantDashboard = () => {
         <Switch>
           <Route path="/merchant/profile" component={mainPage} />
           <Route path="/merchant/settings" component={SettingsPage} />
-            <Route path="/merchant/order" component={CreateOrderPage} />
+          <Route path="/merchant/order" component={CreateOrderPage} />
           <Redirect to="/merchant/profile" />
         </Switch>
       </div>

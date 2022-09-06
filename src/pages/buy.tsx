@@ -176,13 +176,12 @@ export const BuyPage = () => {
   let animatedBuyButton = <button onClick={onBuyClick} style={{
     backgroundColor: '#615793',
     fontSize: '20px',
-    padding: '10px 20px',
     borderRadius: '25px',
     margin: '10px 0px',
     cursor: 'pointer',
-    justifySelf: "end",
-    alignSelf: "end"
-  }} className="w-full h-16 flex items-center justify-center text-white mt-8 mb-2 ">
+    justifySelf: "start",
+    alignSelf: "center"
+  }} className="wfullm h-16 flex items-center justify-center text-white mt-8 mb-2 ">
     {transactionInProgress === TransactionState.IN_PROGRESS ?
         <div className="thecube w-8 h-8 m-1">
           <div className="cube c1"></div>
@@ -197,36 +196,37 @@ export const BuyPage = () => {
   </button>;
 
   const helperTextMessage = <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
-               className="text-center text-secondary text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+               className="text-center text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
 
   return (
     <div className="w-full h-full flex justify-between">
       <div className="w-full flex flex-col justify-between">
-        <div className="h-full mt-4 flex flex-col text-white justify-between items-center">
-          <p className="mx-4 text-white text-secondary font-bold" style={{alignSelf: 'start'}}>Payment Method</p>
-
-          {/*Credit Card*/}
-          <div className="w-full flex flex-col text-black justify-between pt-5 pb-5 px-14"
-               style={{
-                 minHeight: '10rem',
-                 maxWidth: '20rem',
-                 backgroundImage: `url(${QRIcon})`,
-                 backgroundSize: "contain",
-                 backgroundPosition: 'center',
-                 backgroundRepeat: 'no-repeat'
-               }}>
-            <img style={{alignSelf: 'end'}} className="w-10 h-10" src={ETHIcon} alt=""/>
-            <p style={{fontFamily: 'Montserrat', fontStyle: 'normal', color: '#8E8EA9'}} className="pt-2 text-sm">
-              {`${ellipseAddress(accountInfo?.address)}`}</p>
-            <div className="flex w-full justify-between"
-                 style={{fontFamily: 'Righteous', fontStyle: 'normal', color: '#8E8EA9'}}>
-              <p className="text-grey text-sm">notdevin.eth</p>
-              <p className="text-grey text-sm">Ethereum</p>
+        <div className="h-full mt-8 flex flex-col text-white justify-between items-center">
+          <div className="flex flex-col wfullm justify-center items-center" >
+            <p className="w-full mx-4 text-white text-terciary font-bold" style={{alignSelf: 'start'}}>Payment Method</p>
+            {/*Credit Card*/}
+            <div className="w-full flex flex-col text-black justify-between pt-5 pb-5 px-14"
+                 style={{
+                   minHeight: '10rem',
+                   maxWidth: '20rem',
+                   backgroundImage: `url(${QRIcon})`,
+                   backgroundSize: "contain",
+                   backgroundPosition: 'center',
+                   backgroundRepeat: 'no-repeat'
+                 }}>
+              <img style={{alignSelf: 'end'}} className="w-10 h-10" src={ETHIcon} alt=""/>
+              <p style={{fontFamily: 'Montserrat', fontStyle: 'normal', color: '#8E8EA9'}} className="pt-2 text-sm">
+                {`${ellipseAddress(accountInfo?.address)}`}</p>
+              <div className="flex w-full justify-between"
+                   style={{fontFamily: 'Righteous', fontStyle: 'normal', color: '#8E8EA9'}}>
+                <p className="text-grey text-sm">notdevin.eth</p>
+                <p className="text-grey text-sm">Ethereum</p>
+              </div>
             </div>
           </div>
 
           {/*Invoice*/}
-          <div className="w-full flex items-center justify-center mb-4">
+          <div className="wfullm flex items-center justify-center mb-4">
             <div style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
                  className="w-full flex flex-col items-center justify-center ml-10 mr-10 bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
               <div className="w-full flex justify-between p-4">
@@ -237,15 +237,15 @@ export const BuyPage = () => {
                 <p className="text-white text-start text-xs mr-2 mt-2">Transaction Fee</p>
                 <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentFeeUsd.toFixed(6)}`}</p>
               </div>
-              <div className="flex flex-col w-full text-secondary mt-4 justify-between"
+              <div className="flex flex-col w-full mt-4 justify-between"
                    style={{height: 1, backgroundColor: '#FFB01D', backgroundRepeat: "no-repeat"}}/>
               <div className="w-full flex justify-between p-4">
                 <p className="text-white text-start text-xs mr-2 mt-2">Subtotal</p>
                 <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${paymentTotalUSD.toFixed(2)}`}</p>
               </div>
               <div className="w-full flex justify-between pl-4 pr-4 pb-6">
-                <p className="text-white text-start text-xs mr-2">Total Price</p>
-                <p className="text-start text-secondary text-xs mr-2">{`$ ${paymentTotalUSD.toFixed(2)}`}</p>
+                <p className="text-white text-start text-base mr-2">Total Price</p>
+                <p className="text-start text-terciary text-base mr-2">{`$ ${paymentTotalUSD.toFixed(2)}`}</p>
               </div>
             </div>
           </div>
@@ -259,7 +259,7 @@ export const BuyPage = () => {
             }
             {
               // transaction progress bar / text
-              <div className="flex flex-col text-center text-secondary text-xs">
+              <div className="flex flex-col text-center text-terciary text-xs">
                 <div className="w-1/3 absolute" style={{alignSelf: 'center'}}>
                   <img className="w-full absolute mr-8" style={{alignSelf: 'center'}} src={ProgressBase} alt=""/>
                   {transactionInProgress === TransactionState.IN_PROGRESS &&

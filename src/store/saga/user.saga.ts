@@ -1,12 +1,13 @@
-import { all, put, takeLatest, call } from 'redux-saga/effects';
-import { AxiosResponse } from 'axios';
-import { EUserActionTypes } from '../../enums';
-import { UserService } from '../../services';
-import { userAction } from '../actions';
-import { toast } from 'react-toastify';
-import { ens } from '../../utils/walletConnect';
+import {all, call, put, takeLatest} from 'redux-saga/effects';
+import {AxiosResponse} from 'axios';
+import {EUserActionTypes} from '../../enums';
+import {UserService} from '../../services';
+import {userAction} from '../actions';
+import {toast} from 'react-toastify';
+import {ens} from '../../utils/walletConnect';
 import {IMerchant, IOrder, ITicker, ITransactionOrder, IUserInfo} from '../../models';
 import {generateTransaction, ITransaction} from "../../helpers/tx";
+import * as H from "history";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -20,14 +21,20 @@ export default function* root() {
     takeLatest(EUserActionTypes.SET_CREATE_TRANSACTION as any, watchCreateTransactions),
     takeLatest(EUserActionTypes.UNSET_TRANSACTION as any, watchUnsetTransaction),
 
-
     takeLatest(EUserActionTypes.CREATE_ORDER as any, watchCreateNewOrder),
 
     takeLatest(EUserActionTypes.SET_ORDER_TRANSACTION_HASH as any, watchLinkOrderTransaction),
 
-    takeLatest(EUserActionTypes.MERCHANT_LOGIN_SUCCESS as any, watchGetMerchantInfo),
+    takeLatest(EUserActionTypes.GET_MERCHANT_INFO as any, watchGetMerchantInfo),
 
     takeLatest(EUserActionTypes.GET_ORDER as any, watchGetOrderInfo),
+
+    takeLatest(EUserActionTypes.CREATE_MERCHANT as any, watchCreateMerchant),
+
+    takeLatest(EUserActionTypes.UPDATE_MERCHANT_SETTINGS as any, watchUpdateMerchant),
+
+    // maybe not needed
+    //takeLatest(EUserActionTypes.UPDATE_MERCHANT_SUCCESS as any, watchGetMerchantInfo)
   ]);
 }
 
@@ -130,6 +137,44 @@ function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
     yield put(userAction.setCreateTransactionSuccess(null));
   } catch (err: any) {
     toast.error(err.message);
+  }
+}
+
+function* watchCreateMerchant(action: { type: EUserActionTypes; payload: {merchant: IMerchant, history: H.History}}) {
+  try {
+    const res: AxiosResponse = yield call(() => UserService.createNewMerchant(action.payload.merchant)
+        // .catch(
+        // onrejectionhandled => {
+        //   console.warn(`called failed ${onrejectionhandled.response.data} ${onrejectionhandled.data}`);
+        //   if (onrejectionhandled && onrejectionhandled.includes("There's already a merchant for the same member")) {
+        //     action.payload.history.replace("/merchant/profile");
+        //   }
+        // }
+    // )
+  );
+    console.info(`createMerchant response ${res} ${res.status} ${res.data}`)
+    if (res.status !== 200) {
+      console.error(`error result in create new merchant`);
+    }
+    yield put(userAction.setCreateMerchantSuccess(res.data));
+    action.payload.history.replace("/merchant/profile");
+  } catch (err: any) {
+    console.error(`error while creating merchant ${err}`)
+    toast.error(err.data.message ? `${err.data.message}` : `Error ${err.status}`);
+  }
+}
+
+function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: {merchant: IMerchant}}) {
+  try {
+    const res: AxiosResponse = yield call(() => UserService.updateMerchantSettings(action.payload.merchant));
+    console.info(`updateMerchant response ${res} ${res.status} ${res.data}`)
+    if (res.status !== 200) {
+      console.error(`error result in create new merchant`);
+    }
+    yield put(userAction.updateMerchantSuccess(res.data));
+  } catch (err: any) {
+    console.error(`error while creating merchant ${err}`)
+    toast.error(err.data.message ? `${err.data.message}` : `Error ${err.status}`);
   }
 }
 

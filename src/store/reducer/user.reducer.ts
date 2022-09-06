@@ -25,6 +25,7 @@ export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.SET_TRANSACTION_SUCCESS]: setTransactionData,
   [userActionTypes.CREATE_ORDER_SUCCESS]: setOrderData,
   [userActionTypes.GET_ORDER_SUCCESS]: setOrderData,
+  [userActionTypes.CREATE_MERCHANT_SUCCESS]: setMerchantInfo,
 });
 
 function setLoginSuccessStatus(state: IUserState, { payload }: IAction<IAccountInfo>) {
@@ -77,6 +78,11 @@ function setTransactionData(state: IUserState, { payload }: IAction<ITransaction
   });
 }
 
+/**
+ * called by both CREATE_ORDER_SUCCESS & GET_ORDER_SUCCESS user actions
+ * @param state
+ * @param payload
+ */
 function setOrderData(state: IUserState, { payload }: IAction<IOrder>) {
   return produce(state, draft => {
     draft.order = payload;

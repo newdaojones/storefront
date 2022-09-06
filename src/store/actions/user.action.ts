@@ -9,6 +9,9 @@ import {
   IUserInfo,
   TransactionState
 } from '../../models';
+import * as H from "history";
+import {toast} from "react-toastify";
+import {options} from "numeral";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -90,6 +93,24 @@ const setCreateOrderSuccess = (payload: IOrder) => {
   };
 };
 
+
+const setCreateMerchantSuccess = (payload: IMerchant) => {
+  console.info(`setCreateMerchantSuccess order ${payload.merchantName} ${payload.memberAddress}`)
+  return {
+    type: EUserActionTypes.CREATE_MERCHANT_SUCCESS,
+    payload
+  };
+};
+
+const updateMerchantSuccess = (payload: IMerchant) => {
+  console.info(`updateMerchantSuccess order ${payload.merchantName} ${payload.memberAddress}`)
+  toast.success("Settings updated", {autoClose: 2000})
+  return {
+    type: EUserActionTypes.UPDATE_MERCHANT_SUCCESS,
+    payload
+  };
+};
+
 const getOrderSuccess = (payload: IOrder) => {
   console.info(`getOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
   return {
@@ -108,7 +129,7 @@ const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionH
 
 const merchantLoginSuccess = (payload: {address: string}) => {
   return {
-    type: EUserActionTypes.MERCHANT_LOGIN_SUCCESS,
+    type: EUserActionTypes.GET_MERCHANT_INFO,
     payload
   };
 };
@@ -117,6 +138,20 @@ const createOrder = (payload: IOrder) => {
   return {
     type: EUserActionTypes.CREATE_ORDER,
     payload
+  };
+};
+
+const createMerchant = (payload: IMerchant, history: H.History) => {
+  return {
+    type: EUserActionTypes.CREATE_MERCHANT,
+    payload: {merchant: payload, history: history}
+  };
+};
+
+const updateMerchant = (payload: IMerchant) => {
+  return {
+    type: EUserActionTypes.UPDATE_MERCHANT_SETTINGS,
+    payload: {merchant: payload}
   };
 };
 
@@ -143,5 +178,9 @@ export const userAction = {
   setOrderTransactionHash,
   createOrder,
   getOrder,
-  merchantLoginSuccess
+  merchantLoginSuccess,
+  createMerchant,
+  setCreateMerchantSuccess,
+  updateMerchant,
+  updateMerchantSuccess
 };
