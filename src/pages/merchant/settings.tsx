@@ -63,7 +63,7 @@ export const SettingsPage = () => {
           <div className="w-full flex items-center justify-between mt-10">
             <p className="text-center text-white mr-8">Wallet Address</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
-              {ellipseAddress(merchantInfo?.memberAddress)}
+              {`0x${ellipseAddress(merchantInfo?.memberAddress)}`}
             </div>
           </div>
           <div className="w-full flex items-center justify-between mt-10">
