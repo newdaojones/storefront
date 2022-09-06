@@ -104,7 +104,7 @@ const setCreateMerchantSuccess = (payload: IMerchant) => {
 
 const updateMerchantSuccess = (payload: IMerchant) => {
   console.info(`updateMerchantSuccess order ${payload.merchantName} ${payload.memberAddress}`)
-  toast.success("Settings updated", {autoClose: 1000})
+  toast.success("Settings updated", {autoClose: 2000})
   return {
     type: EUserActionTypes.UPDATE_MERCHANT_SUCCESS,
     payload
