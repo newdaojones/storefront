@@ -92,7 +92,7 @@ export const TransactionStatus = () => {
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
                         <h1 className="text-xl font-righteous">Storefront Pay</h1>
-                        <h1 className="text-sm ">testnet</h1>
+                        <h1 className="text-sm ">{ currentOrder?.testnet ? 'Test Money' : 'Real Money'}</h1>
                     </div>
                 </div>
 
