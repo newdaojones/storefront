@@ -155,7 +155,7 @@ export const ConfirmationPage = () => {
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4 pb-6">
                       <p className="text-white text-start text-xs mr-2">Amount</p>
-                      <p className="text-start text-secondary text-xs mr-2">{`${formatted.substring(0,8)} ETH`}</p>
+                      <p className="text-start text-terciary text-xs mr-2">{`${formatted.substring(0,8)} ETH`}</p>
                   </div>
               </div>
           </div>
