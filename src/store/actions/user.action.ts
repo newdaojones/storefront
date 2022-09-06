@@ -10,6 +10,8 @@ import {
   TransactionState
 } from '../../models';
 import * as H from "history";
+import {toast} from "react-toastify";
+import {options} from "numeral";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -102,6 +104,7 @@ const setCreateMerchantSuccess = (payload: IMerchant) => {
 
 const updateMerchantSuccess = (payload: IMerchant) => {
   console.info(`updateMerchantSuccess order ${payload.merchantName} ${payload.memberAddress}`)
+  toast.success("Settings updated", {autoClose: 1000})
   return {
     type: EUserActionTypes.UPDATE_MERCHANT_SUCCESS,
     payload
