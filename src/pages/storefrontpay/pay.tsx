@@ -62,7 +62,8 @@ export const Pay = () => {
                         amount: order.amount,
                         externalOrderId: order?.externalOrderId,
                         //FIXME hardcoded merchant data like testnet = true
-                        testnet: merchantInfo.testnet,
+                        //testnet: merchantInfo.testnet,//TODO instead of sending this here, just use it in the backend
+                        testnet: true,
                         token: "USD",
                         //FIXME merchant address should come from backend, not what's in the url params
                         toAddress: order.merchantAddress,
@@ -154,7 +155,7 @@ export const Pay = () => {
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
                         <h1 className="text-xl font-righteous">Storefront Pay</h1>
-                        <h1 className="text-sm ">Paper money</h1>
+                        <h1 className="text-sm ">{currentOrder ? currentOrder?.testnet ? 'Test Money': 'Real Money' : ''}</h1>
                     </div>
                 </div>
 
@@ -211,7 +212,9 @@ export const Pay = () => {
                 <p onClick={onTroubleScanningClicked}
                    className="text-xs mt-1 cursor-pointer">Trouble Scanning?</p>
 
-                <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
+                {!currentOrder?.transactionHash ?
+                    <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous font-bold" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
+                    : <p className="font-righteous mt-4 mb-40 text-secondary">This order has already been paid</p>}
 
             </div>
 
