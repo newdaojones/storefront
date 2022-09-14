@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {storefrontPayButton} from "../../StorefrontPaySdk";
 import {useDispatch, useSelector} from "react-redux";
 import {selectMerchantInfo} from "../../store/selector";
 import {getAddressFromAccount} from "@walletconnect/utils";

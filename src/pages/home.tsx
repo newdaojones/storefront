@@ -27,7 +27,6 @@ export const HomePage = () => {
   let query = useLocation().search;
   const [ loading, setLoading ] = useState(false)
   const [ scanning, setScanning ] = useState(false)
-  const [ qrCodeUrl, setQrCodeUrl ] = useState('')
   const [ redirected, setRedirected ] = useState(false)
   const [ transactionCreatedLock, setTransactionCreatedLock ] = useState(false)
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
@@ -70,7 +69,7 @@ export const HomePage = () => {
       }
     }
 
-  }, [query, tickers]);
+  }, [query, tickers, redirected]);
 
 
   const startScanning = (): void => {
@@ -112,7 +111,6 @@ export const HomePage = () => {
   function processScanResult(resultText: string) {
     stopScanning();
     try {
-      setQrCodeUrl(resultText);
       console.info(`qr ${resultText}`)
       const order = extractOrderFromUrl(resultText);
       createTransaction(order);

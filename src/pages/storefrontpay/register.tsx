@@ -42,7 +42,7 @@ export const RegisterMerchant = () => {
             merchantLogin.merchantExists = true;
             history.replace("/merchant/profile")
         }
-    }, [merchantInfo, history]);
+    }, [merchantInfo, merchantLogin, history]);
 
     const getWalletAddress = (): string => {
         if (accounts && accounts.length > 0) {

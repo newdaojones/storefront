@@ -1,4 +1,4 @@
-import { EUserActionTypes } from '../../enums';
+import {EUserActionTypes} from '../../enums';
 import {
   IAccountInfo,
   IMerchant,
@@ -11,7 +11,6 @@ import {
 } from '../../models';
 import * as H from "history";
 import {toast} from "react-toastify";
-import {options} from "numeral";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
