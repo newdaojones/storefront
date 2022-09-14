@@ -33,6 +33,7 @@ export default function* root() {
 
     takeLatest(EUserActionTypes.UPDATE_MERCHANT_SETTINGS as any, watchUpdateMerchant),
 
+    takeLatest(EUserActionTypes.UNSET_CURRENT_ORDER as any, watchUnsetTransaction),
     // maybe not needed
     //takeLatest(EUserActionTypes.UPDATE_MERCHANT_SUCCESS as any, watchGetMerchantInfo)
   ]);
@@ -135,6 +136,14 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
 function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
   try {
     yield put(userAction.setCreateTransactionSuccess(null));
+  } catch (err: any) {
+    toast.error(err.message);
+  }
+}
+
+function* watchUnsetOrder(action: { type: EUserActionTypes}) {
+  try {
+    yield put(userAction.setCreateOrderSuccess(null));
   } catch (err: any) {
     toast.error(err.message);
   }

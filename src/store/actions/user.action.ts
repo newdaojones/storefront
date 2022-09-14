@@ -77,6 +77,12 @@ const unsetTransaction = () => {
   };
 };
 
+const unsetCurrentOrder = () => {
+  return {
+    type: EUserActionTypes.UNSET_CURRENT_ORDER,
+  };
+};
+
 const setCreateTransactionSuccess = (payload: ITransactionOrder | null) => {
   return {
     type: EUserActionTypes.SET_TRANSACTION_SUCCESS,
@@ -84,8 +90,10 @@ const setCreateTransactionSuccess = (payload: ITransactionOrder | null) => {
   };
 };
 
-const setCreateOrderSuccess = (payload: IOrder) => {
-  console.info(`setCreateOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
+const setCreateOrderSuccess = (payload: IOrder | null) => {
+  if (payload) {
+    console.info(`setCreateOrderSuccess order ${payload.amount} ${payload.externalOrderId} tracking: ${payload.trackingId}`)
+  }
   return {
     type: EUserActionTypes.CREATE_ORDER_SUCCESS,
     payload
@@ -181,5 +189,6 @@ export const userAction = {
   createMerchant,
   setCreateMerchantSuccess,
   updateMerchant,
-  updateMerchantSuccess
+  updateMerchantSuccess,
+  unsetCurrentOrder
 };

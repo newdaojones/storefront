@@ -14,7 +14,11 @@ export const CreateOrderPage = () => {
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState(0);
 
+  const [orderCreated, setOrderCreated] = useState(false);
+
+  //fixme need to initialize as null, this could be set already
   let currentOrder = useSelector(selectCurrentOrder);
+  //dispatch(userAction.unsetTransaction());
 
   function handleCreateOrder() {
     if (orderId == '') {
@@ -42,10 +46,11 @@ export const CreateOrderPage = () => {
     };
     console.info(`creating order ${orderInstance}`);
     dispatch(userAction.createOrder(orderInstance));
+    setOrderCreated(true)
   }
 
   React.useEffect(() => {
-    if (currentOrder) {
+    if (currentOrder && orderCreated) {
       openPayUrl();
     }
   }, [currentOrder]);
@@ -58,6 +63,9 @@ export const CreateOrderPage = () => {
     const linkUrl = payLink(currentOrder?.trackingId);
     console.info(`generateUrl, redirecting to ${linkUrl}`);
     window.open(linkUrl, "_blank");
+
+    dispatch(userAction.unsetCurrentOrder())
+    setOrderCreated(false);
   }
 
   const handleChange = (event: any) => {
