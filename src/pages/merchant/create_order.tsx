@@ -5,20 +5,26 @@ import DollarIcon from '../../assets/images/dollarIcon.svg';
 import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
 import logoIcon from "../../assets/images/logo.svg";
 import {payLink} from "../../utils/link_utils";
-import {useSelector} from "react-redux";
-import {selectMerchantInfo} from "../../store/selector";
+import {useDispatch, useSelector} from "react-redux";
+import {selectCurrentOrder, selectMerchantInfo} from "../../store/selector";
 import {toast} from "react-toastify";
+import {IOrder} from "../../models";
+import {isTestnetMode} from "../../config/appconfig";
+import {userAction} from "../../store/actions";
+import {extractOrderFromUrl} from "../../utils/path_utils";
 
 export const CreateOrderPage = () => {
+  const dispatch = useDispatch();
   let merchantInfo = useSelector(selectMerchantInfo);
-  // const depositors = [{transactionHash: 0x212123abd, amount: 0.55}, {transactionHash: 0x212123abd, amount: 0.55}];
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState(0);
+
+  let currentOrder = useSelector(selectCurrentOrder);
 
   let onEdit = () => {
   };
 
-  function generateUrl() {
+  function handleCreateOrder() {
     if (orderId == '') {
       toast.error("Order Id must be valid")
       return;
@@ -27,9 +33,44 @@ export const CreateOrderPage = () => {
       toast.error("Amount must be greater than zero")
       return;
     }
-    const linkUrl = payLink(amount, orderId, merchantInfo?.memberAddress!!);
-    window.open(linkUrl, "_blank");
+    if (!merchantInfo?.memberAddress) {
+      toast.error("Merchant address is not valid")
+      return;
+    }
+
+    // FIXME this should be a secured operation by the merchant, not an open to anyone operation, without login, since it can be exploited
+    console.log(`creating order...`)
+    let orderInstance: IOrder = {
+      amount: amount,
+      externalOrderId: orderId,
+      //TODO instead of sending this here, just use it in the backend
+      // testnet: merchantInfo.testnet,
+      testnet: isTestnetMode(),
+      token: "USD",
+      //FIXME merchant address should come from backend, not what's in the url params
+      //TODO instead of sending this here, just use it in the backend
+      toAddress: merchantInfo?.memberAddress,
+      transactionHash: null,
+      nativeAmount: null
+    };
+    console.info(`creating order ${orderInstance}`);
+    dispatch(userAction.createOrder(orderInstance));
+  }
+
+  React.useEffect(() => {
+    if (currentOrder) {
+      openPayUrl();
+    }
+  }, [currentOrder]);
+
+  function openPayUrl() {
+    if (!currentOrder?.trackingId) {
+      toast.error("Order trackingId must be valid")
+      return;
+    }
+    const linkUrl = payLink(currentOrder?.trackingId);
     console.info(`generateUrl, redirecting to ${linkUrl}`);
+    window.open(linkUrl, "_blank");
   }
 
   const handleChange = (event: any) => {
@@ -62,7 +103,7 @@ export const CreateOrderPage = () => {
           </div>
 
           <div className="mt-10">
-            <a onClick={generateUrl}>
+            <a onClick={handleCreateOrder}>
             <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
               <img className="w-8 h-8 mr-4" src={logoIcon} alt="" />
               <p className="font-righteous">Create Order</p>

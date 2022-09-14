@@ -69,7 +69,6 @@ export interface ITransactionInfo {
 
 export interface IOrder {
   externalOrderId: string,
-  toAddress: string,
   amount: number,
   token: string,
   testnet: boolean,
@@ -79,8 +78,8 @@ export interface IOrder {
   addedAt?: string,
   updatedAt?: string,
   id?: number,
-  merchantName?: String,
-  merchantAddress?: String,
+  merchantName?: string,
+  toAddress: string,
   nativeAmount: string | null,
 
   /**

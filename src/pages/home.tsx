@@ -6,7 +6,7 @@ import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getNonZeroAccountBalance} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
-import {selectCreateTransaction, selectTickers} from "../store/selector";
+import {selectCreateTransaction, selectCurrentOrder, selectTickers} from "../store/selector";
 import numeral from "numeral";
 import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
@@ -14,6 +14,7 @@ import {QrReader} from "react-qr-reader";
 import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
+import {IOrder} from "../models";
 
 /**
  * https://test.jxndao.com/storefront/home
@@ -34,9 +35,9 @@ export const HomePage = () => {
   const accountBalance = getNonZeroAccountBalance(accounts, balances);
   console.info(`selected account:${accountBalance.account} balance:${accountBalance.balanceString} token:${accountBalance.token}`)
 
-  const tickers = useSelector(selectTickers)
-
-  const trxCreated = useSelector(selectCreateTransaction)
+  const tickers = useSelector(selectTickers);
+  const currentOrder = useSelector(selectCurrentOrder);
+  const trxCreated = useSelector(selectCreateTransaction);
 
   useEffect(() => {
     console.info(`useEffect transactionCreatedLock: ${transactionCreatedLock} trxCreated: ${trxCreated} transaction: ${trxCreated?.transaction}`)
@@ -56,13 +57,13 @@ export const HomePage = () => {
 
       try {
         const order = extractOrderFromUrl(query);
-        console.log(`orderTrackingId: ${order.orderTrackingId} externalOrderId: ${order.externalOrderId} amount: ${order.amount}`);
-        if (order.orderTrackingId && order.amount && !redirected) {
-          setRedirected(true);
-          createTransaction(order);
-        } else {
-          console.log(`not creating trx`)
+        console.log(`orderTrackingId: ${order.orderTrackingId} `);
+        //FIXME should also get the url and fetch the order data from the trackingId
+        if (!order.orderTrackingId) {
+          toast.error(`Invalid orderTrackingId`)
+          return;
         }
+        dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
       } catch (e: any) {
         console.log(e);
         toast.error(`${e?.message}`)
@@ -71,6 +72,20 @@ export const HomePage = () => {
 
   }, [query, tickers, redirected]);
 
+
+  useEffect(() => {
+    console.info(`crating order transaction and moving to by`)
+    //TODO move this logic to when the order is returned
+    if (!currentOrder) {
+      return;
+    }
+    if (currentOrder.trackingId && currentOrder.amount && !redirected) {
+      setRedirected(true);
+      createTransaction(currentOrder);
+    } else {
+      console.log(`not creating trx`)
+    }
+  }, [currentOrder]);
 
   const startScanning = (): void => {
     console.info(`starting scanning....`)
@@ -82,7 +97,7 @@ export const HomePage = () => {
     setScanning(false);
   }
 
-  const createTransaction = (order: IOrderParams): void => {
+  const createTransaction = (order: IOrder): void => {
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
     const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
@@ -92,11 +107,16 @@ export const HomePage = () => {
     }
     setLoading(true);
 
-    if (!order.orderTrackingId) {
+    if (!order.trackingId) {
       toast.error("Invalid order tracking ID")
     } else {
       // FIXME Merchant address from the order
-      dispatch(userAction.setCreateTransaction({account: accountBalance.account, toAddress: order.merchantAddress, amount: ethTotal, orderTrackingId: order.orderTrackingId}));
+      dispatch(userAction.setCreateTransaction({
+        account: accountBalance.account,
+        toAddress: order.toAddress,
+        amount: ethTotal,
+        orderTrackingId: order.trackingId
+      }));
     }
   };
 
@@ -114,7 +134,15 @@ export const HomePage = () => {
     try {
       console.info(`qr ${resultText}`)
       const order = extractOrderFromUrl(resultText);
-      createTransaction(order);
+
+      //TODO dispatch fetch order data
+      if (!order.orderTrackingId) {
+        toast.error(`Invalid orderTrackingId`)
+        return;
+      }
+      dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
+
+      //createTransaction(order);
     } catch (e) {
       console.info(`Invalid QrCode url`);
       toast.error(`Invalid QrCode url`);

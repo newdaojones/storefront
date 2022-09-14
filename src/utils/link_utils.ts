@@ -10,7 +10,7 @@ export const transactionStatusLink = (transactionHash: string, orderTrackingId: 
  * @param amount
  * @param orderId
  */
-export const payLink = (amount: number, orderId: string, merchantAddress: string) : string => {
-  const link = `${storefrontPayBaseUrl}/storefront/pay?orderId=${orderId}&amount=${amount}&merchantAddress=${merchantAddress}`;
+export const payLink = (orderTrackingId: string) : string => {
+  const link = `${storefrontPayBaseUrl}/storefront/pay?orderTrackingId=${orderTrackingId}`;
   return link;
 }
