@@ -5,16 +5,11 @@ import {toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
-import {storefrontPaymentAddress} from "../StorefrontPaySdk";
-
 
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
 export async function getGasPrice(chainId: string): Promise<string> {
-    //TODO wtf hardcoded gas price for ethereum mainnet?
-    //if (chainId === "eip155:1") return toWad("20", 9).toHexString();
-    const gasPrices = await currentRpcApi.getGasPrices(chainId);
-    return gasPrices
+    return await currentRpcApi.getGasPrices(chainId)
 }
 
 
@@ -33,21 +28,21 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * See transaction https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/0x346fd04ddb4a0727e1a7d6ee68c752261eb8ee3c2a5b6f579f7bfcbcbd0ee034/
  * by hash
  *
- * FIXME
  * transaction value: 123500000000000 WEI formatted: 0.0001235 ETH produces problems when converting to hex
  * make tests for it. The hex below doesn't contain the full value but only a small part
  * transaction value: 123500000000000 number bigN: 123500000000000 formatted: 0.0001235 - hex: 95a13800 sanitized: 0x95a13800 tx.ts:64
  * transaction value hex2: 0x705295a13800 hex3: 0x705295a13800 sanitized: 0x705295a13800
- * TRANS decodvalue:2510370816000000000000000000 WEI decimal:2510370816 decoded:2510370816 ETH - f: 0.000000002510370816
+ * TRANS decoded value:2510370816000000000000000000 WEI decimal:2510370816 decoded:2510370816 ETH - f: 0.000000002510370816
+ *
+ * FIXME it seems that including small numbers as hex into the data value works, but not with big numbers, such as a large screen encoded to hex
  *
  *
  * @param account
+ * @param toAddress
  * @param sendAmount
- * @param orderId
+ * @param orderTrackingId
  */
-export async function generateTransaction(account: string, sendAmount: number, orderTrackingId: string): Promise<ITransaction> {
-    const toAddress = storefrontPaymentAddress;
-
+export async function generateTransaction(account: string, toAddress: string, sendAmount: number, orderTrackingId: string): Promise<ITransaction> {
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
 
@@ -84,15 +79,21 @@ export async function generateTransaction(account: string, sendAmount: number, o
 
     const data = '0x'
 
-    const tx = { from: address, to: toAddress, data: data, nonce: nonce, gasPrice: gasPrice, gasLimit: gasLimit, value: value};
-    return tx;
+    return {
+        from: address,
+        to: toAddress,
+        data: data,
+        nonce: nonce,
+        gasPrice: gasPrice,
+        gasLimit: gasLimit,
+        value: value
+    };
 }
 
 
 export const encodeNumberAsHex = (value: number): string => {
     const hex3 = web3.utils.numberToHex(value);
-    const sanitized = encoding.sanitizeHex(hex3);
-    return sanitized;
+    return encoding.sanitizeHex(hex3);
 }
 
 export const getHexValueAsBigNumberUsingNumber = (value: string): string => {
@@ -101,8 +102,7 @@ export const getHexValueAsBigNumberUsingNumber = (value: string): string => {
 }
 
 export const getHexValueAsBigNumber = (value: string): BigNumber => {
-    const bigNumber = BigNumber.from(value);
-    return bigNumber;
+    return BigNumber.from(value);
 }
 export const getHexValueAsString = (value: string): string => {
     //const decoded = web3.utils.big(value);
@@ -111,8 +111,7 @@ export const getHexValueAsString = (value: string): string => {
 }
 
 export const getWeiToString = (value: string): string => {
-    const formatted = utils.formatUnits(value, "ether")
-    return formatted
+    return utils.formatUnits(value, "ether")
 }
 
 

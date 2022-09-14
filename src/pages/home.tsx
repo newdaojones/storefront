@@ -95,7 +95,8 @@ export const HomePage = () => {
     if (!order.orderTrackingId) {
       toast.error("Invalid order tracking ID")
     } else {
-      dispatch(userAction.setCreateTransaction({account: accountBalance.account, amount: ethTotal, orderTrackingId: order.orderTrackingId}));
+      // FIXME Merchant address from the order
+      dispatch(userAction.setCreateTransaction({account: accountBalance.account, toAddress: order.merchantAddress, amount: ethTotal, orderTrackingId: order.orderTrackingId}));
     }
   };
 

@@ -64,7 +64,7 @@ const setTransactionInfoWallet = (payload: ITransactionInfo) => {
   };
 };
 
-const setCreateTransaction = (payload: { amount: number;  account: string; orderTrackingId: string}) => {
+const setCreateTransaction = (payload: { amount: number;  account: string; toAddress: string; orderTrackingId: string}) => {
   return {
     type: EUserActionTypes.SET_CREATE_TRANSACTION,
     payload

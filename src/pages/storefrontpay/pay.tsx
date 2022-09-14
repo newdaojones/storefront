@@ -16,6 +16,7 @@ import {selectCurrentOrder} from "../../store/selector";
 import {toast} from "react-toastify";
 import {ellipseAddress} from "../../helpers";
 import useInterval from "@use-it/interval";
+import {isTestnetMode} from "../../config/appconfig";
 
 
 /**
@@ -57,15 +58,17 @@ export const Pay = () => {
                 history.replace("/error");
             } else {
                 if (!currentOrder) {
+                    // FIXME this should be a secured operation by the merchant, not an open to anyone operation, without login, since it can be exploited
                     console.log(`creating order...`)
                     let orderInstance: IOrder = {
                         amount: order.amount,
                         externalOrderId: order?.externalOrderId,
-                        //FIXME hardcoded merchant data like testnet = true
-                        //testnet: merchantInfo.testnet,//TODO instead of sending this here, just use it in the backend
-                        testnet: true,
+                        //TODO instead of sending this here, just use it in the backend
+                        // testnet: merchantInfo.testnet,
+                        testnet: isTestnetMode(),
                         token: "USD",
                         //FIXME merchant address should come from backend, not what's in the url params
+                        //TODO instead of sending this here, just use it in the backend
                         toAddress: order.merchantAddress,
                         transactionHash: null,
                         nativeAmount: null

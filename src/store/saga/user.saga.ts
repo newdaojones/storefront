@@ -119,9 +119,9 @@ function* watchGetTickers() {
   }
 }
 
-function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; amount: number, orderTrackingId: string }}) {
+function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; toAddress: string; amount: number, orderTrackingId: string }}) {
   try {
-    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.amount, action.payload.orderTrackingId));
+    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId));
     const transactionOrder: ITransactionOrder = {
       transaction: res,
       orderTrackingId: action.payload.orderTrackingId

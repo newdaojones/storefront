@@ -31,9 +31,6 @@ export const SettingsPage = () => {
     }
   }, [merchantInfo]);
 
-  let onEdit = () => {
-  };
-
   const onSaveSettings = () => {
     if (!merchantInfo) {
       return;
@@ -83,9 +80,9 @@ export const SettingsPage = () => {
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
               <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative" >
                 <input type="checkbox" id="toggle-example" className="sr-only" checked={enabled}/>
-                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" onClick={() => {
-                    setEnabled(!enabled);
-                  }}></div>
+                <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" onClick={() => {
+                  setEnabled(!enabled);
+                }}/>
                   <span className="ml-3 text-sm text-white">{enabled ?'ON' :'OFF'}</span>
               </label>
             </div>
@@ -100,7 +97,7 @@ export const SettingsPage = () => {
                 <div>{'Ethereum'}</div>
                 <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4" >
                   <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={true}/>
-                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" ></div>
+                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
                 </label>
               </div>
 
