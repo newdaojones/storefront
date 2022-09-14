@@ -48,33 +48,17 @@ export const Pay = () => {
                 //FIXME the address should come from a backend call to fetch the merchant info, instead of what's in the url
                 //url should only contain basic info
                 order = extractOrderFromUrl(query);
-                console.log(`orderId: ${order.externalOrderId} amount: ${order.amount}`);
+                console.log(`orderId: ${order.orderTrackingId}`);
             } catch (e: any) {
                 toast.error(`${e?.message}`)
             }
 
-            if (!order?.externalOrderId) {
+            if (!order?.orderTrackingId) {
                 console.log(`Invalid query data, redirecting`);
-                history.replace("/error");
+                toast.error(`Invalid order trackingId on query data`)
             } else {
                 if (!currentOrder) {
-                    // FIXME this should be a secured operation by the merchant, not an open to anyone operation, without login, since it can be exploited
-                    console.log(`creating order...`)
-                    let orderInstance: IOrder = {
-                        amount: order.amount,
-                        externalOrderId: order?.externalOrderId,
-                        //TODO instead of sending this here, just use it in the backend
-                        // testnet: merchantInfo.testnet,
-                        testnet: isTestnetMode(),
-                        token: "USD",
-                        //FIXME merchant address should come from backend, not what's in the url params
-                        //TODO instead of sending this here, just use it in the backend
-                        toAddress: order.merchantAddress,
-                        transactionHash: null,
-                        nativeAmount: null
-                    };
-                    // create the order and populate the qr with that tracking Id, to let it fetch data.
-                    dispatch(userAction.createOrder(orderInstance));
+                    dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
                 } else {
                     console.log(`order already created trackingId: ${currentOrder.trackingId}`)
                 }

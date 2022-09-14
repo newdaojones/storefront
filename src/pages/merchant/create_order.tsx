@@ -1,8 +1,4 @@
 import React, {useState} from 'react';
-import numeral from 'numeral';
-
-import DollarIcon from '../../assets/images/dollarIcon.svg';
-import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
 import logoIcon from "../../assets/images/logo.svg";
 import {payLink} from "../../utils/link_utils";
 import {useDispatch, useSelector} from "react-redux";
@@ -11,7 +7,6 @@ import {toast} from "react-toastify";
 import {IOrder} from "../../models";
 import {isTestnetMode} from "../../config/appconfig";
 import {userAction} from "../../store/actions";
-import {extractOrderFromUrl} from "../../utils/path_utils";
 
 export const CreateOrderPage = () => {
   const dispatch = useDispatch();
@@ -20,9 +15,6 @@ export const CreateOrderPage = () => {
   const [amount, setAmount] = useState(0);
 
   let currentOrder = useSelector(selectCurrentOrder);
-
-  let onEdit = () => {
-  };
 
   function handleCreateOrder() {
     if (orderId == '') {
@@ -37,18 +29,13 @@ export const CreateOrderPage = () => {
       toast.error("Merchant address is not valid")
       return;
     }
-
-    // FIXME this should be a secured operation by the merchant, not an open to anyone operation, without login, since it can be exploited
     console.log(`creating order...`)
     let orderInstance: IOrder = {
       amount: amount,
       externalOrderId: orderId,
       //TODO instead of sending this here, just use it in the backend
-      // testnet: merchantInfo.testnet,
       testnet: isTestnetMode(),
       token: "USD",
-      //FIXME merchant address should come from backend, not what's in the url params
-      //TODO instead of sending this here, just use it in the backend
       toAddress: merchantInfo?.memberAddress,
       transactionHash: null,
       nativeAmount: null
