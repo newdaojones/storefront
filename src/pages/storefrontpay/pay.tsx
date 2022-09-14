@@ -124,7 +124,7 @@ export const Pay = () => {
                 qrCode.append(qrCodeElement);
             }
         }
-    }, [currentOrder, showBlackWhite]);
+    }, [currentOrder, showBlackWhite, qrCodeUri, size]);
 
     function onTroubleScanningClicked() {
         setShowBlackWhite(!showBlackWhite);

@@ -133,7 +133,7 @@ export interface AccountBalance {
     token: string;
 }
 
-//TODO this returns the latest account in the list with non-zero amount
+//TODO this returns the first account in the list with non-zero amount
 export function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];
@@ -174,3 +174,17 @@ export function getNonZeroAccountBalance(accounts: string[], balances: AccountBa
         balanceString: balanceString,
     }
 }
+//
+// export function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance {
+//     accounts.find(value => {
+//         let accountBalances = balances[value];
+//     })
+//
+//     return {
+//         token: balanceToken || 'ETH',
+//         account: firstNonZeroAccount,
+//         balance: accountBalance,
+//         balanceUsd: accountBalanceUSD,
+//         balanceString: balanceString,
+//     }
+// }

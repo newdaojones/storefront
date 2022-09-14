@@ -44,7 +44,7 @@ export const RegisterMerchant = () => {
         }
     }, [merchantInfo, merchantLogin, history]);
 
-    const getWalletAddress = (): string => {
+    const getWalletAddress = (accounts: any[]): string => {
         if (accounts && accounts.length > 0) {
             const first = accounts[0];
             let accountAddress = getAddressFromAccount(first!!)||"";
@@ -73,7 +73,7 @@ export const RegisterMerchant = () => {
         console.log(`register info `);
         toast.dismiss();
 
-        merchant.memberAddress = getWalletAddress();
+        merchant.memberAddress = getWalletAddress(accounts);
         setMerchant(merchant);
 
         if (!merchant?.merchantName) {
@@ -97,18 +97,8 @@ export const RegisterMerchant = () => {
         }
 
         console.log(`creating merchant ${merchant}`)
-        merchant.memberAddress = getWalletAddress();
-        setMerchant(merchant);
-
-
         dispatch(userAction.createMerchant(merchant, history));
     }
-
-    React.useEffect(() => {
-        getWalletAddress();
-    }, [accounts, getWalletAddress]);
-
-
 
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
@@ -135,7 +125,7 @@ export const RegisterMerchant = () => {
 
                         <div className="w-full flex flex-col p-4">
                             <p className="text-sm ">Wallet Address</p>
-                            <input className="border-2 border-secondary rounded-16xl shadow-md px-4 py-2 my-2" type='text' readOnly={true} value={ellipseAddress(getWalletAddress())}/>
+                            <input className="border-2 border-secondary rounded-16xl shadow-md px-4 py-2 my-2" type='text' readOnly={true} value={ellipseAddress(getWalletAddress(accounts) || "")}/>
                         </div>
                         <div className="flex items-center justify-center mt-8">
                             <input className="mx-2" name="policy" type="checkbox" readOnly={true} value='true' onChange={handleChange}/>

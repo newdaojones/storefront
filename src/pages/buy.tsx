@@ -269,7 +269,7 @@ export const BuyPage = () => {
                 </div>
                 <p className="mt-4">{`${buyProgress + 1}/3`}</p>
                 {
-                  isMobile() && buyProgress == 1 ? <a href={"wc://"} className="">
+                  isMobile() && buyProgress === 1 ? <a href={"wc://"} className="">
                     {helperTextMessage}
                   </a> : helperTextMessage
                 }

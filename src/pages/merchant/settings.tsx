@@ -69,7 +69,7 @@ export const SettingsPage = () => {
               </div>
           </div>
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-center text-white  mr-8">Default Token</p>
+            <p className="text-center text-white  mr-8">Accepted Token</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
               {merchantInfo?.defaultToken}
             </div>

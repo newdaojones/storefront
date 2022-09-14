@@ -417,7 +417,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         toast.error(err.message);
       }
     },
-    [client, session]
+    [client, session, login]
   );
 
   const _subscribeToEvents = useCallback(

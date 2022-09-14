@@ -33,7 +33,8 @@ export default function* root() {
 
     takeLatest(EUserActionTypes.UPDATE_MERCHANT_SETTINGS as any, watchUpdateMerchant),
 
-    takeLatest(EUserActionTypes.UNSET_CURRENT_ORDER as any, watchUnsetTransaction),
+    takeLatest(EUserActionTypes.UNSET_CURRENT_ORDER as any, watchUnsetOrder),
+
     // maybe not needed
     //takeLatest(EUserActionTypes.UPDATE_MERCHANT_SUCCESS as any, watchGetMerchantInfo)
   ]);
