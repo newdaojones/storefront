@@ -54,11 +54,12 @@ export const Login = () => {
         })
     }
 
-    const payButton = storefrontPayButton('0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004', "12323", 0.45);
+    const wcV2Deeplink = qrCodeUri ? qrCodeUri : '';
     const backpackDeeplink = qrCodeUri ? `ndj-backpack://wc?uri=${qrCodeUri}` : '';
+    const backpackUniversalLink = qrCodeUri ? `https://jxndao.com/wc?uri=${qrCodeUri}` : '';
     return (
-        <div className="w-full h-full flex items-center justify-center flex-col">
-            <a href={qrCodeUri} className="">
+        <div className="w-full h-screen flex items-center justify-center flex-col">
+            <a href={wcV2Deeplink} target={"_blank"} className="">
                 <div className="flex items-center justify-center pt-2">
                     <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
                     </div>
@@ -69,11 +70,18 @@ export const Login = () => {
                className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
             <p className="font-montserrat text-center text-white mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
 
-            {/*Storefront Pay Button*/}
-            <a href={backpackDeeplink}>
+            {/*Backpack Button*/}
+            <a href={backpackDeeplink} target={"_blank"}>
                 <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
                     <img className="w-8 h-8 mr-4" src={backpackLogo} alt="" />
                     <p className="font-righteous">Connect with Backpack</p>
+                </button>
+            </a>
+            {/*Backpack Button 2*/}
+            <a href={backpackUniversalLink} target={"_blank"}>
+                <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+                    <img className="w-8 h-8 mr-4" src={backpackLogo} alt="" />
+                    <p className="font-righteous">Connect with Backpack 2</p>
                 </button>
             </a>
             <p className="font-montserrat text-center text-white mt-2 mb-10">Or connect directly with your Backpack</p>

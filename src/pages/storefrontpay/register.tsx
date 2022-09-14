@@ -29,7 +29,7 @@ export const RegisterMerchant = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-    const { accounts, balances, merchantLogin } = useWalletConnectClient();
+    const { accounts, merchantLogin } = useWalletConnectClient();
 
     const [ policy, setPolicy ] = useState(false)
     const [ merchant, setMerchant ] = useState<IMerchant>(defaultMerchant)
@@ -42,7 +42,7 @@ export const RegisterMerchant = () => {
             merchantLogin.merchantExists = true;
             history.replace("/merchant/profile")
         }
-    }, [merchantInfo]);
+    }, [merchantInfo, history]);
 
     const getWalletAddress = (): string => {
         if (accounts && accounts.length > 0) {
@@ -55,14 +55,14 @@ export const RegisterMerchant = () => {
     }
 
     const handleChange = (event: any) => {
-        if (event.target.name == "policy") {
+        if (event.target.name === "policy") {
             console.info(`setting policy ${event.target.value}`);
             setPolicy(event.target.value)
-        } else if (event.target.name == "merchantName") {
+        } else if (event.target.name === "merchantName") {
             console.info(`setting name ${event.target.value}`);
             merchant.merchantName = event.target.value;
             setMerchant(merchant);
-        } else if (event.target.name == "storeName") {
+        } else if (event.target.name === "storeName") {
             console.info(`setting name ${event.target.value}`);
             merchant.storeName = event.target.value;
             setMerchant(merchant);
@@ -106,7 +106,7 @@ export const RegisterMerchant = () => {
 
     React.useEffect(() => {
         getWalletAddress();
-    }, [accounts]);
+    }, [accounts, getWalletAddress]);
 
 
 

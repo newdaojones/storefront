@@ -80,7 +80,7 @@ export const Pay = () => {
             console.log(`Invalid query data, redirecting`);
             history.replace("/error?msg=Invalid data query");
         }
-    }, [currentOrder]);
+    }, [currentOrder, dispatch, history, query]);
 
 
     const qrCodeUri = currentOrder ? `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder.trackingId}` : '';
@@ -187,7 +187,7 @@ export const Pay = () => {
                 </div>
 
                 {currentOrder && !showBlackWhite && (
-                    <a href={qrCodeUri} target={'_blank'}>
+                    <a href={qrCodeUri} target={'_blank'} rel={'noreferrer'}>
                     <div className="flex items-center justify-center">
                         <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
                         </div>

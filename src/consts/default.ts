@@ -1,9 +1,10 @@
+import {isTestnetMode} from "../config/appconfig";
+
 export const DEFAULT_MAIN_CHAINS = [
-  // mainnets
-  // "eip155:1",
+  "eip155:1",// ethereum mainnet
   // "eip155:10",
   // "eip155:100",
-  // "eip155:137",
+  "eip155:137",// polygon mainnet
   // "eip155:42161",
   // "eip155:42220",
   // "cosmos:cosmoshub-4",
@@ -19,31 +20,20 @@ export const DEFAULT_TEST_CHAINS = [
   // "eip155:44787",
   // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",
 ];
-export const REQUIRED_TEST_CHAINS = [
-  // testnets
-  "eip155:42",//ethereum kovan
-  // "eip155:69",
-  // "eip155:80001",//polygon mumbai
-  // "eip155:421611",
-  // "eip155:44787",
-  // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",
-];
 
-export const DEFAULT_CHAINS = [...DEFAULT_MAIN_CHAINS, ...DEFAULT_TEST_CHAINS];
-export const REQUIRED_CHAINS = [...DEFAULT_MAIN_CHAINS, ...REQUIRED_TEST_CHAINS];
+export const DEFAULT_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
+export const REQUIRED_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
 
 // Wallet connect project ID
 export const DEFAULT_PROJECT_ID = 'f17194a7efd15ee24623a532ccff7c77';
 export const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.com';
-// export const DEFAULT_PROJECT_ID = process.env.REACT_APP_PROJECT_ID;
-// export const DEFAULT_RELAY_URL = process.env.REACT_APP_RELAY_URL;
 
 export const DEFAULT_LOGGER = 'info';
 
 // TODO Change app data
 export const DEFAULT_APP_METADATA = {
   name: 'NDJ Storefront',
-  description: 'New DAO Jones StoreFront DApp',
+  description: 'StoreFront Pay DApp',
   url: 'https://test.jxndao.com/storefront',
   icons: ['https://jxndao.com/logo192.png'],
 };

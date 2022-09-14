@@ -1,31 +1,29 @@
 import Client from '@walletconnect/sign-client';
 import {PairingTypes, SessionTypes} from '@walletconnect/types';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { PublicKey } from '@solana/web3.js';
+import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import {PublicKey} from '@solana/web3.js';
 import moment from 'moment';
 import * as encoding from '@walletconnect/encoding';
 
 import {
   DEFAULT_APP_METADATA,
-  DEFAULT_CHAINS,
   DEFAULT_EIP155_METHODS,
-  DEFAULT_LOGGER,
   DEFAULT_PROJECT_ID,
-  DEFAULT_RELAY_URL, REQUIRED_CHAINS,
+  DEFAULT_RELAY_URL,
+  REQUIRED_CHAINS,
 } from '../consts';
-import { getAppMetadata, getSdkError } from "@walletconnect/utils";
-import { getPublicKeysFromAccounts } from '../helpers/solana';
-import { useDispatch } from 'react-redux';
-import { userAction } from '../store/actions';
-import { sleep } from '../utils';
-import { toast } from 'react-toastify';
+import {getAppMetadata, getSdkError} from "@walletconnect/utils";
+import {getPublicKeysFromAccounts} from '../helpers/solana';
+import {useDispatch} from 'react-redux';
+import {userAction} from '../store/actions';
+import {sleep} from '../utils';
+import {toast} from 'react-toastify';
 import {AccountBalances} from "../helpers";
 import {getRequiredNamespaces} from "../helpers/namespaces";
 import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
-import {useHistory} from "react-router-dom";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -314,8 +312,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
           toast.error(`Error: ${err.message}.`);
 
-          //TODO check if disconnect or not
-          // disconnect().then(() => console.log(`disconnect done.`));
+          disconnect().then(() => console.log(`disconnect done.`));
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         } finally {
           setIsLoading(false);
         }
@@ -349,8 +350,14 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         onSessionConnected(session);
       } catch (e: any) {
         toast.error(`connect error: ${e?.message || ""}`);
+        disconnect().then(() => console.log(`disconnect done.`));
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+
       } finally {
-        // close modal in case it was open
+        setIsLoading(false);
       }
     },
     [chains, client, onSessionConnected]

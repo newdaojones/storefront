@@ -53,13 +53,6 @@ const SPriceLimits = {
     width: '18%',
 }
 
-const SAssetBalance = {
-    display: 'flex',
-    alignSelf: 'center',
-    align: 'end',
-    color: 'white',
-};
-
 const SLimitValues = {
     display: 'flex',
     alignItems: 'right',

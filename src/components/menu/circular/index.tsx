@@ -54,7 +54,7 @@ export const OrbitalMenu = ({
     useEffect(() => {
         window.addEventListener('keydown', onKeydown);
         return () => window.removeEventListener('keydown', onKeydown);
-    }, [focused, disabled]);
+    }, [focused, disabled, onKeydown]);
 
     let name = '';
     if (ensName) {

@@ -56,7 +56,7 @@ export const Main = () => {
 
   return (
     <div className="h-screen w-screen flex flex-col">
-      <Menu
+      {account && <Menu
         status={isLoading ? 'Connecting...' : account ? 'Connected' : 'Disconnected'}
         onDisconnect={onDisconnect}
         onSelectAccount={() => setOpenSwitchAccount(true)}
@@ -65,7 +65,7 @@ export const Main = () => {
         items={menuItems}
         size={200}
         key={'topMenu'}
-      />
+      />}
       {isLoading || isInitializing ? <Landing /> : account ? <Dashboard /> : <Login />}
       <AccountModal
         account={account}

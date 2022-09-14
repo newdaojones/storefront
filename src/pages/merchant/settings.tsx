@@ -18,11 +18,11 @@ export const SettingsPage = () => {
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
   console.log(`merchant Account ${account} add ${getAddressFromAccount(account!!)||""}`)
 
-  let payButton = storefrontPayButton(getAddressFromAccount(account!!) || "", "1", 0.15);
+  //let payButton = storefrontPayButton(getAddressFromAccount(account!!) || "", "1", 0.15);
 
   React.useEffect(() => {
     if (account) {
-      payButton = storefrontPayButton(getAddressFromAccount(account), "1", 0.15);
+      //payButton = storefrontPayButton(getAddressFromAccount(account), "1", 0.15);
     }
   }, [account]);
 
@@ -111,7 +111,7 @@ export const SettingsPage = () => {
                   <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={polygonEnabled}/>
                   <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" onClick={() => {
                     setPolygonEnabled(!polygonEnabled);
-                  }}></div>
+                  }}/>
                 </label>
               </div>
             </div>
@@ -123,10 +123,10 @@ export const SettingsPage = () => {
           </button>
 
           {/*Storefront Pay Button*/}
-          <div className="w-full flex flex-col items-center justify-around pt-8">
-            <p className="font-montserrat text-white text-center text-sm mt-2">Add a Pay with Storefront button to your site, or use our sdk.</p>
-            {payButton}
-          </div>
+          {/*<div className="w-full flex flex-col items-center justify-around pt-8">*/}
+          {/*  <p className="font-montserrat text-white text-center text-sm mt-2">Add a Pay with Storefront button to your site, or use our sdk.</p>*/}
+          {/*  {payButton}*/}
+          {/*</div>*/}
         </div>
       </div>
     </div>

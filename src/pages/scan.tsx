@@ -1,5 +1,5 @@
-import React, {Component, useState} from 'react';
-import { QrReader } from "react-qr-reader";
+import React, {useState} from 'react';
+import {QrReader} from "react-qr-reader";
 import {useHistory} from "react-router-dom";
 /*
 
