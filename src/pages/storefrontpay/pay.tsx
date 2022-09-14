@@ -11,12 +11,10 @@ import QRCode from 'react-qr-code';
 import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
 import {useDispatch, useSelector} from "react-redux";
 import {userAction} from "../../store/actions";
-import {IOrder} from "../../models";
 import {selectCurrentOrder} from "../../store/selector";
 import {toast} from "react-toastify";
 import {ellipseAddress} from "../../helpers";
 import useInterval from "@use-it/interval";
-import {isTestnetMode} from "../../config/appconfig";
 
 
 /**
@@ -45,8 +43,6 @@ export const Pay = () => {
         if (query) {
             let order = null;
             try {
-                //FIXME the address should come from a backend call to fetch the merchant info, instead of what's in the url
-                //url should only contain basic info
                 order = extractOrderFromUrl(query);
                 console.log(`orderId: ${order.orderTrackingId}`);
             } catch (e: any) {
@@ -165,11 +161,11 @@ export const Pay = () => {
                 <div className="w-3/4 flex justify-around pb-4">
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Order Id</p>
-                        <p className="font-bold text-xl pl-4">{`${currentOrder?.externalOrderId}`}</p>
+                        <p className="font-bold text-xl pl-4">{`${currentOrder?.externalOrderId || ''}`}</p>
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>
-                        <p className="font-bold text-xl">{`USD $${currentOrder?.amount}`}</p>
+                        <p className="font-bold text-xl">{`USD $${currentOrder?.amount || ''}`}</p>
                     </div>
                 </div>
 
