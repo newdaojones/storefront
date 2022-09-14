@@ -63,10 +63,6 @@ const SLimitValues = {
 const OrderRow = (props: any) => {
     const {asset, onEdit} = props;
     const depositorInfo: IOrder = asset
-    // const selectDepositor = (item: ITransactionInfo): boolean => {
-    //     setInputs(values => ({...values, name: item.depositorName, walletAddress: item.memberAddress, ensAddress: item.memberENSAddress}))
-    //     return true
-    // }
     let initialState = {
         name: '',
         ensAddress: '',
@@ -99,7 +95,7 @@ const OrderRow = (props: any) => {
     }
 
     const isTransactionConfirmed = (): boolean => {
-        return depositorInfo?.transactionHash != null
+        return !!(depositorInfo?.transactionHash)
     }
 
     let editDepositorDialog = <ConfirmDialog onConfirm={() => onEditConfirmed()}
@@ -147,10 +143,17 @@ const OrderRow = (props: any) => {
         </button>
     </ConfirmDialog>;
 
+    const icon = isTransactionConfirmed() ?
+        <a target='_blank'
+           href={transactionStatusLink(depositorInfo.transactionHash!!, depositorInfo.trackingId || "")}>
+            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={ConfirmedIcon} alt="Status" />
+        </a> :
+        <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt="" />
+
     return (
         <div style={SAssetRow}>
             <div style={SAssetRowLeft}>
-                <img style={Center} className="w-8 h-8 mr-2 filter-white" src={isTransactionConfirmed() ? ConfirmedIcon : PendingIcon} alt="" />
+                {icon}
                 <div style={SColumnLeft}>
                     <div style={SAssetName}>{`orderId: ${depositorInfo.externalOrderId}`}</div>
                     <div className="flex text-xs text-white overflow-hidden">
