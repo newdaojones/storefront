@@ -18,9 +18,8 @@ import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
   AccountBalance,
-  getNonZeroAccountBalance,
   getHexValueAsBigNumber,
-  getHexValueAsString,
+  getHexValueAsString, getPreferredAccountBalance,
   ITransaction
 } from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
@@ -39,7 +38,7 @@ export const BuyPage = () => {
   let transactionInProgress = useSelector(selectTransactionInProgress)
   const tickers = useSelector(selectTickers)
   const { accounts, balances } = useWalletConnectClient();
-  const accountBalance = getNonZeroAccountBalance(accounts, balances);
+  const accountBalance = getPreferredAccountBalance(accounts, balances);
 
   const transaction = useSelector(selectCreateTransaction)
   const helpMessages = ['Tap the button above to submit the signing request',
