@@ -9,7 +9,7 @@ import pendingIcon from '../../assets/images/loading.svg';
 import {useLocation} from "react-use";
 import {extractTransactionIdFromUrl, ITransactionStatus} from "../../utils/path_utils";
 import {useHistory} from "react-router-dom";
-import {currentRpcApi, getNonZeroAccountBalance} from "../../helpers/tx";
+import {currentRpcApi, getPreferredAccountBalance} from "../../helpers/tx";
 import {ellipseAddress, TxDetails} from "../../helpers";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {toast} from "react-toastify";
@@ -31,7 +31,7 @@ export const TransactionStatus = () => {
     let query = useLocation().search;
     const dispatch = useDispatch();
     const { accounts, balances } = useWalletConnectClient();
-    const accountBalance = getNonZeroAccountBalance(accounts, balances);
+    const accountBalance = getPreferredAccountBalance(accounts, balances);
 
     const history = useHistory();
     const [ confirmed, setConfirmed ] = useState(false)

@@ -133,8 +133,25 @@ export interface AccountBalance {
     token: string;
 }
 
-//TODO this returns the first account in the list with non-zero amount
-export function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
+/**
+ *
+ * @param accounts
+ * @param balances
+ *
+ * @return the first account with USDC tokens, or first found account with non-zero balance for any token
+ */
+export function getPreferredAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
+    const accountWithUSDC = getAccountWithNonZeroUSDCBalance(accounts, balances);
+    if (accountWithUSDC) {
+        return accountWithUSDC;
+    }
+    return getNonZeroAccountBalance(accounts, balances);
+}
+
+/**
+ *  @returns the first account in the list with non-zero balance of any token
+ */
+function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];
     let accountBalance = BigNumber.from(0);
@@ -174,17 +191,25 @@ export function getNonZeroAccountBalance(accounts: string[], balances: AccountBa
         balanceString: balanceString,
     }
 }
-//
-// export function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance {
-//     accounts.find(value => {
-//         let accountBalances = balances[value];
-//     })
-//
-//     return {
-//         token: balanceToken || 'ETH',
-//         account: firstNonZeroAccount,
-//         balance: accountBalance,
-//         balanceUsd: accountBalanceUSD,
-//         balanceString: balanceString,
-//     }
-// }
+
+function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance | null {
+    const usdcAccount = accounts.find(value => {
+        let accountBalances = balances[value];
+        return !!(accountBalances.find(value1 => value1.symbol === 'USDC'))
+    })
+
+    if (usdcAccount) {
+        const usdcAccountBalance = balances[usdcAccount];
+        const usdcTokenAsset = usdcAccountBalance.find(value => value.symbol === 'USDC');
+        console.info(`found USDC account ${usdcAccount} with tokens ${usdcAccountBalance.map(value => value.symbol).join(",")}`);
+        return {
+            token: 'USDC',
+            account: usdcAccount,
+            balance: BigNumber.from(usdcTokenAsset?.balance || 0),
+            balanceUsd: BigNumber.from(usdcTokenAsset?.balance || 0),
+            balanceString: BigNumber.from(usdcTokenAsset?.balance || 0).toString(),
+        }
+    }
+
+    return null;
+}

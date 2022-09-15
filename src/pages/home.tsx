@@ -4,7 +4,7 @@ import QRTarget from '../assets/images/qrCodeScanning.svg';
 import QRLine from '../assets/images/qrCodeBar.svg';
 import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {getNonZeroAccountBalance} from "../helpers/tx";
+import {getPreferredAccountBalance} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCreateTransaction, selectCurrentOrder, selectTickers} from "../store/selector";
 import numeral from "numeral";
@@ -32,7 +32,7 @@ export const HomePage = () => {
   const [ transactionCreatedLock, setTransactionCreatedLock ] = useState(false)
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
-  const accountBalance = getNonZeroAccountBalance(accounts, balances);
+  const accountBalance = getPreferredAccountBalance(accounts, balances);
   console.info(`selected account:${accountBalance.account} balance:${accountBalance.balanceString} token:${accountBalance.token}`)
 
   const tickers = useSelector(selectTickers);
