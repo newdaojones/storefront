@@ -11,6 +11,7 @@ import VaultIcon from '../assets/images/menu_icon.svg';
 
 import { selectAccountInfo, selectEnsName } from '../store/selector';
 import {useWalletConnectClient} from '../contexts/walletConnect';
+import {toast} from "react-toastify";
 
 export const Main = () => {
   const ensName = useSelector(selectEnsName);
@@ -36,7 +37,12 @@ export const Main = () => {
   };
 
   const onDisconnect = () => {
-    session && disconnect();
+    console.info(`onDisconnect called session ${session}`);
+    toast.info("Disconnecting...", {autoClose: 1000})
+    disconnect().then(r => console.info(`disconnected!`));
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   };
 
   React.useEffect(() => {
