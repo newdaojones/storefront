@@ -5,8 +5,7 @@ import {isDevMode} from "./config/appconfig";
 const devUrl = 'http://localhost:3000';
 const baseUrl = 'https://test.jxndao.com';
 
-//FIXME export const storefrontPayBaseUrl = isDevMode() ? devUrl : baseUrl;
-export const storefrontPayBaseUrl = devUrl;
+export const storefrontPayBaseUrl = isDevMode() ? devUrl : baseUrl;
 
 export const storefrontPayButton = (merchantAddress: string, orderId: String, amount: Number) => {
     const url = `${storefrontPayBaseUrl}/storefront/pay?merchantAddress=${merchantAddress}&orderId=${orderId}&amount=${amount}`
