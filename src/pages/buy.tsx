@@ -42,7 +42,7 @@ export const BuyPage = () => {
 
   const transaction = useSelector(selectCreateTransaction)
   const helpMessages = ['Tap the button above to submit the signing request',
-    'Switch to your wallet app and sign the transaction. Click here to open it.',
+    'Open your wallet app and sign the transaction. Click here to open it.',
     'Sending transaction...']
 
   const {
