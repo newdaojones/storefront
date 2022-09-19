@@ -13,7 +13,8 @@ export const DEFAULT_MAIN_CHAINS = [
 
 export const DEFAULT_TEST_CHAINS = [
   // testnets
-  "eip155:42",//ethereum kovan
+  "eip155:5",//ethereum gorli
+  // "eip155:42",//ethereum kovan
   // "eip155:69",
   "eip155:80001",//polygon mumbai
   // "eip155:421611",
@@ -22,7 +23,7 @@ export const DEFAULT_TEST_CHAINS = [
 ];
 
 export const DEFAULT_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
-export const REQUIRED_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
+//export const REQUIRED_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
 
 // Wallet connect project ID
 export const DEFAULT_PROJECT_ID = 'f17194a7efd15ee24623a532ccff7c77';

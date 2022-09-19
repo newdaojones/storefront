@@ -13,8 +13,8 @@ const testUrl = 'https://test-api.jxndao.com/';
 // axios.defaults.baseURL = 'https://api.jxndao.com/';
 
 export const apiBaseUrl = isDevMode() ? devUrl : testUrl;
-axios.defaults.baseURL = apiBaseUrl;
 
+axios.defaults.baseURL = apiBaseUrl;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 axios.interceptors.response.use(

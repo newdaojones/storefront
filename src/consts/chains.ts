@@ -48,13 +48,13 @@ export const chainData: any = {
       rgb: '99, 125, 234',
       symbol: 'ETH',
     },
-    '42': {
-      name: 'Ethereum Kovan',
-      id: 'eip155:42',
-      rpc: ['https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09'],
+    '5': {
+      name: 'Ethereum Görli',
+      id: 'eip155:5',
+      rpc: ['https://goerli.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09'],
       slip44: 60,
       testnet: true,
-      logo: 'https://blockchain-api.xyz/logos/eip155:1.png',
+      logo: 'https://blockchain-api.xyz/logos/eip155:5.png',
       rgb: '99, 125, 234',
       symbol: 'ETH',
     },

@@ -7,10 +7,10 @@ import * as encoding from '@walletconnect/encoding';
 
 import {
   DEFAULT_APP_METADATA,
+  DEFAULT_CHAINS,
   DEFAULT_EIP155_METHODS,
   DEFAULT_PROJECT_ID,
   DEFAULT_RELAY_URL,
-  REQUIRED_CHAINS,
 } from '../consts';
 import {getAppMetadata, getSdkError} from "@walletconnect/utils";
 import {getPublicKeysFromAccounts} from '../helpers/solana';
@@ -81,7 +81,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [account, setAccount] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
   const [solanaPublicKeys, setSolanaPublicKeys] = useState<Record<string, PublicKey>>();
-  const [chains, setChains] = useState<string[]>(REQUIRED_CHAINS);
+  const [chains, setChains] = useState<string[]>(DEFAULT_CHAINS);
 
   const [balances, setBalances] = useState<AccountBalances>({});
 

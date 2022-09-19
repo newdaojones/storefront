@@ -1,21 +1,9 @@
 import axios, {AxiosInstance} from "axios";
 import {AssetData, TxDetails} from "../helpers/types";
-
-// Infura-Api only used for kovan & polygon at the moment
-// FIXME the url should be read from the config, as everywhere else,
-// not hardcoded here
-
-//TODO extract config rpc urls
-const ethKovanRpcUrl = "https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
-// TODO infure polygon needs a credit card to be added to be enabled
-// const polygonMumbainRpcUrl = "https://polygon-mainnet.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
-
-const polygonMumbainRpcUrl = "https://matic-testnet-archive-rpc.bwarelabs.com/";
-
-
+import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
 
 const ethInstance: AxiosInstance = axios.create({
-    baseURL: ethKovanRpcUrl,
+    baseURL: ethereumRpcUrl,
     timeout: 30000, // 30 secs
     headers: {
         Accept: "application/json",
@@ -24,7 +12,7 @@ const ethInstance: AxiosInstance = axios.create({
 });
 
 const polygonInstance: AxiosInstance = axios.create({
-    baseURL: polygonMumbainRpcUrl,
+    baseURL: polygonRpcUrl,
     timeout: 30000, // 30 secs
     headers: {
         Accept: "application/json",
