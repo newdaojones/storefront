@@ -29,6 +29,7 @@ export const MerchantMain = () => {
   const {
     session,
     isInitializing,
+    isWaitingForApproval,
     connect,
     disconnect,
     switchAccount,
@@ -77,7 +78,7 @@ export const MerchantMain = () => {
             size={450}
             key={'orbMenu'}
         />}
-        {isLoading || isInitializing ? <Landing /> : account ? merchantLogin.merchantExists ? <MerchantDashboard />: <RegisterMerchant/> :<MerchantLogin /> }
+        {isLoading || isInitializing ? <Landing text={ isWaitingForApproval ? "Waiting for signature...": "Loading..."}/> : account ? merchantLogin.merchantExists ? <MerchantDashboard />: <RegisterMerchant/> :<MerchantLogin /> }
         <AccountModal
             account={account}
             accounts={accounts}

@@ -42,6 +42,7 @@ interface IContext {
   refreshBalances: (accounts: string[]) => Promise<void>;
   switchAccount: (account: string) => Promise<void>;
   isInitializing: boolean;
+  isWaitingForApproval: boolean;
   chains: string[];
   pairings: PairingTypes.Struct[];
   isLoading: boolean;
@@ -77,6 +78,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [isFetchingBalances, setIsFetchingBalances] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isWaitingForApproval, setIsWaitingForApproval] = useState(false);
 
   const [account, setAccount] = useState<string>();
   const [accounts, setAccounts] = useState<string[]>([]);
@@ -282,14 +284,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
           let signature: string | null = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
           if (!signature) {
+            setIsWaitingForApproval(true);
             signature = await signNonce(account, nonce) || null;
+            setIsWaitingForApproval(false);
           }
-
           if (signature) {
             axios.setAuthorizationToken(signature);
             axios.setNonce(nonce);
           } else {
             toast("Invalid signature")
+            setIsWaitingForApproval(false);
           }
 
           const duration = moment.duration(moment().diff(startTime)).asSeconds();
@@ -304,8 +308,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
           dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
           dispatch(userAction.merchantLoginSuccess({address: address}));
-
-
 
         } catch (err: any) {
           localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
@@ -528,6 +530,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       initialized,
       qrCodeUri,
       isLoading,
+      isWaitingForApproval,
       account,
       accounts,
       balances,
@@ -546,6 +549,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       pairings,
       isInitializing,
       isLoading,
+      isWaitingForApproval,
       initialized,
       qrCodeUri,
       account,
