@@ -24,11 +24,14 @@ export const ProfilePage = () => {
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName} totalUsd: ${merchantInfo?.totalInUsd}`);
 
   const refreshOrders = () => {
+    setIsLoadingOrders(true);
     if (merchantInfo) {
-      setIsLoadingOrders(true);
       refreshOrdersForMerchant(merchantInfo);
-      setIsLoadingOrders(false);
     }
+
+    setTimeout(() => {
+      setIsLoadingOrders(false);
+    }, 2000);
   }
 
   function refreshOrdersForMerchant(merchantInfo: IMerchant) {
@@ -41,7 +44,9 @@ export const ProfilePage = () => {
       setIsLoadingOrders(true);
       setCount((currentCount) => currentCount + 1);
       refreshOrdersForMerchant(merchantInfo);
-      setIsLoadingOrders(false);
+      setTimeout(() => {
+        setIsLoadingOrders(false);
+      }, 2000);
     }
   }, 30000);
 
@@ -69,7 +74,7 @@ export const ProfilePage = () => {
             <p className="text-white mt-1 py-2 font-bold font-montserrat">Orders</p>
             <div className="flex items-center items-center" >
               {/*<p className="text-white text-xs">Reload</p>*/}
-              <img className="w-8 h-8 ml-2 cursor-pointer " style = {{animation: isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
+              <img className="w-8 h-8 ml-2 cursor-pointer " style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
             </div>
           </div>
 
