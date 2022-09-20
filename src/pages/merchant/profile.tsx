@@ -3,7 +3,7 @@ import numeral from 'numeral';
 
 import BTCIcon from '../../assets/images/ethIcon.svg';
 import DollarIcon from '../../assets/images/dollarIcon.svg';
-import RefreshIcon from '../../assets/images/loading_white.svg';
+import RefreshIcon from '../../assets/images/reload.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
 import {useDispatch, useSelector} from "react-redux";
 import {selectMerchantInfo} from "../../store/selector";
@@ -17,11 +17,17 @@ export const ProfilePage = () => {
   let merchantInfo = useSelector(selectMerchantInfo);
 
   const [count, setCount] = useState(0);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+
+
+
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName} totalUsd: ${merchantInfo?.totalInUsd}`);
 
   const refreshOrders = () => {
     if (merchantInfo) {
+      setIsLoadingOrders(true);
       refreshOrdersForMerchant(merchantInfo);
+      setIsLoadingOrders(false);
     }
   }
 
@@ -32,8 +38,10 @@ export const ProfilePage = () => {
 
   useInterval(() => {
     if (merchantInfo) {
+      setIsLoadingOrders(true);
       setCount((currentCount) => currentCount + 1);
       refreshOrdersForMerchant(merchantInfo);
+      setIsLoadingOrders(false);
     }
   }, 30000);
 
@@ -59,9 +67,9 @@ export const ProfilePage = () => {
         <div className="mt-4">
           <div className="flex items-center justify-between px-10">
             <p className="text-white mt-1 py-2 font-bold font-montserrat">Orders</p>
-            <div className="flex items-center items-center">
+            <div className="flex items-center items-center" >
               {/*<p className="text-white text-xs">Reload</p>*/}
-              <img className="w-8 h-8 ml-2 cursor-pointer" src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
+              <img className="w-8 h-8 ml-2 cursor-pointer " style = {{animation: isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
             </div>
           </div>
 
