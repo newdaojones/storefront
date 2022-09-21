@@ -74,6 +74,11 @@ export const BuyPage = () => {
       console.debug("skipping click while there's an ongoing trx");
       return;
     }
+    if (!accountBalance) {
+      toast.error("Error fetching account balance");
+      return;
+    }
+
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     onSendTransaction(accountBalance).then(r => {})
 
