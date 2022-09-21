@@ -62,6 +62,7 @@ export async function generateTransaction(account: string, toAddress: string, se
 
     // FIXME this should also be a param
     // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
+    //const _gasLimit = 101112;
     const _gasLimit = 21112;
     const gasLimit = encodeNumberAsHex(_gasLimit)
 
@@ -72,6 +73,8 @@ export async function generateTransaction(account: string, toAddress: string, se
     const value = encoding.sanitizeHex(_value.toHexString());
     //debugTransactionEncodingDecoding(_value, value);
 
+    const to = encoding.sanitizeHex(toAddress);
+
     // TODO add transaction id here, maybe a hash function of the qrcode & timestamp could be good
     // const orderIdEncoded = encoding.utf8ToHex(orderTrackingId);
     // const data = encoding.sanitizeHex(orderIdEncoded);
@@ -81,7 +84,7 @@ export async function generateTransaction(account: string, toAddress: string, se
 
     return {
         from: address,
-        to: toAddress,
+        to: to,
         data: data,
         nonce: nonce,
         gasPrice: gasPrice,
@@ -141,6 +144,10 @@ export interface AccountBalance {
  * @return the first account with USDC tokens, or first found account with non-zero balance for any token
  */
 export function getPreferredAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
+    if (!balances) {
+        console.error("undefined or null balances");
+        throw Error("undefined AccountBalances");
+    }
     const accountWithUSDC = getAccountWithNonZeroUSDCBalance(accounts, balances);
     if (accountWithUSDC) {
         return accountWithUSDC;

@@ -42,6 +42,9 @@ export class InfuraApi implements RpcApi {
 }
 
 /**
+ * TODO should remove this dependency in favor of some other RPC based solution like the infura.
+ * See https://github.com/WalletConnect/web-examples/commit/6c23356a550d797558362a5d2d44ac865856f88d
+ *
  * https://ethereum-api.xyz/supported-chains
  */
 export class EthereumXyzApi implements RpcApi {
