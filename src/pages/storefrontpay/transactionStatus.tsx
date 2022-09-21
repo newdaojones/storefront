@@ -30,9 +30,7 @@ import numeral from "numeral";
 export const TransactionStatus = () => {
     let query = useLocation().search;
     const dispatch = useDispatch();
-    const { accounts, balances } = useWalletConnectClient();
-    const accountBalance = getPreferredAccountBalance(accounts, balances);
-
+    const { account } = useWalletConnectClient();
     const history = useHistory();
     const [ confirmed, setConfirmed ] = useState(false)
 
@@ -65,12 +63,11 @@ export const TransactionStatus = () => {
 
 
     React.useEffect(() => {
-        if (transactionId && accountBalance && accountBalance?.account && !blockTransactionData) {
-            const account = accountBalance.account;
+        if (transactionId && account && !blockTransactionData) {
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
-            const gasPrices = currentRpcApi.getTransactionByHash(transactionId.transactionId, chainId);
-            gasPrices.then(
+            const txDetailsPromise = currentRpcApi.getTransactionByHash(transactionId.transactionId, chainId);
+            txDetailsPromise.then(
                 response => {
                     if (response) {
                         setBlockTransactionData(response)
@@ -82,7 +79,7 @@ export const TransactionStatus = () => {
                 }
             )
         }
-    }, [transactionId, accountBalance, accountBalance?.account, blockTransactionData]);
+    }, [transactionId, account, blockTransactionData]);
 
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
