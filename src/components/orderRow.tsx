@@ -10,7 +10,7 @@ import PendingIcon from '../assets/images/loading_white.svg';
 
 import ConfirmDialog from "./ConfirmDialogStyle";
 import {ellipseAddress} from "../helpers";
-import {transactionStatusLink} from "../utils/link_utils";
+import {payLink, transactionStatusLink} from "../utils/link_utils";
 
 const SAssetRow = {
     width: '100%',
@@ -148,7 +148,11 @@ const OrderRow = (props: any) => {
            href={transactionStatusLink(depositorInfo.transactionHash!!, depositorInfo.trackingId || "")}>
             <img style={Center} className="w-8 h-8 mr-2 filter-white" src={ConfirmedIcon} alt="Status" />
         </a> :
-        <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt="" />
+        <a target='_blank'
+           href={depositorInfo.trackingId ? payLink(depositorInfo.trackingId): ''}>
+            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt="" />
+        </a>
+
 
     return (
         <div style={SAssetRow}>
