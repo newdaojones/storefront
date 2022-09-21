@@ -1,16 +1,12 @@
 import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
 
 export const transactionStatusLink = (transactionHash: string, orderTrackingId: string) : string => {
-  const link = `${storefrontPayBaseUrl}/storefront/status?transactionId=${transactionHash}&orderTrackingId=${orderTrackingId}`;
-  return link;
+  return `${storefrontPayBaseUrl}/storefront/status?transactionId=${transactionHash}&orderTrackingId=${orderTrackingId}`;
 }
 
 /**
- * orderId=1&amount=0.25&merchantAddress=0x1151B4Fd37d26B9c0B59DbcD7D637B46549AB004
- * @param amount
- * @param orderId
+ * @param orderTrackingId
  */
 export const payLink = (orderTrackingId: string) : string => {
-  const link = `${storefrontPayBaseUrl}/storefront/pay?orderTrackingId=${orderTrackingId}`;
-  return link;
+  return `${storefrontPayBaseUrl}/storefront/pay?orderTrackingId=${orderTrackingId}`;
 }
