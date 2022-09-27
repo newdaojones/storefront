@@ -2,7 +2,7 @@
 const DEVELOPMENT = 0;
 const TEST = 1;
 
-const MAINNET_MODE = false;
+const MAINNET_MODE = true;
 
 // export const BUILD_CONFIG = DEVELOPMENT;
 const BUILD_CONFIG = TEST;
