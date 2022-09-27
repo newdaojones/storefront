@@ -37,7 +37,6 @@ export const CreateOrderPage = () => {
     let orderInstance: IOrder = {
       amount: amount,
       externalOrderId: orderId,
-      //TODO instead of sending this here, just use it in the backend
       testnet: isTestnetMode(),
       token: "USD",
       toAddress: merchantInfo?.memberAddress,

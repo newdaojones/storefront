@@ -1,11 +1,12 @@
 import React from "react";
 import logoIcon from "./assets/images/logo.svg";
-import {isDevMode} from "./config/appconfig";
+import {isDevMode, isTestnetMode} from "./config/appconfig";
 
 const devUrl = 'http://localhost:3000';
-const baseUrl = 'https://test.jxndao.com';
+const testUrl = 'https://test.jxndao.com';
+const prodUrl = 'https://jxndao.com';
 
-export const storefrontPayBaseUrl = isDevMode() ? devUrl : baseUrl;
+export const storefrontPayBaseUrl = isDevMode() ? devUrl : isTestnetMode() ? testUrl : prodUrl;
 
 export const storefrontPayButton = (merchantAddress: string, orderId: String, amount: Number) => {
     const url = `${storefrontPayBaseUrl}/storefront/pay?merchantAddress=${merchantAddress}&orderId=${orderId}&amount=${amount}`

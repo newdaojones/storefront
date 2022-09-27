@@ -1,4 +1,3 @@
-//TODO maybe this should be fixed
 // This chain data is used in the menu, and account modal to show info about selected chains.
 export const chainData: any = {
   bep20: {

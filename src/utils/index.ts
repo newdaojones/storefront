@@ -31,7 +31,7 @@ export const getDisplayName = (account: string, ensName: string | null) : string
 
     if (chainData[namespace] && chainData[namespace][reference]) {
       const chainMeta = chainData[namespace][reference];
-      console.info(`chainMeta ${chainMeta.symbol} ${chainMeta.currency} ${chainMeta.name}`);
+      console.info(`chainMeta ${chainMeta.symbol} ${chainMeta.name} currency: ${chainMeta.currency}`);
       name = ellipseAddress(address);
     }
   }

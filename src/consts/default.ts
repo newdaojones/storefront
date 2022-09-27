@@ -4,7 +4,7 @@ export const DEFAULT_MAIN_CHAINS = [
   "eip155:1",// ethereum mainnet
   // "eip155:10",
   // "eip155:100",
-  "eip155:137",// polygon mainnet
+  //"eip155:137",// polygon mainnet infura inodes requires that the account enters a payment method
   // "eip155:42161",
   // "eip155:42220",
   // "cosmos:cosmoshub-4",
@@ -23,7 +23,6 @@ export const DEFAULT_TEST_CHAINS = [
 ];
 
 export const DEFAULT_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
-//export const REQUIRED_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
 
 // Wallet connect project ID
 export const DEFAULT_PROJECT_ID = 'f17194a7efd15ee24623a532ccff7c77';
@@ -31,11 +30,12 @@ export const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.com';
 
 export const DEFAULT_LOGGER = 'info';
 
+const APP_URL = isTestnetMode() ? 'https://test.jxndao.com/storefront': 'https://jxndao.com/storefront'
 // TODO Change app data
 export const DEFAULT_APP_METADATA = {
   name: 'NDJ Storefront',
   description: 'StoreFront Pay DApp',
-  url: 'https://test.jxndao.com/storefront',
+  url: APP_URL,
   icons: ['https://jxndao.com/logo192.png'],
 };
 
