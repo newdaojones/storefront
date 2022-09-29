@@ -54,10 +54,10 @@ export async function generateTransaction(account: string, toAddress: string, se
     }
 
     const nonce = encoding.sanitizeHex(encoding.numberToHex(_nonce));
+
     const _gasPrice = await getGasPrice(chainId);
     const gasNumber = Number(_gasPrice);
-    const gasPrice = encodeNumberAsHex(gasNumber);
-
+    const gasPrice = _gasPrice;
     console.info(`gasPrice-> hex:${_gasPrice} number: ${gasNumber} encodedGasPrice: ${gasPrice}`);
 
     // FIXME this should also be a param
@@ -65,6 +65,7 @@ export async function generateTransaction(account: string, toAddress: string, se
     //const _gasLimit = 101112;
     const _gasLimit = 21112;
     const gasLimit = encodeNumberAsHex(_gasLimit)
+    console.info(`gasLimit-> number: ${_gasLimit} encodedGasLimit: ${gasLimit}`);
 
     const _value = toWad(sendAmount.toString());
     console.info(`send amount ${sendAmount} toWad -> ${_value} `)
