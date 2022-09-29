@@ -15,6 +15,7 @@ import {selectCurrentOrder} from "../../store/selector";
 import {toast} from "react-toastify";
 import {ellipseAddress} from "../../helpers";
 import useInterval from "@use-it/interval";
+import {orderPaymentLink} from "../../utils/link_utils";
 
 
 /**
@@ -66,7 +67,7 @@ export const Pay = () => {
     }, [currentOrder, dispatch, history, query]);
 
 
-    const qrCodeUri = currentOrder ? `${storefrontPayBaseUrl}/storefront/home${query}&orderTrackingId=${currentOrder.trackingId}` : '';
+    const qrCodeUri = currentOrder?.trackingId ? orderPaymentLink(currentOrder.trackingId) : '';
 
     useInterval(() => {
         if (currentOrder) {

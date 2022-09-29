@@ -10,3 +10,12 @@ export const transactionStatusLink = (transactionHash: string, orderTrackingId: 
 export const payLink = (orderTrackingId: string) : string => {
   return `${storefrontPayBaseUrl}/storefront/pay?orderTrackingId=${orderTrackingId}`;
 }
+
+
+
+/**
+ * @param orderTrackingId
+ */
+export const orderPaymentLink = (orderTrackingId: string) : string => {
+  return `${storefrontPayBaseUrl}/storefront/home?orderTrackingId=${orderTrackingId}`;
+}
