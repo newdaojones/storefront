@@ -50,7 +50,11 @@ export const apiGetAccountNonce = async (address: string, chainId: string): Prom
     return result;
 };
 
-//FIXME no chain id, only for ethereum ??
+/**
+ * Sample response
+ * {"success":true,"result":{"timestamp":1664460006089,"slow":{"time":84,"price":14.2},"average":{"time":84,"price":14.2},"fast":{"time":30,"price":53}}}
+ * @param chainId
+ */
 export const apiGetGasPrices = async (chainId: string): Promise<GasPrices> => {
     const ethChainId = chainId.split(":")[1];
     console.info(`apiGetGasPrices for chainId: ${chainId} ethChainId: ${ethChainId}`);

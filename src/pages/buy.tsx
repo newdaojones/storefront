@@ -141,16 +141,17 @@ export const BuyPage = () => {
     let paymentValueEth: string = "0";
     const token = 'ETH';
     if (transaction?.value) {
-      console.log(`payment value: ${transaction?.value}`)
+      console.debug(`payment value: ${transaction?.value}`)
       paymentValueEth = getHexValueAsString(transaction?.value);
 
       const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
       const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
-      console.info(`gasPrice ${transaction?.gasPrice}  ${transaction?.gasPrice ? gasPriceNumber : ''}WEI  = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
+      console.info(`gasPrice hex: ${transaction?.gasPrice} = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
-      const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
+      //const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
+      const gasLimitNumber = getHexValueAsString(transaction?.gasLimit);
       const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
-      console.info(`gasLimit ${transaction?.gasLimit}  ${transaction?.gasLimit ? gasLimitNumber : ''}WEI  = ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
+      console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
       const trxValueAsNumber = Number(paymentValueEth);
       const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);

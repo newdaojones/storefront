@@ -58,8 +58,10 @@ export class EthereumXyzApi implements RpcApi {
 
     async getGasPrices(chainId: string): Promise<string> {
         const gasPrices = await apiGetGasPrices(chainId);
-        console.info(`got gas prices ${gasPrices}`);
-        return toWad(`${gasPrices.slow.price}`, 9).toHexString();
+        const toWad1 = toWad(`${gasPrices.average.price}`, 9);
+        const toHexString = toWad1.toHexString();
+        console.info(`EthereumXyzApi gasPrices average: ${gasPrices.average.price} -->  ${toWad1} WAD hex: ${toHexString}`);
+        return toHexString;
     }
 
     async getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
@@ -89,7 +91,9 @@ export class RpcSourceAdapter implements RpcApi {
     }
 
     async getGasPrices(chainId: string): Promise<string> {
-        return this.ethereumXyzRpcApi.getGasPrices(chainId);
+        //FIXME default api for prices
+        return this.infuraRpcApi.getGasPrices(chainId);
+        //return this.ethereumXyzRpcApi.getGasPrices(chainId);
     }
 
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
