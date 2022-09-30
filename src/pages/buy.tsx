@@ -85,7 +85,7 @@ export const BuyPage = () => {
   };
 
   function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
-    console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${res.result}`)
+    console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/goerli/tx/${res.result}`)
     const transactionInfo: ITransactionInfo = {
       transaction: transaction?.transaction || null,
       transactionHash: res.result,

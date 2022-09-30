@@ -42,11 +42,14 @@ export const ConfirmationPage = () => {
 
 
     const onHomeClick = async () => {
+      dispatch(userAction.unsetTransaction());
       await refreshBalances(accounts).then(r => {
           console.info(`refreshing balances on home click`)
-          dispatch(userAction.unsetTransaction());
-          //history.go(-2)
-          history.replace("/home");
+          setTimeout(() => {
+              history.goBack()
+              history.goBack()
+              history.replace("/home");
+          }, 1000);
       });
 
   }
