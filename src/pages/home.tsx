@@ -53,12 +53,8 @@ export const HomePage = () => {
 
   useEffect(() => {
     if (query && tickers?.length > 0) {
-      console.info(`detected order query: ${query}`)
-
       try {
         const order = extractOrderFromUrl(query);
-        console.log(`orderTrackingId: ${order.orderTrackingId} `);
-        //FIXME should also get the url and fetch the order data from the trackingId
         if (!order.orderTrackingId) {
           toast.error(`Invalid orderTrackingId`)
           return;
@@ -74,8 +70,6 @@ export const HomePage = () => {
 
 
   useEffect(() => {
-    console.info(`crating order transaction and moving to by`)
-    //TODO move this logic to when the order is returned
     if (!currentOrder) {
       return;
     }
@@ -83,17 +77,17 @@ export const HomePage = () => {
       setRedirected(true);
       createTransaction(currentOrder);
     } else {
-      console.log(`not creating trx`)
+      console.debug(`not creating trx`)
     }
   }, [currentOrder]);
 
   const startScanning = (): void => {
-    console.info(`starting scanning....`)
+    console.debug(`starting scanning....`)
     setScanning(!scanning);
   }
 
   const stopScanning = (): void => {
-    console.info(`stop scanning....`)
+    console.debug(`stop scanning....`)
     setScanning(false);
   }
 
@@ -110,7 +104,6 @@ export const HomePage = () => {
     if (!order.trackingId) {
       toast.error("Invalid order tracking ID")
     } else {
-      // FIXME Merchant address from the order
       dispatch(userAction.setCreateTransaction({
         account: accountBalance.account,
         toAddress: order.toAddress,
@@ -132,17 +125,12 @@ export const HomePage = () => {
   function processScanResult(resultText: string) {
     stopScanning();
     try {
-      console.info(`qr ${resultText}`)
       const order = extractOrderFromUrl(resultText);
-
-      //TODO dispatch fetch order data
       if (!order.orderTrackingId) {
         toast.error(`Invalid orderTrackingId`)
         return;
       }
       dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
-
-      //createTransaction(order);
     } catch (e) {
       console.info(`Invalid QrCode url`);
       toast.error(`Invalid QrCode url`);
