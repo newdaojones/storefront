@@ -19,8 +19,6 @@ export const ProfilePage = () => {
   const [count, setCount] = useState(0);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
-
-
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName} totalUsd: ${merchantInfo?.totalInUsd}`);
 
   const refreshOrders = () => {
@@ -40,7 +38,7 @@ export const ProfilePage = () => {
   }
 
   useInterval(() => {
-    if (merchantInfo) {
+    if (merchantInfo && count < 10) {
       setIsLoadingOrders(true);
       setCount((currentCount) => currentCount + 1);
       refreshOrdersForMerchant(merchantInfo);

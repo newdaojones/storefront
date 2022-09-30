@@ -48,7 +48,6 @@ ReactDOM.render(
                   <Route path={'/pay'} component={Pay}></Route>
                   <Route path={'/status'} component={TransactionStatus}></Route>
                   <Route path={'/error'} component={ErrorPage}></Route>
-                  {/*<Route path={'/merchant/register'} component={RegisterMerchant}></Route>*/}
                   <Route path={'/merchant'} component={MerchantMain}></Route>
                   <Route path={'/'} component={Main} ></Route>
               </Switch>
