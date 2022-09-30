@@ -92,8 +92,8 @@ export class RpcSourceAdapter implements RpcApi {
 
     async getGasPrices(chainId: string): Promise<string> {
         //FIXME default api for prices
-        return this.infuraRpcApi.getGasPrices(chainId);
-        //return this.ethereumXyzRpcApi.getGasPrices(chainId);
+        // return this.infuraRpcApi.getGasPrices(chainId);
+        return this.ethereumXyzRpcApi.getGasPrices(chainId);
     }
 
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
