@@ -131,6 +131,15 @@ export const Pay = () => {
         setShowBlackWhite(!showBlackWhite);
     }
 
+    function onCopyLinkClicked() {
+        navigator.clipboard.writeText(qrCodeUri).then(r => {
+            toast.info("Copied", {
+                autoClose: 1200,
+            })
+        });
+
+    }
+
     return (
         <div className="h-screen w-screen flex twoColumnContainer">
             {/*Left Column*/}
@@ -195,8 +204,8 @@ export const Pay = () => {
                     </a>
                 )}
 
-                <p onClick={onTroubleScanningClicked}
-                   className="text-xs mt-1 cursor-pointer">Trouble Scanning?</p>
+                <p onClick={onCopyLinkClicked}
+                   className="text-xs mt-1 cursor-pointer">Copy Link</p>
 
                 {!currentOrder?.transactionHash ?
                     <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous font-bold" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
