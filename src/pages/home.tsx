@@ -134,6 +134,7 @@ export const HomePage = () => {
     await refreshBalances(accounts);
   }
 
+  //FIXME get the usdc balance and fallback to eth
   const balanceN = Number(accountBalance.balanceString);
   const currencySymbol = accountBalance.token;
   const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);

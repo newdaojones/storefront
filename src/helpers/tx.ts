@@ -1,7 +1,7 @@
 import * as encoding from "@walletconnect/encoding";
 import {BigNumber, utils} from "ethers";
 
-import {toWad} from "./utilities";
+import {fromWad, toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
@@ -153,6 +153,7 @@ export function getPreferredAccountBalance(accounts: string[], balances: Account
     }
     const accountWithUSDC = getAccountWithNonZeroUSDCBalance(accounts, balances);
     if (accountWithUSDC) {
+        console.info(`Found USDC account using that ${accountWithUSDC.balance} ${accountWithUSDC.token}`)
         return accountWithUSDC;
     }
     return getNonZeroAccountBalance(accounts, balances);
@@ -203,23 +204,26 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
 }
 
 function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance | null {
-    const usdcAccount = accounts.find(value => {
-        let accountBalances = balances[value];
-        return !!(accountBalances.find(value1 => value1.symbol === 'USDC'))
-    })
+    // const usdcAccount = accounts.find(value => {
+    //     let accountBalances = balances[value];
+    //     return !!(accountBalances.find(value1 => value1.symbol === 'USDC'))
+    // })
 
-    if (usdcAccount) {
-        const usdcAccountBalance = balances[usdcAccount];
-        const usdcTokenAsset = usdcAccountBalance.find(value => value.symbol === 'USDC');
-        console.info(`found USDC account ${usdcAccount} with tokens ${usdcAccountBalance.map(value => value.symbol).join(",")}`);
-        return {
-            token: 'USDC',
-            account: usdcAccount,
-            balance: BigNumber.from(usdcTokenAsset?.balance || 0),
-            balanceUsd: BigNumber.from(usdcTokenAsset?.balance || 0),
-            balanceString: BigNumber.from(usdcTokenAsset?.balance || 0).toString(),
+    for (const account of accounts) {
+        let accountBalances = balances[account];
+        const usdcTokenAsset = accountBalances.find(value => value.symbol === 'USDC' && Number(value.balance) > 0);
+        if (usdcTokenAsset && usdcTokenAsset.balance) {
+            console.info(`found USDC account ${account} with tokens ${accountBalances.map(value => `${value.symbol} ${value.balance}`).join(",")}`);
+            const numValue = fromWad(usdcTokenAsset.balance, 6);
+            return {
+                token: 'USDC',
+                account: account,
+                balance: BigNumber.from(numValue || 0),
+                balanceUsd: BigNumber.from(numValue),
+                balanceString: numValue.toString(),
+            }
         }
-    }
 
+    }
     return null;
 }

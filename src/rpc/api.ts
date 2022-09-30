@@ -22,13 +22,13 @@ const ethereumApi: AxiosInstance = axios.create({
 //     return result;
 // }
 
-export async function apiGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
+export async function apiGetAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
     const ethChainId = chainId.split(":")[1];
     const response = await ethereumApi.get(
         `/account-balance?address=${address}&chainId=${ethChainId}`,
     );
     const { result } = response.data;
-    return result;
+    return [result];
 }
 
 export async function apiGetAccountTransactions(

@@ -120,9 +120,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             const [namespace, reference, address] = account.split(":");
             const chainId = `${namespace}:${reference}`;
             const assets = await currentRpcApi.getAccountBalance(address, chainId);
-            console.info(`account balance for chainId:${chainId} address:${address} \n
-              --> balance = ${assets.symbol} ${assets.balance}`);
-            return { account, assets: [assets] };
+            assets.forEach(asset =>
+                console.info(`account balance for chainId:${chainId} address:${address} \n
+              --> balance = ${asset.symbol} ${asset.balance}`)
+            );
+            return { account, assets: assets };
           }),
       );
 

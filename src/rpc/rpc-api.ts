@@ -1,7 +1,7 @@
 import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
 import {apiGetAccountBalance, apiGetAccountNonce, apiGetAccountTransactions, apiGetGasPrices} from "./api";
 import {
-    infuraGetAccountBalance,
+    infuraGetAccountBalance, infuraGetAccountBalances,
     infuraGetAccountNonce,
     infuraGetGasPrices,
     infuraGetTransactionByHash
@@ -9,7 +9,7 @@ import {
 import {toWad} from "../helpers";
 
 export interface RpcApi {
-    getAccountBalance(address: string, chainId: string): Promise<AssetData>;
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]>;
     getAccountNonce(address: string, chainId: string): Promise<number>;
     getGasPrices(chainId: string): Promise<string>;
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]>;
@@ -17,8 +17,12 @@ export interface RpcApi {
 }
 
 export class InfuraApi implements RpcApi {
-    getAccountBalance(address: string, chainId: string): Promise<AssetData> {
-        return infuraGetAccountBalance(address, chainId);
+    // getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    //     return infuraGetAccountBalance(address, chainId);
+    // }
+
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
+        return infuraGetAccountBalances(address, chainId);
     }
 
     getAccountNonce(address: string, chainId: string): Promise<number> {
@@ -48,7 +52,7 @@ export class InfuraApi implements RpcApi {
  * https://ethereum-api.xyz/supported-chains
  */
 export class EthereumXyzApi implements RpcApi {
-    getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
         return apiGetAccountBalance(address, chainId);
     }
 
@@ -78,12 +82,13 @@ export class RpcSourceAdapter implements RpcApi {
     infuraRpcApi: RpcApi = new InfuraApi();
     ethereumXyzRpcApi = new EthereumXyzApi();
 
-    getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
         if (chainId.includes('eip155:80001')) {
             //EthereumXYZ does not support polygon! ()
             return this.infuraRpcApi.getAccountBalance(address, chainId);
         }
-        return this.ethereumXyzRpcApi.getAccountBalance(address, chainId);
+        return this.infuraRpcApi.getAccountBalance(address, chainId);
+        //return this.ethereumXyzRpcApi.getAccountBalance(address, chainId);
     }
 
     getAccountNonce(address: string, chainId: string): Promise<number> {
