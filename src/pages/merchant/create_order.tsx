@@ -16,16 +16,14 @@ export const CreateOrderPage = () => {
 
   const [orderCreated, setOrderCreated] = useState(false);
 
-  //fixme need to initialize as null, this could be set already
   let currentOrder = useSelector(selectCurrentOrder);
-  //dispatch(userAction.unsetTransaction());
 
   function handleCreateOrder() {
     if (orderId == '') {
       toast.error("Order Id must be valid")
       return;
     }
-    if (!amount || amount == 0) {
+    if (!amount || amount <= 0) {
       toast.error("Amount must be greater than zero")
       return;
     }
@@ -65,6 +63,8 @@ export const CreateOrderPage = () => {
 
     dispatch(userAction.unsetCurrentOrder())
     setOrderCreated(false);
+    setOrderId("");
+    setAmount(0);
   }
 
   const handleChange = (event: any) => {
