@@ -238,9 +238,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
 
       } catch (err: any) {
-        localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
-        toast.error(err.message);
         console.error(`login exception: ${err} ${err?.message}. Disconnecting...`)
+        toast.error(err.message);
         disconnect();
       } finally {
         setIsLoading(false);
@@ -373,10 +372,14 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       if (typeof session === 'undefined') {
         throw new Error('Session is not connected');
       }
+      localStorage.removeItem(NDJ_ADDRESS);
+      localStorage.removeItem(SIGNATURE_PREFIX);
+
       await client.disconnect({
         topic: session.topic,
         reason: getSdkError("USER_DISCONNECTED"),
       });
+
       // Reset app state after disconnect.
       reset();
     } catch (err: any) {

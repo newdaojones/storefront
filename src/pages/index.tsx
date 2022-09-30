@@ -39,10 +39,13 @@ export const Main = () => {
   const onDisconnect = () => {
     console.info(`onDisconnect called session ${session}`);
     toast.info("Disconnecting...", {autoClose: 1000})
-    disconnect().then(r => console.info(`disconnected!`));
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+    disconnect().then(r => {
+      console.info(`disconnected. reloading page in a second....`)
+      setTimeout(() => {
+        window.location.reload();
+      }, 200);
+    });
+
   };
 
   React.useEffect(() => {
