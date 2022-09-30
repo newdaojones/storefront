@@ -91,6 +91,22 @@ export const HomePage = () => {
     setScanning(false);
   }
 
+  const pastePaymentLink = async () => {
+    console.debug(`paste link `)
+
+    try {
+      const text = await navigator.clipboard.readText();
+      processScanResult(text);
+    } catch (e) {
+      console.warn(`error ${e}`);
+    }
+  }
+
+
+  /**
+   * Create Payment Transaction (not blockchain transaction)
+   * @param order
+   */
   const createTransaction = (order: IOrder): void => {
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
@@ -133,7 +149,7 @@ export const HomePage = () => {
       dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
     } catch (e) {
       console.info(`Invalid QrCode url`);
-      toast.error(`Invalid QrCode url`);
+      toast.error(`Invalid Payment Link`);
     }
   }
 
@@ -181,9 +197,11 @@ export const HomePage = () => {
                                src={QRLine} alt="" />
                         </div>
               }
-              <p className="text-white mt-8 text-center font-bold">Scan Payment QR</p>
-              <div className="mt-4">
+              <a className="text-white text-center text-sm cursor-pointer" onClick={pastePaymentLink}>Paste Link</a>
 
+
+              <div className="mt-4">
+                <p className="text-white mt-8 text-center font-bold">Scan Payment QR or </p>
                 <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
                   Scan the payment QR code provided by the store to checkout</p>
               </div>
