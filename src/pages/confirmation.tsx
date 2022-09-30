@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {BigNumber, utils} from "ethers";
-import QRIcon from '../assets/images/qrCodeIcon.svg';
 import {useDispatch, useSelector} from "react-redux";
 import {selectBuyTransaction} from "../store/selector";
 import {useHistory} from "react-router-dom";
@@ -9,7 +8,6 @@ import {useWalletConnectClient} from "../contexts/walletConnect";
 import {userAction} from "../store/actions";
 import logoIcon from "../assets/images/logo.svg";
 import QRCodeStyling from "qr-code-styling";
-import {storefrontPayBaseUrl} from "../StorefrontPaySdk";
 import {transactionStatusLink} from "../utils/link_utils";
 
 export const ConfirmationPage = () => {
@@ -23,7 +21,6 @@ export const ConfirmationPage = () => {
   let transactionInfo = useSelector(selectBuyTransaction)
   const [linkUrl, setLinkUrl] = useState('');
 
-    //TODO link transaction
     if (!transactionInfo?.transactionHash) {
         history.replace("/")
     }
@@ -48,14 +45,14 @@ export const ConfirmationPage = () => {
       await refreshBalances(accounts).then(r => {
           console.info(`refreshing balances on home click`)
           dispatch(userAction.unsetTransaction());
-          history.go(-2)
+          //history.go(-2)
           history.replace("/home");
       });
 
   }
 
   const onQRCodeClick = (): void => {
-    console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/kovan/tx/${transactionInfo?.transactionHash}`)
+    console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/goerli/tx/${transactionInfo?.transactionHash}`)
   };
 
 
