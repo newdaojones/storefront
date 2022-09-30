@@ -137,8 +137,7 @@ export const TransactionStatus = () => {
                 <p className="text-xs mt-1 ">{confirmed?
                     <div className="flex flex-col justify-center items-center">
                         <p>Block Hash</p>
-                        {/*TODO this url in kovan don't work no more*/}
-                        <a href={`https://kovan.etherscan.io/tx/${blockTransactionData?.hash}`}>
+                        <a href={`https://goerli.etherscan.io/tx/${blockTransactionData?.hash}`}>
                             <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.blockHash)}</p>
                         </a>
                         {/*<div className="flex pt-2">*/}
