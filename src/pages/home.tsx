@@ -40,7 +40,6 @@ export const HomePage = () => {
   const trxCreated = useSelector(selectCreateTransaction);
 
   useEffect(() => {
-    console.info(`useEffect transactionCreatedLock: ${transactionCreatedLock} trxCreated: ${trxCreated} transaction: ${trxCreated?.transaction}`)
     if (trxCreated?.transaction && trxCreated.transaction.value && !transactionCreatedLock) {
       setTransactionCreatedLock(true);
       if (!redirected) {
@@ -62,7 +61,7 @@ export const HomePage = () => {
         dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
       } catch (e: any) {
         console.log(e);
-        toast.error(`${e?.message}`)
+        toast.error(`error fetching order data. ${e?.message}`)
       }
     }
 
@@ -73,11 +72,18 @@ export const HomePage = () => {
     if (!currentOrder) {
       return;
     }
+
+    if (currentOrder.amount === 0) {
+      toast.error("invalid order amount");
+      return;
+    }
+
     if (currentOrder.trackingId && currentOrder.amount && !redirected) {
       setRedirected(true);
       createTransaction(currentOrder);
     } else {
       console.debug(`not creating trx`)
+      toast.error("invalid order data");
     }
   }, [currentOrder]);
 
