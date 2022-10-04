@@ -37,3 +37,8 @@ export const getDisplayName = (account: string, ensName: string | null) : string
   }
   return name;
 }
+
+
+export function isNumeric(n: any) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
