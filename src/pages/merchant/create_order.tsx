@@ -7,6 +7,7 @@ import {toast} from "react-toastify";
 import {IOrder} from "../../models";
 import {isTestnetMode} from "../../config/appconfig";
 import {userAction} from "../../store/actions";
+import {isNumeric} from "../../utils";
 
 export const CreateOrderPage = () => {
   const dispatch = useDispatch();
@@ -18,41 +19,7 @@ export const CreateOrderPage = () => {
 
   let currentOrder = useSelector(selectCurrentOrder);
 
-  function handleCreateOrder() {
-    if (orderId == '') {
-      toast.error("Order Id must be valid")
-      return;
-    }
-    if (!amount || amount <= 0) {
-      toast.error("Amount must be greater than zero")
-      return;
-    }
-    if (!merchantInfo?.memberAddress) {
-      toast.error("Merchant address is not valid")
-      return;
-    }
-    console.log(`creating order...`)
-    let orderInstance: IOrder = {
-      amount: amount,
-      externalOrderId: orderId,
-      testnet: isTestnetMode(),
-      token: "USD",
-      toAddress: merchantInfo?.memberAddress,
-      transactionHash: null,
-      nativeAmount: null
-    };
-    console.info(`creating order ${orderInstance}`);
-    dispatch(userAction.createOrder(orderInstance));
-    setOrderCreated(true)
-  }
-
-  React.useEffect(() => {
-    if (currentOrder && orderCreated) {
-      openPayUrl();
-    }
-  }, [currentOrder]);
-
-  function openPayUrl() {
+  const openPayUrl = () => {
     if (!currentOrder?.trackingId) {
       toast.error("Order trackingId must be valid")
       return;
@@ -67,13 +34,71 @@ export const CreateOrderPage = () => {
     setAmount(0);
   }
 
+
+
+  function handleCreateOrder() {
+    if (orderId === '') {
+      toast.error("Order Id must be valid");
+      return;
+    }
+    if (!isNumeric(amount )) {
+      toast.error("Amount must be a decimal greater than zero");
+      return;
+    }
+    if (!amount || amount <= 0) {
+      toast.error("Amount must be greater than zero");
+      return;
+    }
+    if (amount < 0.01) {
+      toast.error("Amount must be at least 0.01");
+      return;
+    }
+    if (!merchantInfo?.memberAddress) {
+      toast.error("Merchant address is not valid");
+      return;
+    }
+
+    try {
+      const fixedNumber = amount.toFixed(4) //need to avoid '.01' entry which will be considered 0 in backend
+      let orderInstance: IOrder = {
+        amount: Number(fixedNumber),
+        externalOrderId: orderId,
+        testnet: isTestnetMode(),
+        token: "USD",
+        toAddress: merchantInfo?.memberAddress,
+        transactionHash: null,
+        nativeAmount: null
+      };
+      console.info(`creating order ${orderInstance}`);
+      dispatch(userAction.createOrder(orderInstance));
+      setOrderCreated(true)
+
+    } catch (e) {
+      console.warn(`error parsing amount: ${amount} -> ${e}`)
+      return;
+    }
+  }
+
+  React.useEffect(() => {
+    if (currentOrder && orderCreated) {
+      openPayUrl();
+    }
+  }, [currentOrder, openPayUrl, orderCreated]);
+
+
+
   const handleChange = (event: any) => {
-    if (event.target.name == "orderId") {
+    if (event.target.name === "orderId") {
       console.info(`setting orderId ${event.target.value}`);
       setOrderId(event.target.value);
-    } else if (event.target.name == "amount") {
+    } else if (event.target.name === "amount") {
       console.info(`setting amount ${event.target.value}`);
-      setAmount(event.target.value);
+      if (!isNumeric(event.target.value)) {
+        toast.info("Invalid amount");
+        return;
+      }
+      const number: number = Number(event.target.value);
+      setAmount(number);
     }
   }
 
@@ -87,8 +112,8 @@ export const CreateOrderPage = () => {
             <input id='orderId' name='orderId' placeholder="Your order ID" type="text" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-white">Order Value</p>
-            <input name='amount' placeholder="0.50"  type="number" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+            <p className="text-white">Order Value (USD)</p>
+            <input name='amount' placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
@@ -105,7 +130,6 @@ export const CreateOrderPage = () => {
           </a>
           </div>
         </div>
-
       </div>
     </div>
   );

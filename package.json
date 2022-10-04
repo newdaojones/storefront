@@ -60,7 +60,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test",
+    "test": "react-scripts test --watchAll=true",
     "eject": "react-scripts eject",
     "code-clean": "prettier --write \".\""
   },
@@ -86,5 +86,12 @@
     "postcss": "^7.0.35",
     "prettier": "2.2.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.0"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*.{js,jsx,ts,tsx}",
+      "<rootDir>/__tests__/**test.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,ts,tsx}"
+    ]
   }
 }
