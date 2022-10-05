@@ -6,6 +6,10 @@ import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 
+//FIXME move to a constants file
+const USDC_TOKEN = 'USDC';
+export const USDC_DECIMALS = 6;
+
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
 export async function getGasPrice(chainId: string): Promise<string> {
@@ -42,7 +46,7 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * @param sendAmount
  * @param orderTrackingId
  */
-export async function generateTransaction(account: string, toAddress: string, sendAmount: number, orderTrackingId: string): Promise<ITransaction> {
+export async function generateTransaction(account: string, toAddress: string, sendAmount: number, orderTrackingId: string, decimals: number = 18): Promise<ITransaction> {
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
 
@@ -69,7 +73,7 @@ export async function generateTransaction(account: string, toAddress: string, se
     const gasLimit = encodeNumberAsHex(_gasLimit)
     console.info(`gasLimit-> number: ${_gasLimit} encodedGasLimit: ${gasLimit}`);
 
-    const _value = toWad(sendAmount.toString());
+    const _value = toWad(sendAmount.toString(), decimals);
     console.info(`send amount ${sendAmount} toWad -> ${_value} `)
     // const _value = 123500000000000; //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
 
@@ -195,7 +199,7 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
         }
     })
     return {
-        token: balanceToken || 'ETH',
+        token: balanceToken || 'ETH', //FIXME remove eth default?
         account: firstNonZeroAccount,
         balance: accountBalance,
         balanceUsd: accountBalanceUSD,
@@ -203,20 +207,23 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
     }
 }
 
+
+
+
 function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance | null {
     // const usdcAccount = accounts.find(value => {
     //     let accountBalances = balances[value];
-    //     return !!(accountBalances.find(value1 => value1.symbol === 'USDC'))
+    //     return !!(accountBalances.find(value1 => value1.symbol === USDC_TOKEN))
     // })
 
     for (const account of accounts) {
         let accountBalances = balances[account];
-        const usdcTokenAsset = accountBalances.find(value => value.symbol === 'USDC' && Number(value.balance) > 0);
+        const usdcTokenAsset = accountBalances.find(value => value.symbol === USDC_TOKEN && Number(value.balance) > 0);
         if (usdcTokenAsset && usdcTokenAsset.balance) {
             console.info(`found USDC account ${account} with tokens ${accountBalances.map(value => `${value.symbol} ${value.balance}`).join(",")}`);
-            const numValue = fromWad(usdcTokenAsset.balance, 6);
+            const numValue = fromWad(usdcTokenAsset.balance, USDC_DECIMALS);
             return {
-                token: 'USDC',
+                token: USDC_TOKEN,
                 account: account,
                 balance: BigNumber.from(numValue || 0),
                 balanceUsd: BigNumber.from(numValue),
