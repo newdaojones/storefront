@@ -6,7 +6,6 @@ import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {ellipseAddress} from "../../helpers";
 import {userAction} from "../../store/actions";
 import {IMerchant} from "../../models";
-import logoIcon from "../../assets/images/logo.svg";
 import {toast} from "react-toastify";
 
 export const SettingsPage = () => {

@@ -5,7 +5,7 @@ import {UserService} from '../../services';
 import {userAction} from '../actions';
 import {toast} from 'react-toastify';
 import {ens} from '../../utils/walletConnect';
-import {IMerchant, IOrder, ITicker, ITransactionOrder, IUserInfo} from '../../models';
+import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
 import {generateTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
 import {isUSDStableToken} from "../../utils";
@@ -56,15 +56,6 @@ function* watchGetEnsName(action: { type: EUserActionTypes; payload: string }) {
     }
 
     yield put(userAction.getEnsNameSuccess(ensName));
-  } catch (err: any) {
-    toast.error(err.message);
-  }
-}
-
-function* watchGetAccountInfo() {
-  try {
-    const res: AxiosResponse<IUserInfo> = yield call(UserService.getMeApi);
-    yield put(userAction.getAccountInfoSuccess(res.data));
   } catch (err: any) {
     toast.error(err.message);
   }

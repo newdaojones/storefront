@@ -9,7 +9,7 @@ import pendingIcon from '../../assets/images/loading.svg';
 import {useLocation} from "react-use";
 import {extractTransactionIdFromUrl, ITransactionStatus} from "../../utils/path_utils";
 import {useHistory} from "react-router-dom";
-import {currentRpcApi, getPreferredAccountBalance} from "../../helpers/tx";
+import {currentRpcApi} from "../../helpers/tx";
 import {ellipseAddress, TxDetails} from "../../helpers";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {toast} from "react-toastify";
@@ -64,7 +64,7 @@ export const TransactionStatus = () => {
 
     React.useEffect(() => {
         if (transactionId && account && !blockTransactionData) {
-            const [namespace, reference, address] = account.split(":");
+            const [namespace, reference] = account.split(":");
             const chainId = `${namespace}:${reference}`;
             const txDetailsPromise = currentRpcApi.getTransactionByHash(transactionId.transactionId, chainId);
             txDetailsPromise.then(
@@ -121,7 +121,7 @@ export const TransactionStatus = () => {
 
 
                 {transactionId && (
-                    <a>
+                    <a href='#'>
                         <div className="h-40 flex items-center justify-center">
                             <div className="w-3/4 flex justify-center items-center pb-4">
                                 <div className="flex flex-col justify-center items-center pb-4">
