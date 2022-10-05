@@ -15,6 +15,7 @@ import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
 import {IOrder} from "../models";
+import {isUSDStableToken} from "../utils";
 
 /**
  * https://test.jxndao.com/storefront/home
@@ -116,10 +117,17 @@ export const HomePage = () => {
   const createTransaction = (order: IOrder): void => {
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
-    const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
-    if (!ethTotal) {
-      toast.error(`Could not convert value to crypto. Invalid tickers ${tickers.length}`);
-      return;
+
+    let nativeTotal = order.amount;
+    if (!isUSDStableToken(currencySymbol)) {
+      console.log(`using non stable coin ${currencySymbol}`);
+      nativeTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers) || 0;
+      if (!nativeTotal) {
+        toast.error(`Could not convert value to crypto. Invalid tickers ${tickers.length}`);
+        return;
+      }
+    } else {
+      nativeTotal = order.amount;
     }
     setLoading(true);
 
@@ -129,7 +137,8 @@ export const HomePage = () => {
       dispatch(userAction.setCreateTransaction({
         account: accountBalance.account,
         toAddress: order.toAddress,
-        amount: ethTotal,
+        amount: nativeTotal,
+        token: currencySymbol,
         orderTrackingId: order.trackingId
       }));
     }
