@@ -4,6 +4,8 @@ import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
 import {web3} from "../utils/walletConnect";
 import {AbiInput, AbiOutput, AbiType, StateMutabilityType} from "web3-utils";
 
+//TODO this should be merged with the 'USDC' constant in some other files
+//FIXME this should have a corresponding mainnet address
 const USDCContractAddress = "0x07865c6e87b9f70255377e024ace6630c1eaa37f";
 
 const ethInstance: AxiosInstance = axios.create({
@@ -88,16 +90,16 @@ export async function infuraGetCustomTokenAccountBalance(address: string, contra
     }
     return assetData;
 
-    const data = {
-        "jsonrpc": "2.0",
-        "method": "eth_getBalance",
-        "params": [address, contractAddress, "latest"],
-        "id": 1
-    };
-    if (chainId.includes("80001")) {
-        return infuraGetPolygonAccountBalance(data);
-    }
-    return infuraGetEthAccountBalance(data);
+    // const data = {
+    //     "jsonrpc": "2.0",
+    //     "method": "eth_getBalance",
+    //     "params": [address, contractAddress, "latest"],
+    //     "id": 1
+    // };
+    // if (chainId.includes("80001")) {
+    //     return infuraGetPolygonAccountBalance(data);
+    // }
+    // return infuraGetEthAccountBalance(data);
 }
 
 async function infuraGetEthAccountBalance(data: any): Promise<AssetData> {

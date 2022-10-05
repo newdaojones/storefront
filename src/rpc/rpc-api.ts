@@ -1,7 +1,7 @@
 import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
 import {apiGetAccountBalance, apiGetAccountNonce, apiGetAccountTransactions, apiGetGasPrices} from "./api";
 import {
-    infuraGetAccountBalance, infuraGetAccountBalances,
+    infuraGetAccountBalances,
     infuraGetAccountNonce,
     infuraGetGasPrices,
     infuraGetTransactionByHash
