@@ -13,7 +13,7 @@ import {
 } from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {ellipseAddress, isMobile} from "../helpers";
+import {ellipseAddress, isMobile, toWad} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
@@ -25,6 +25,16 @@ import {
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
+import {getFormattedTokenValue} from "../utils";
+import { BigNumber } from "ethers";
+import {formatFixed} from "@ethersproject/bignumber";
+
+export interface IPaymentInformation {
+  paymentValueToken: BigNumber;
+  paymentValueUsd: number;
+  paymentFeeUsd: number;
+  paymentTotalUSD: number;
+}
 
 /**
  * Test code
@@ -38,11 +48,12 @@ export const BuyPage = () => {
   let transactionInProgress = useSelector(selectTransactionInProgress)
   const tickers = useSelector(selectTickers)
   const { accounts, balances } = useWalletConnectClient();
-  const accountBalance = getPreferredAccountBalance(accounts, balances);
 
+  const accountBalance = getPreferredAccountBalance(accounts, balances);
   const transaction = useSelector(selectCreateTransaction)
+
   const helpMessages = ['Tap the button above to submit the signing request',
-    'Open your wallet app and sign the transaction. Click here to open it.',
+    'Open your wallet app and sign the transaction.',
     'Sending transaction...']
 
   const {
@@ -51,6 +62,11 @@ export const BuyPage = () => {
   } = useJsonRpc();
 
   const [ locationKeys ] = useState("")
+
+  const [ paymentValueToken, setPaymentValueToken ] = useState('0');
+  const [ paymentValueUsd, setPaymentValueUsd ] = useState(0);
+  const [ paymentFeeUsd, setPaymentFeeUsd ] = useState(0);
+  const [ paymentTotalUSD, setPaymentTotalUSD ] = useState(0);
 
   useEffect(() => {
     return history.listen(location => {
@@ -69,13 +85,33 @@ export const BuyPage = () => {
     })
   }, [ locationKeys, dispatch, history])
 
+  useEffect(() => {
+    if (transaction) {
+      initializePaymentScreen(accountBalance, transaction.transaction);
+    }
+  }, [ accountBalance, transaction])
+
+  const initializePaymentScreen = (accountBalance: AccountBalance, transaction: ITransaction): void => {
+    if (!accountBalance.token) {
+      toast.error("Invalid or empty token found. Cannot initialize payment data");
+      return;
+    }
+    console.info(`calculating prices for trx value: ${transaction.value}`)
+    const paymentInfo = initializePaymentData(accountBalance, transaction);
+    setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
+    setPaymentValueUsd(paymentInfo.paymentValueUsd);
+    setPaymentValueToken(paymentInfo.paymentValueToken.toString());
+    setPaymentTotalUSD(paymentInfo.paymentTotalUSD);
+  }
+
+
   const onBuyClick = (): void => {
     if (transactionInProgress === TransactionState.IN_PROGRESS) {
       console.debug("skipping click while there's an ongoing trx");
       return;
     }
     if (!accountBalance) {
-      toast.error("Error fetching account balance");
+      toast.error("Error fetching account balance. Please try again later.");
       return;
     }
 
@@ -133,16 +169,20 @@ export const BuyPage = () => {
         })
   };
 
-  function initializePaymentData(transaction: ITransaction) {
+  function initializePaymentData(accountBalance: AccountBalance, transaction: ITransaction): IPaymentInformation{
     let paymentFeeUsd = 0;
-    let paymentValueUsd = 0;
-
+    let paymentValueUSD = 0;
     let paymentTotalUSD = 0;
-    let paymentValueEth: string = "0";
-    const token = 'ETH';
+    const token = accountBalance.token;
+
     if (transaction?.value) {
-      console.debug(`payment value: ${transaction?.value}`)
-      paymentValueEth = getHexValueAsString(transaction?.value);
+      const paymentValueInTokenStringRaw = getHexValueAsString(transaction?.value);
+      const paymentValueInTokenBn = getHexValueAsBigNumber(transaction?.value);
+
+      const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, 6);
+      paymentValueUSD = Number(paymentValueInTokenString);
+      console.debug(`payment value hex:${transaction?.value} 
+      bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)
 
       const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
       const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
@@ -153,30 +193,32 @@ export const BuyPage = () => {
       const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
       console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
-      const trxValueAsNumber = Number(paymentValueEth);
-      const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);
-
-      if (trxPriceUsd && gasPriceUsd) {
-        paymentValueUsd = trxPriceUsd;
-        paymentFeeUsd = gasPriceUsd;
-        paymentTotalUSD = trxPriceUsd + gasPriceUsd;
-      } else {
-        console.info(`unable to calculate total trx price in USD`);
+      //FIXME throws overflow
+      if (token !== 'USDC') {
+        const trxValueAsNumber = paymentValueInTokenBn.toNumber();
+        paymentValueUSD = convertTokenToUSD(trxValueAsNumber, token, tickers) || 0;
+        console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${paymentValueUSD} USD`)
       }
 
-      console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
-      console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
+      if (paymentValueUSD && gasPriceUsd) {
+        paymentFeeUsd = gasPriceUsd;
+        paymentTotalUSD = paymentValueUSD + gasPriceUsd;
+      } else {
+        console.info(`unable to calculate total trx price in USD. paymentValueUSD: ${paymentValueUSD} gasPrice: ${gasPriceUsd}`);
+      }
+
+      console.debug(`payment value ${paymentTotalUSD} USD  = trx ${paymentValueUSD} USD + fee ${gasPriceUsd} USD`)
+
+      return {paymentFeeUsd: paymentFeeUsd, paymentValueUsd: paymentValueUsd,
+        paymentTotalUSD: paymentTotalUSD, paymentValueToken: paymentValueInTokenBn};
+
     } else {
       console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
       history.replace("/home");
+      throw new Error(`transaction value not available. maybe should go back?. redirecting to /home page`);
     }
-    return {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth};
   }
 
-  //TODO all this block should be a hook or effect, and run before the view is rendered.
-  let {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth} = initializePaymentData(transaction?.transaction!!);
-
-  const buyProgress = transactionInProgress.valueOf();
 
   let animatedBuyButton = <button onClick={onBuyClick} style={{
     backgroundColor: '#615793',
@@ -196,12 +238,12 @@ export const BuyPage = () => {
         </div> :
         <div className="w-full flex flex-col items-center justify-center">
           <p className="text-white text-start font-righteous font-bold mr-2">{`Pay $${paymentTotalUSD.toFixed(2)}`}</p>
-          <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.substring(0,8)} ETH`}</p>
+          <p className="text-white text-start text-xs mr-2">{getFormattedTokenValue(accountBalance.token, paymentValueToken)}</p>
         </div>}
   </button>;
 
   const helperTextMessage = <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
-               className="text-center text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+               className="text-center text-xs m-4 mb-8">{helpMessages[transactionInProgress.valueOf()]}</p>
 
   return (
     <div className="w-full h-full flex justify-between">
@@ -272,9 +314,9 @@ export const BuyPage = () => {
                   {transactionInProgress === TransactionState.FINISHED &&
                   <img className="w-full absolute mr-8" src={ProgressFull} alt=""/>}
                 </div>
-                <p className="mt-4">{`${buyProgress + 1}/3`}</p>
+                <p className="mt-4">{`${transactionInProgress.valueOf() + 1}/3`}</p>
                 {
-                  isMobile() && buyProgress === 1 ? <a href={"wc://"} className="">
+                  isMobile() && transactionInProgress.valueOf() === 1 ? <a href={"wc://"} className="">
                     {helperTextMessage}
                   </a> : helperTextMessage
                 }
