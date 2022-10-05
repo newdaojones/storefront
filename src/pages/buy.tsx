@@ -63,7 +63,7 @@ export const BuyPage = () => {
 
   const [ locationKeys ] = useState("")
 
-  const [ paymentValueToken, setPaymentValueToken ] = useState('0');
+  const [ paymentValueToken, setPaymentValueToken ] = useState(BigNumber.from(0));
   const [ paymentValueUsd, setPaymentValueUsd ] = useState(0);
   const [ paymentFeeUsd, setPaymentFeeUsd ] = useState(0);
   const [ paymentTotalUSD, setPaymentTotalUSD ] = useState(0);
@@ -86,23 +86,21 @@ export const BuyPage = () => {
   }, [ locationKeys, dispatch, history])
 
   useEffect(() => {
-    if (transaction) {
-      initializePaymentScreen(accountBalance, transaction.transaction);
-    }
-  }, [ accountBalance, transaction])
+    if (transaction && accountBalance && paymentValueUsd === 0) {
+      if (!accountBalance.token) {
+        toast.error("Invalid or empty token found. Cannot initialize payment data");
+        return;
+      }
+      console.info(`calculating prices for trx value: ${transaction.transaction.value}`)
+      const paymentInfo = initializePaymentData(accountBalance, transaction.transaction);
+      setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
+      setPaymentValueUsd(paymentInfo.paymentValueUsd);
+      setPaymentValueToken(paymentInfo.paymentValueToken);
+      setPaymentTotalUSD(paymentInfo.paymentTotalUSD);
 
-  const initializePaymentScreen = (accountBalance: AccountBalance, transaction: ITransaction): void => {
-    if (!accountBalance.token) {
-      toast.error("Invalid or empty token found. Cannot initialize payment data");
-      return;
+      // initializePaymentScreen(accountBalance, transaction.transaction);
     }
-    console.info(`calculating prices for trx value: ${transaction.value}`)
-    const paymentInfo = initializePaymentData(accountBalance, transaction);
-    setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
-    setPaymentValueUsd(paymentInfo.paymentValueUsd);
-    setPaymentValueToken(paymentInfo.paymentValueToken.toString());
-    setPaymentTotalUSD(paymentInfo.paymentTotalUSD);
-  }
+  }, [ transaction])
 
 
   const onBuyClick = (): void => {
@@ -169,7 +167,7 @@ export const BuyPage = () => {
         })
   };
 
-  function initializePaymentData(accountBalance: AccountBalance, transaction: ITransaction): IPaymentInformation{
+  function initializePaymentData(accountBalance: AccountBalance, transaction: ITransaction): IPaymentInformation {
     let paymentFeeUsd = 0;
     let paymentValueUSD = 0;
     let paymentTotalUSD = 0;
@@ -177,11 +175,6 @@ export const BuyPage = () => {
 
     if (transaction?.value) {
       const paymentValueInTokenBn = getHexValueAsBigNumber(transaction?.value);
-
-      const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, USDC_DECIMALS);
-      paymentValueUSD = Number(paymentValueInTokenString);
-      console.debug(`payment value hex:${transaction?.value} 
-      bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)
 
       const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
       const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
@@ -191,11 +184,20 @@ export const BuyPage = () => {
       const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
       console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
-      if (!isUSDStableToken(token)) {
-        //FIXME throws overflow
-        const trxValueAsNumber = paymentValueInTokenBn.toNumber();
+      if (token === 'ETH') {
+        const paymentValueEth = getHexValueAsString(transaction?.value);
+        const trxValueAsNumber = Number(paymentValueEth);
         paymentValueUSD = convertTokenToUSD(trxValueAsNumber, token, tickers) || 0;
         console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${paymentValueUSD} USD`)
+      } else if (token === 'USDC') {
+        const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, USDC_DECIMALS);
+        paymentValueUSD = Number(paymentValueInTokenString);
+        console.debug(`payment value hex:${transaction?.value} 
+         bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)
+      } else {
+        let message = `token ${token} not implemented`;
+        toast.error(message)
+        throw new Error(message);
       }
 
       if (paymentValueUSD && gasPriceUsd) {

@@ -131,17 +131,23 @@ export const HomePage = () => {
     }
     setLoading(true);
 
-    if (!order.trackingId) {
-      toast.error("Invalid order tracking ID")
-    } else {
-      dispatch(userAction.setCreateTransaction({
-        account: accountBalance.account,
-        toAddress: order.toAddress,
-        amount: nativeTotal,
-        token: currencySymbol,
-        orderTrackingId: order.trackingId
-      }));
+    if (accountBalance.account.includes(order.toAddress)) {
+      toast.error("Merchant can't pay for their own orders")
+      return;
     }
+
+    if (!order.trackingId) {
+      toast.error("Invalid order tracking ID");
+      return;
+    }
+
+    dispatch(userAction.setCreateTransaction({
+      account: accountBalance.account,
+      toAddress: order.toAddress,
+      amount: nativeTotal,
+      token: currencySymbol,
+      orderTrackingId: order.trackingId
+    }));
   };
 
   const onHomeClick = async () => {
