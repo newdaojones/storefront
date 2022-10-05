@@ -1,5 +1,8 @@
 import {chainData} from "../consts";
 import {ellipseAddress} from "../helpers";
+import { BigNumber } from "ethers";
+import {getHexValueAsString, USDC_DECIMALS} from "../helpers/tx";
+import {formatFixed} from "@ethersproject/bignumber";
 
 export const SUPPORTED_STABLETOKENS = ["USDC", "USDT"];
 
@@ -39,19 +42,18 @@ export const getDisplayName = (account: string, ensName: string | null) : string
   }
   return name;
 }
-export const getFormattedTokenValue = (token: string, value: number | string) => {
-  if (typeof value === "string") {
-    return `${value.substring(0, value.length > 8 ? 8 :value.length)} ${token}`
-  }
-  const valueNumber: number = value;
-  let fractionDigits = 6;
-  if (isUSDStableToken(token)) {
-    fractionDigits = 2;
+
+export const getFormattedTokenValue = (token: string, value: BigNumber) => {
+  if (token === 'USDC') {
+    const paymentValueInTokenString = formatFixed(value, USDC_DECIMALS);
+    return `${Number(paymentValueInTokenString).toFixed(2)} ${token}`;
+  } else if (token === 'ETH' || token === 'MATIC') {
+    const paymentValueInTokenString = formatFixed(value, 18);
+    const trxValueAsNumber = Number(paymentValueInTokenString);
+    return `${trxValueAsNumber.toFixed(6)} ${token}`;
   } else {
-    console.log(`token ${token}`);
+    throw Error(`token not handled ${token}`);
   }
-  const getNativePriceString: string = `${valueNumber.toFixed(fractionDigits)} ${token}`
-  return getNativePriceString;
 }
 
 export function isUSDStableToken(token: string) {
