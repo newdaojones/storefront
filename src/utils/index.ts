@@ -1,6 +1,8 @@
 import {chainData} from "../consts";
 import {ellipseAddress} from "../helpers";
 
+export const SUPPORTED_STABLETOKENS = ["USDC", "USDT"];
+
 export const sleep = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -36,6 +38,24 @@ export const getDisplayName = (account: string, ensName: string | null) : string
     }
   }
   return name;
+}
+export const getFormattedTokenValue = (token: string, value: number | string) => {
+  if (typeof value === "string") {
+    return `${value.substring(0, value.length > 8 ? 8 :value.length)} ${token}`
+  }
+  const valueNumber: number = value;
+  let fractionDigits = 6;
+  if (isUSDStableToken(token)) {
+    fractionDigits = 2;
+  } else {
+    console.log(`token ${token}`);
+  }
+  const getNativePriceString: string = `${valueNumber.toFixed(fractionDigits)} ${token}`
+  return getNativePriceString;
+}
+
+export function isUSDStableToken(token: string) {
+  return token === "USDC" || token === "USDT";
 }
 
 
