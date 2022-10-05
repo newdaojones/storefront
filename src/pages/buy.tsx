@@ -20,12 +20,12 @@ import {
   AccountBalance,
   getHexValueAsBigNumber,
   getHexValueAsString, getPreferredAccountBalance,
-  ITransaction
+  ITransaction, USDC_DECIMALS
 } from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
-import {getFormattedTokenValue} from "../utils";
+import {getFormattedTokenValue, isUSDStableToken} from "../utils";
 import { BigNumber } from "ethers";
 import {formatFixed} from "@ethersproject/bignumber";
 
@@ -176,10 +176,9 @@ export const BuyPage = () => {
     const token = accountBalance.token;
 
     if (transaction?.value) {
-      const paymentValueInTokenStringRaw = getHexValueAsString(transaction?.value);
       const paymentValueInTokenBn = getHexValueAsBigNumber(transaction?.value);
 
-      const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, 6);
+      const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, USDC_DECIMALS);
       paymentValueUSD = Number(paymentValueInTokenString);
       console.debug(`payment value hex:${transaction?.value} 
       bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)
@@ -188,13 +187,12 @@ export const BuyPage = () => {
       const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
       console.info(`gasPrice hex: ${transaction?.gasPrice} = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
-      //const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
       const gasLimitNumber = getHexValueAsString(transaction?.gasLimit);
       const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
       console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
-      //FIXME throws overflow
-      if (token !== 'USDC') {
+      if (!isUSDStableToken(token)) {
+        //FIXME throws overflow
         const trxValueAsNumber = paymentValueInTokenBn.toNumber();
         paymentValueUSD = convertTokenToUSD(trxValueAsNumber, token, tickers) || 0;
         console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${paymentValueUSD} USD`)
