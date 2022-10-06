@@ -100,7 +100,7 @@ export const BuyPage = () => {
 
       // initializePaymentScreen(accountBalance, transaction.transaction);
     }
-  }, [ transaction])
+  }, [transaction])
 
 
   const onBuyClick = (): void => {

@@ -6,7 +6,7 @@ import ETHIcon from '../assets/images/eth.svg';
 import DollarIcon from '../assets/images/dollarIcon.svg';
 import AccountEditIcon from '../assets/images/account-edit.svg';
 import ConfirmedIcon from '../assets/images/confirmed_white.svg';
-import PendingIcon from '../assets/images/loading_white.svg';
+import PendingIcon from '../assets/images/pending_white.svg';
 
 import ConfirmDialog from "./ConfirmDialogStyle";
 import {ellipseAddress} from "../helpers";
