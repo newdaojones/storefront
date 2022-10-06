@@ -7,6 +7,7 @@ import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 
 //FIXME move to a constants file
+const PAY_WITH_USDC_ENABLED = false;
 const USDC_TOKEN = 'USDC';
 export const USDC_DECIMALS = 6;
 
@@ -144,6 +145,8 @@ export interface AccountBalance {
     token: string;
 }
 
+
+
 /**
  *
  * @param accounts
@@ -156,11 +159,15 @@ export function getPreferredAccountBalance(accounts: string[], balances: Account
         console.error("undefined or null balances");
         throw Error("undefined AccountBalances");
     }
-    const accountWithUSDC = getAccountWithNonZeroUSDCBalance(accounts, balances);
-    if (accountWithUSDC) {
-        console.info(`Found USDC account using that ${accountWithUSDC.balance} ${accountWithUSDC.token}`)
-        return accountWithUSDC;
+
+    if (PAY_WITH_USDC_ENABLED) {
+        const accountWithUSDC = getAccountWithNonZeroUSDCBalance(accounts, balances);
+        if (accountWithUSDC) {
+            console.info(`Found USDC account using that ${accountWithUSDC.balance} ${accountWithUSDC.token}`)
+            return accountWithUSDC;
+        }
     }
+
     return getNonZeroAccountBalance(accounts, balances);
 }
 

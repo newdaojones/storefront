@@ -352,13 +352,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         console.log("Established session:", session);
         onSessionConnected(session);
       } catch (e: any) {
-        toast.error(`connect error: ${e?.message || ""}`);
-        disconnect().then(() => console.log(`disconnect done.`));
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-
+        const message = `connect error: ${e?.message || ""}. Disconnecting...`;
+        console.log(message)
+        toast.error(message);
+        disconnect().then(() => {
+          console.log(`disconnect done.`)
+          //FIXME review the reload needed or not
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 2000);
+        });
       } finally {
         setIsLoading(false);
       }
@@ -385,8 +388,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       // Reset app state after disconnect.
       reset();
     } catch (err: any) {
+      //FIXME in case of thrown errors here the local storage items won' get replaced, and then the app will think it's logged it.maybe cause it's not connected it won't
       console.log(`disconnect error ${err?.message}`)
       //toast.error(err.message);
+    } finally {
+      //TODO mode the local storage calls here
     }
   }, [client, session]);
 
@@ -410,6 +416,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const switchAccount = useCallback(
     async (_account: string) => {
       try {
+        console.log('switchAccount', _account);
         setAccount(undefined);
         if (!client) {
           throw new Error('WalletConnect is not initialized');
@@ -418,7 +425,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         if (!session) {
           throw new Error('Session is not connected');
         }
-        console.log('_account', _account);
         login(_account);
       } catch (err: any) {
         toast.error(err.message);
