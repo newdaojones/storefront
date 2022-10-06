@@ -7,7 +7,7 @@ import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 
 //FIXME move to a constants file
-const PAY_WITH_USDC_ENABLED = false;
+export const PAY_WITH_USDC_ENABLED = false;
 const USDC_TOKEN = 'USDC';
 export const USDC_DECIMALS = 6;
 

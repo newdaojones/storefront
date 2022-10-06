@@ -3,6 +3,7 @@ import {AssetData, TxDetails} from "../helpers/types";
 import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
 import {web3} from "../utils/walletConnect";
 import {AbiInput, AbiOutput, AbiType, StateMutabilityType} from "web3-utils";
+import {PAY_WITH_USDC_ENABLED} from "../helpers/tx";
 
 //TODO this should be merged with the 'USDC' constant in some other files
 //FIXME this should have a corresponding mainnet address
@@ -28,7 +29,9 @@ const polygonInstance: AxiosInstance = axios.create({
 
 export async function infuraGetAccountBalances(address: string, chainId: string): Promise<AssetData[]> {
     const ethBalance = await infuraGetAccountBalance(address, chainId);
-    if (!chainId.includes("80001")) {
+
+    //TODO this should be extended to mainnet
+    if (PAY_WITH_USDC_ENABLED && chainId.includes("5")) {
         const usdcEthBalance = await infuraGetCustomTokenAccountBalance(address, USDCContractAddress, chainId);
         return [ethBalance, usdcEthBalance];
     } else {
