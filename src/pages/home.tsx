@@ -135,11 +135,13 @@ export const HomePage = () => {
 
     if (accountBalance.account.includes(order.toAddress)) {
       toast.error("Merchant can't pay for their own orders")
+      setLoading(false);
       return;
     }
 
     if (!order.trackingId) {
       toast.error("Invalid order tracking ID");
+      setLoading(false);
       return;
     }
 
