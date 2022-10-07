@@ -209,7 +209,7 @@ export const BuyPage = () => {
 
       console.debug(`payment value ${paymentTotalUSD} USD  = trx ${paymentValueUSD} USD + fee ${gasPriceUsd} USD`)
 
-      return {paymentFeeUsd: paymentFeeUsd, paymentValueUsd: paymentValueUsd,
+      return {paymentFeeUsd: paymentFeeUsd, paymentValueUsd: paymentValueUSD,
         paymentTotalUSD: paymentTotalUSD, paymentValueToken: paymentValueInTokenBn};
 
     } else {
@@ -266,7 +266,7 @@ export const BuyPage = () => {
                 {`${ellipseAddress(accountInfo?.address)}`}</p>
               <div className="flex w-full justify-between"
                    style={{fontFamily: 'Righteous', fontStyle: 'normal', color: '#8E8EA9'}}>
-                <p className="text-grey text-sm">notdevin.eth</p>
+                <p className="text-grey text-sm">{accountBalance.token}</p>
                 <p className="text-grey text-sm">Ethereum</p>
               </div>
             </div>
