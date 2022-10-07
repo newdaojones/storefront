@@ -351,6 +351,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         const session = await approval();
         console.log("Established session:", session);
         onSessionConnected(session);
+
       } catch (e: any) {
         const message = `connect error: ${e?.message || ""}. Disconnecting...`;
         console.log(message)
@@ -358,9 +359,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         disconnect().then(() => {
           console.log(`disconnect done.`)
           //FIXME review the reload needed or not
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 2000);
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         });
       } finally {
         setIsLoading(false);
@@ -377,8 +378,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       if (typeof session === 'undefined') {
         throw new Error('Session is not connected');
       }
-      localStorage.removeItem(NDJ_ADDRESS);
-      localStorage.removeItem(SIGNATURE_PREFIX);
+      setIsLoading(true);
 
       await client.disconnect({
         topic: session.topic,
@@ -387,12 +387,17 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
       // Reset app state after disconnect.
       reset();
+
+      //TODO mode the local storage calls here
+      localStorage.removeItem(NDJ_ADDRESS);
+      localStorage.removeItem(SIGNATURE_PREFIX);
     } catch (err: any) {
-      //FIXME in case of thrown errors here the local storage items won' get replaced, and then the app will think it's logged it.maybe cause it's not connected it won't
+      //FIXME in case of thrown errors here the local storage items won' get replaced, and then the app will think it's logged it.
+      // maybe cause it's not connected it won't.
       console.log(`disconnect error ${err?.message}`)
       //toast.error(err.message);
     } finally {
-      //TODO mode the local storage calls here
+      setIsLoading(false);
     }
   }, [client, session]);
 
