@@ -79,12 +79,14 @@ export const HomePage = () => {
       return;
     }
 
+    if (!currentOrder.trackingId) {
+      toast.error("invalid order trackingId");
+      return;
+    }
+
     if (currentOrder.trackingId && currentOrder.amount && !redirected) {
       setRedirected(true);
       createTransaction(currentOrder);
-    } else {
-      console.debug(`not creating trx`)
-      toast.error("invalid order data");
     }
   }, [currentOrder]);
 
