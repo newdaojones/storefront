@@ -13,20 +13,22 @@ import {
 } from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {ellipseAddress, isMobile, toWad} from "../helpers";
+import {ellipseAddress, isMobile} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
   AccountBalance,
   getHexValueAsBigNumber,
-  getHexValueAsString, getPreferredAccountBalance,
-  ITransaction, USDC_DECIMALS
+  getHexValueAsString,
+  getPreferredAccountBalance,
+  ITransaction,
+  USDC_DECIMALS
 } from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
-import {getFormattedTokenValue, isUSDStableToken} from "../utils";
-import { BigNumber } from "ethers";
+import {getFormattedTokenValue} from "../utils";
+import {BigNumber} from "ethers";
 import {formatFixed} from "@ethersproject/bignumber";
 
 export interface IPaymentInformation {
@@ -61,29 +63,29 @@ export const BuyPage = () => {
     ethereumRpc,
   } = useJsonRpc();
 
-  const [ locationKeys ] = useState("")
-
   const [ paymentValueToken, setPaymentValueToken ] = useState(BigNumber.from(0));
   const [ paymentValueUsd, setPaymentValueUsd ] = useState(0);
   const [ paymentFeeUsd, setPaymentFeeUsd ] = useState(0);
   const [ paymentTotalUSD, setPaymentTotalUSD ] = useState(0);
 
+  function onBackPressed() {
+    console.warn(`onBackPressed event, clearing trx. `)
+    dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
+    dispatch(userAction.unsetTransaction());
+  }
+
+  const onBackButtonEvent = (e: Event) => {
+    e.preventDefault();
+    onBackPressed();
+  }
+
   useEffect(() => {
-    return history.listen(location => {
-      if (history.action === 'PUSH') {
-      }
-      if (history.action === 'POP') {
-        if (locationKeys[1] === location.key) {
-          // Handle forward event
-        } else {
-          console.info(`back event, clearing trx. `)
-          dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
-          dispatch(userAction.unsetTransaction());
-          history.push("/home");
-        }
-      }
-    })
-  }, [ locationKeys, dispatch, history])
+    window.history.pushState(null, '', window.location.pathname);
+    window.addEventListener('popstate', onBackButtonEvent);
+    return () => {
+      window.removeEventListener('popstate', onBackButtonEvent);
+    };
+  }, []);
 
   useEffect(() => {
     if (transaction && accountBalance && paymentValueUsd === 0) {
@@ -97,8 +99,6 @@ export const BuyPage = () => {
       setPaymentValueUsd(paymentInfo.paymentValueUsd);
       setPaymentValueToken(paymentInfo.paymentValueToken);
       setPaymentTotalUSD(paymentInfo.paymentTotalUSD);
-
-      // initializePaymentScreen(accountBalance, transaction.transaction);
     }
   }, [transaction])
 

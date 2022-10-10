@@ -29,8 +29,10 @@ export const HomePage = () => {
   let query = useLocation().search;
   const [ loading, setLoading ] = useState(false)
   const [ scanning, setScanning ] = useState(false)
+
   const [ redirected, setRedirected ] = useState(false)
-  const [ transactionCreatedLock, setTransactionCreatedLock ] = useState(false)
+  const [ paymentRequestCreated, setPaymentRequestCreated] = useState(false)
+
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
   const accountBalance = getPreferredAccountBalance(accounts, balances);
@@ -38,18 +40,22 @@ export const HomePage = () => {
 
   const tickers = useSelector(selectTickers);
   const currentOrder = useSelector(selectCurrentOrder);
-  const trxCreated = useSelector(selectCreateTransaction);
+  const transaction = useSelector(selectCreateTransaction)
 
   useEffect(() => {
-    if (trxCreated?.transaction && trxCreated.transaction.value && !transactionCreatedLock) {
-      setTransactionCreatedLock(true);
+    if (transaction?.transaction && transaction.transaction.value && paymentRequestCreated) {
       if (!redirected) {
+        setRedirected(true);
+        console.warn("**** redirecting to buy ****");
         history.push("/buy");
+        setLoading(false);
       } else {
-        history.replace("/buy");
+        console.warn("**** already redirected, removing home query ****");
       }
+    } else {
+      console.debug("no trx request found")
     }
-  }, [trxCreated, transactionCreatedLock, setTransactionCreatedLock, history]);
+  }, [transaction, paymentRequestCreated]);
 
   useEffect(() => {
     if (query && tickers?.length > 0) {
@@ -59,7 +65,9 @@ export const HomePage = () => {
           toast.error(`Invalid orderTrackingId`)
           return;
         }
+        console.warn(`****** detected order in query ${order.orderTrackingId}. Dispatching get order`);
         dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
+
       } catch (e: any) {
         console.log(e);
         toast.error(`error fetching order data. ${e?.message}`)
@@ -84,9 +92,10 @@ export const HomePage = () => {
       return;
     }
 
-    if (currentOrder.trackingId && currentOrder.amount && !redirected) {
-      setRedirected(true);
-      createTransaction(currentOrder);
+    if (currentOrder.trackingId && currentOrder.amount && !paymentRequestCreated) {
+      setPaymentRequestCreated(true);
+      console.warn("non null order found, creating payment request");
+      createOrderPaymentRequest(currentOrder);
     }
   }, [currentOrder]);
 
@@ -102,7 +111,6 @@ export const HomePage = () => {
 
   const pastePaymentLink = async () => {
     console.debug(`paste link `)
-
     try {
       const text = await navigator.clipboard.readText();
       processScanResult(text);
@@ -113,19 +121,20 @@ export const HomePage = () => {
 
 
   /**
-   * Create Payment Transaction (not blockchain transaction)
+   * Create Order Payment Request (not blockchain transaction)
    * @param order
    */
-  const createTransaction = (order: IOrder): void => {
+  const createOrderPaymentRequest = (order: IOrder): void => {
+    console.info("creating orderPaymentRequest")
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
 
-    let nativeTotal = order.amount;
+    let nativeTotal: number;
     if (!isUSDStableToken(currencySymbol)) {
       console.log(`using non stable coin ${currencySymbol}`);
       nativeTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers) || 0;
-      if (!nativeTotal) {
-        toast.error(`Could not convert value to crypto. Invalid tickers ${tickers.length}`);
+      if (!nativeTotal || nativeTotal === 0) {
+        toast.error(`Could not convert value to crypto. Invalid tickers ${tickers}`);
         return;
       }
     } else {
@@ -155,7 +164,7 @@ export const HomePage = () => {
   };
 
   const onHomeClick = async () => {
-    console.info(`refreshing balances `)
+    console.warn(`onHomeClick. refreshing balances `)
     await refreshBalances(accounts);
   }
 
@@ -172,6 +181,8 @@ export const HomePage = () => {
         toast.error(`Invalid orderTrackingId`)
         return;
       }
+      //FIXMe this is the issue, we are always re-creating the order from url;
+      console.warn("*****  processScanResult. dispatching get order");
       dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
     } catch (e) {
       console.info(`Invalid QrCode url`);
