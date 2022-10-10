@@ -121,7 +121,7 @@ export const TransactionStatus = () => {
 
 
                 {transactionId && (
-                    <a href='#'>
+                    // <a href='#'>
                         <div className="h-40 flex items-center justify-center">
                             <div className="w-3/4 flex justify-center items-center pb-4">
                                 <div className="flex flex-col justify-center items-center pb-4">
@@ -131,7 +131,7 @@ export const TransactionStatus = () => {
                                 <img className="w-20 h-20 ml-4" style = {{animation: confirmed ? '': `spin 3s linear infinite` }} src={confirmed? confirmedIcon: pendingIcon} alt="" />
                             </div>
                         </div>
-                    </a>
+                    // </a>
                 )}
 
                 <p className="text-xs mt-1 ">{confirmed?
