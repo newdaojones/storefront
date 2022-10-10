@@ -9,6 +9,7 @@ import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
 import {generateTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
 import {isUSDStableToken} from "../../utils";
+import { createBrowserHistory } from 'history';
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -130,9 +131,12 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
   }
 }
 
+const browserHistory = createBrowserHistory();
 function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
   try {
     yield put(userAction.setCreateTransactionSuccess(null));
+    yield put(userAction.setCreateOrderSuccess(null));
+    browserHistory.back();
   } catch (err: any) {
     toast.error(err.message);
   }
