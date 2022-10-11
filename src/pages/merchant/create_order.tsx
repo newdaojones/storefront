@@ -19,21 +19,6 @@ export const CreateOrderPage = () => {
 
   let currentOrder = useSelector(selectCurrentOrder);
 
-  const openPayUrl = () => {
-    if (!currentOrder?.trackingId) {
-      toast.error("Order trackingId must be valid")
-      return;
-    }
-    const linkUrl = payLink(currentOrder?.trackingId);
-    console.info(`generateUrl, redirecting to ${linkUrl}`);
-    window.open(linkUrl, "_blank");
-
-    dispatch(userAction.unsetCurrentOrder())
-    setOrderCreated(false);
-    setOrderId("");
-    setAmount(0);
-  }
-
 
 
   function handleCreateOrder() {
@@ -81,9 +66,20 @@ export const CreateOrderPage = () => {
 
   React.useEffect(() => {
     if (currentOrder && orderCreated) {
-      openPayUrl();
+      if (!currentOrder?.trackingId) {
+        toast.error("Order trackingId must be valid")
+        return;
+      }
+      const linkUrl = payLink(currentOrder?.trackingId);
+      console.info(`generateUrl, redirecting to ${linkUrl}`);
+      window.open(linkUrl, "_blank");
+
+      dispatch(userAction.unsetCurrentOrder())
+      setOrderCreated(false);
+      setOrderId("");
+      setAmount(0);
     }
-  }, [currentOrder, openPayUrl, orderCreated]);
+  }, [currentOrder, orderCreated]);
 
 
 
