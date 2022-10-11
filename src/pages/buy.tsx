@@ -120,8 +120,7 @@ export const BuyPage = () => {
     }
 
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
-    onSendTransaction(accountBalance).then(r => {})
-
+    onSendTransaction(accountBalance).then(_ => {});
   };
 
   function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
@@ -237,10 +236,10 @@ export const BuyPage = () => {
   }} className="wfullm h-16 flex items-center justify-center text-white mt-8 mb-2 ">
     {transactionInProgress === TransactionState.IN_PROGRESS ?
         <div className="thecube w-8 h-8 m-1">
-          <div className="cube c1"></div>
-          <div className="cube c2"></div>
-          <div className="cube c4"></div>
-          <div className="cube c3"></div>
+          <div className="cube c1"/>
+          <div className="cube c2"/>
+          <div className="cube c4"/>
+          <div className="cube c3"/>
         </div> :
         <div className="w-full flex flex-col items-center justify-center">
           <p className="text-white text-start font-righteous font-bold mr-2">{`Pay $${paymentTotalUSD.toFixed(2)}`}</p>

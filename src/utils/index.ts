@@ -1,7 +1,7 @@
 import {chainData} from "../consts";
 import {ellipseAddress} from "../helpers";
-import { BigNumber } from "ethers";
-import {getHexValueAsString, USDC_DECIMALS} from "../helpers/tx";
+import {BigNumber} from "ethers";
+import {USDC_DECIMALS} from "../helpers/tx";
 import {formatFixed} from "@ethersproject/bignumber";
 
 export const SUPPORTED_STABLETOKENS = ["USDC", "USDT"];

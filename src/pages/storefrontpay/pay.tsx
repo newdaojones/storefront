@@ -31,7 +31,7 @@ export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
     const dispatch = useDispatch();
-    const [ showBlackWhite, setShowBlackWhite ] = useState(true)
+    const [ showBlackWhite ] = useState(true)
     const [background] = useState('#FFFFFF');
     const [foreground] = useState('#000000');
     const [size] = useState(300);
