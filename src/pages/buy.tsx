@@ -88,6 +88,12 @@ export const BuyPage = () => {
   }, []);
 
   useEffect(() => {
+    if (!transaction || !transaction.orderTrackingId || transaction.transaction.value === '0') {
+      console.warn(`detected invalid order: ${transaction} without tracking id or valued 0. Going back to home.`);
+      onBackPressed();
+      return;
+    }
+
     if (transaction && accountBalance && paymentValueUsd === 0) {
       if (!accountBalance.token) {
         toast.error("Invalid or empty token found. Cannot initialize payment data");
