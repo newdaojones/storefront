@@ -9,13 +9,12 @@ import {Landing} from './landing';
 
 import VaultIcon from '../assets/images/menu_icon.svg';
 
-import { selectAccountInfo, selectEnsName } from '../store/selector';
+import {selectEnsName} from '../store/selector';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
 
 export const Main = () => {
   const ensName = useSelector(selectEnsName);
-  const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
 
   // Initialize the WalletConnect client.
