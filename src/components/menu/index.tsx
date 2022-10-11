@@ -4,7 +4,6 @@ import menuIcon from '../../assets/images/menu_icon.svg';
 import {IMenuItem, TransactionState} from '../../models';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
-import {useHistory} from "react-router-dom";
 import {userAction} from "../../store/actions";
 import {useDispatch} from "react-redux";
 

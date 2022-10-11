@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {BigNumber, utils} from "ethers";
 import {useDispatch, useSelector} from "react-redux";
 import {selectBuyTransaction} from "../store/selector";
@@ -40,24 +40,12 @@ export const ConfirmationPage = () => {
         }));
     }
 
-
     const onHomeClick = async () => {
-      dispatch(userAction.unsetTransaction());
       await refreshBalances(accounts).then(r => {
           console.info(`refreshing balances on home click`)
-          setTimeout(() => {
-              history.goBack()
-              history.goBack()
-              history.replace("/home");
-          }, 1000);
       });
-
+      dispatch(userAction.unsetTransaction());
   }
-
-  const onQRCodeClick = (): void => {
-    console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/goerli/tx/${transactionInfo?.transactionHash}`)
-  };
-
 
    React.useEffect(() => {
         if (transactionInfo) {
