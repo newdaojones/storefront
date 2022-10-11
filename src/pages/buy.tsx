@@ -320,7 +320,7 @@ export const BuyPage = () => {
                   {transactionInProgress === TransactionState.FINISHED &&
                   <img className="w-full absolute mr-8" src={ProgressFull} alt=""/>}
                 </div>
-                <p className="mt-4">{`${transactionInProgress.valueOf() + 1}/3`}</p>
+                <p className="mt-8">{`${transactionInProgress.valueOf() + 1}/3`}</p>
                 {
                   isMobile() && transactionInProgress.valueOf() === 1 ? <a href={"wc://"} className="">
                     {helperTextMessage}
