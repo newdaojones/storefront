@@ -65,12 +65,12 @@ export async function generateTransaction(account: string, toAddress: string, se
     const gasPrice = _gasPrice;
     console.info(`gasPrice-> hex:${_gasPrice} number: ${gasNumber} encodedGasPrice: ${gasPrice}`);
 
+
     // FIXME this should also be a param
     // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
-    //const _gasLimit = 101112;
-    // const _gasLimit: number = 862032;
-    const _gasLimit: number = 1220000;
     // const _gasLimit = 21112;
+    const _gasLimit = 101112;
+    // const _gasLimit: number = 862032;
 
     const gasLimit = encodeNumberAsHex(_gasLimit)
     console.info(`gasLimit-> number: ${_gasLimit} encodedGasLimit: ${gasLimit}`);
