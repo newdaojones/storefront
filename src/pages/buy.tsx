@@ -100,11 +100,15 @@ export const BuyPage = () => {
         return;
       }
       console.info(`calculating prices for trx value: ${transaction.transaction.value}`)
-      const paymentInfo = initializePaymentData(accountBalance, transaction.transaction);
-      setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
-      setPaymentValueUsd(paymentInfo.paymentValueUsd);
-      setPaymentValueToken(paymentInfo.paymentValueToken);
-      setPaymentTotalUSD(paymentInfo.paymentTotalUSD);
+      try {
+        const paymentInfo = initializePaymentData(accountBalance, transaction.transaction);
+        setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
+        setPaymentValueUsd(paymentInfo.paymentValueUsd);
+        setPaymentValueToken(paymentInfo.paymentValueToken);
+        setPaymentTotalUSD(paymentInfo.paymentTotalUSD);
+      } catch (e) {
+        toast.error(`Error: ${e}`);
+      }
     }
   }, [transaction])
 
@@ -160,13 +164,13 @@ export const BuyPage = () => {
           if (res?.valid) {
             handleSuccessfulTransaction(res);
           } else {
-            toast.error(res?.result || "Something went wrong, please try again. ");
+            toast.error(`Error sending transaction: ${res?.result}`|| "Something went wrong, please try again. ");
             console.info(`valid = false. transaction result ${res?.result}`)
             dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           }
         })
         .catch((error) => {
-          toast.error(error || "Something went wrong sending the transaction, please try again. ");
+          toast.error(`Error sending transaction: ${error}` || "Something went wrong sending the transaction, please try again. ");
           console.log(`error on signing trx ${error} state: ${rpcResult}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
         })
@@ -200,7 +204,7 @@ export const BuyPage = () => {
         console.debug(`payment value hex:${transaction?.value} 
          bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)
       } else {
-        let message = `token ${token} not implemented`;
+        const message = `token ${token} not implemented`;
         toast.error(message)
         throw new Error(message);
       }
