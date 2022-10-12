@@ -42,13 +42,25 @@ export const HomePage = () => {
   const currentOrder = useSelector(selectCurrentOrder);
   const transaction = useSelector(selectCreateTransaction)
 
+  const clearUrlParams = () => {
+    const queryParams = ""
+    history.replace({
+      search: queryParams,
+    });
+  }
+
   useEffect(() => {
     if (transaction?.transaction && transaction.transaction.value && paymentRequestCreated) {
       if (!redirected) {
         setRedirected(true);
+
+        console.warn(`clearing url params`);
+        clearUrlParams();
+
         console.warn("**** redirecting to buy ****");
         history.push("/buy");
         setLoading(false);
+
       } else {
         console.warn("**** already redirected, removing home query ****");
       }
