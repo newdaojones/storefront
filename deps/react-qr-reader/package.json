@@ -34,8 +34,8 @@
     "react-dom": "^16.8.0 || ^17.0.2"
   },
   "dependencies": {
-    "@zxing/browser": "0.0.7",
-    "@zxing/library": "^0.18.3",
+    "@zxing/browser": "^0.1.1",
+    "@zxing/library": "^0.19.1",
     "rollup": "^2.67.2"
   },
   "devDependencies": {
