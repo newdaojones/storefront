@@ -238,7 +238,7 @@ export const HomePage = () => {
 
 
               <div className="mt-4">
-                <p className="text-white mt-8 text-center font-bold">Scan Payment QR or </p>
+                <p className="text-white mt-8 text-center font-bold">Scan Payment QR </p>
                 <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
                   Scan the payment QR code provided by the store to checkout</p>
               </div>
