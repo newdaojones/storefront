@@ -412,7 +412,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           }
           await getAccountBalances(_accounts);
         } catch (err: any) {
-          toast.error(`caught error while refreshing balances: ${err.message}`);
+          toast.error(`Error while refreshing balances: ${err.message}`);
         }
       },
       [client, session]
@@ -453,18 +453,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       // });
 
       _client.on("pairing_ping", args => {
-        console.warn(`**** pairing event. args: ${args}`);
-        //FIXME should set pairing
-        //setPairings(p)
+        console.debug(`pairing event. args: ${args}`);
         setPairings(_client.pairing.values);
       });
 
       _client.on("session_event", args => {
-        console.log("EVENT", "session_event", args);
+        console.debug("EVENT", "session_event", args);
       });
 
       _client.on("session_update", ({ topic, params }) => {
-        console.log("EVENT", "session_update", { topic, params });
+        console.debug("EVENT", "session_update", { topic, params });
         const { namespaces } = params;
         const _session = _client.session.get(topic);
         const updatedSession = { ..._session, namespaces };
@@ -472,7 +470,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       });
 
       _client.on("session_delete", () => {
-        console.log("EVENT", "session_delete");
+        console.debug("EVENT", "session_delete");
         reset();
       });
     },
