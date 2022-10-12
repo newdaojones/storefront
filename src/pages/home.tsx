@@ -193,12 +193,10 @@ export const HomePage = () => {
         toast.error(`Invalid orderTrackingId`)
         return;
       }
-      //FIXMe this is the issue, we are always re-creating the order from url;
-      console.warn("*****  processScanResult. dispatching get order");
       dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
     } catch (e) {
       console.info(`Invalid QrCode url`);
-      toast.error(`Invalid Payment Link`);
+      toast.error(`Invalid Payment Link`, {autoClose: 2000});
     }
   }
 
