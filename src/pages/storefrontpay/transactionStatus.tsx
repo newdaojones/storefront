@@ -72,10 +72,14 @@ export const TransactionStatus = () => {
                 response => {
                     if (response) {
                         setBlockTransactionData(response)
+                    } else {
+                        console.warn(`invalid response from transaction api ${response}`);
                     }
                     if (response?.blockHash) {
                         console.log(`transaction details block hash: ${response.blockHash}`);
                         setConfirmed(true);
+                    } else {
+                        console.warn(`invalid blockHash from transaction api ${response}`);
                     }
                 }
             )
@@ -135,7 +139,7 @@ export const TransactionStatus = () => {
                     // </a>
                 )}
 
-                <p className="text-xs mt-1 ">{confirmed?
+                <div className="text-xs mt-1 ">{confirmed?
                     <div className="flex flex-col justify-center items-center">
                         <p>Block Hash</p>
                         <a href={`https://goerli.etherscan.io/tx/${blockTransactionData?.hash}`}>
@@ -147,7 +151,7 @@ export const TransactionStatus = () => {
                         {/*</div>*/}
                     </div>
                     : `Trouble verifying?`}
-                </p>
+                </div>
                 <p className="mt-40 mb-40 mx-10 text-center">Please allow for the network to verify the transaction <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Block Explorer</a> to learn more.</p>
 
             </div>
