@@ -14,12 +14,11 @@ export const CreateOrderPage = () => {
   let merchantInfo = useSelector(selectMerchantInfo);
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState(0);
+  const [orderDescription, setOrderDescription] = useState('');
+
 
   const [orderCreated, setOrderCreated] = useState(false);
-
   let currentOrder = useSelector(selectCurrentOrder);
-
-
 
   function handleCreateOrder() {
     if (orderId === '') {
@@ -52,11 +51,17 @@ export const CreateOrderPage = () => {
         token: "USD",
         toAddress: merchantInfo?.memberAddress,
         transactionHash: null,
-        nativeAmount: null
+        nativeAmount: null,
+        orderDescription: orderDescription,
       };
       console.info(`creating order ${orderInstance}`);
       dispatch(userAction.createOrder(orderInstance));
-      setOrderCreated(true)
+      setOrderCreated(true);
+
+      //clear the form fields after success
+      setOrderId('');
+      setAmount(0);
+      setOrderDescription('');
 
     } catch (e) {
       console.warn(`error parsing amount: ${amount} -> ${e}`)
@@ -79,7 +84,7 @@ export const CreateOrderPage = () => {
       setOrderId("");
       setAmount(0);
     }
-  }, [currentOrder, orderCreated]);
+  }, [currentOrder, orderCreated, dispatch]);
 
 
 
