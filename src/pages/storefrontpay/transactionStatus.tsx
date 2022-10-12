@@ -66,6 +66,7 @@ export const TransactionStatus = () => {
         if (transactionId && account && !blockTransactionData) {
             const [namespace, reference] = account.split(":");
             const chainId = `${namespace}:${reference}`;
+            //TODO this should be turned into a redux action
             const txDetailsPromise = currentRpcApi.getTransactionByHash(transactionId.transactionId, chainId);
             txDetailsPromise.then(
                 response => {
