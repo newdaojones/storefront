@@ -26,6 +26,11 @@ const getConnectionNetwork = (account: string) : string => {
   }
   return ""
 }
+export const getAccountAddress = (account: string) : string => {
+  const [address] = account.split(":");
+  return address;
+}
+
 
 export const getDisplayName = (account: string, ensName: string | null) : string => {
   let name = '';
