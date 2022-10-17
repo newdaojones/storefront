@@ -10,7 +10,7 @@ import {toast} from "react-toastify";
 
 export const SettingsPage = () => {
   const dispatch = useDispatch();
-  const { account, disconnect} = useWalletConnectClient();
+  const { session, account, disconnect} = useWalletConnectClient();
   let merchantInfo = useSelector(selectMerchantInfo);
   const [enabled, setEnabled] = useState(true);
   const [polygonEnabled, setPolygonEnabled] = useState(true);
@@ -21,7 +21,7 @@ export const SettingsPage = () => {
   const onDisconnect = () => {
     console.info(`onDisconnect called`);
     toast.info("Disconnecting...", {autoClose: 1000})
-    disconnect().then(r => {
+    session && disconnect(true).then(r => {
       console.info(`disconnected!`)
       setTimeout(() => {
         window.location.reload();
@@ -32,12 +32,6 @@ export const SettingsPage = () => {
   const logoutButton =  <button onClick={onDisconnect} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
     <p className="font-righteous">Logout</p>
   </button>
-
-  React.useEffect(() => {
-    if (account) {
-      //payButton = storefrontPayButton(getAddressFromAccount(account), "1", 0.15);
-    }
-  }, [account]);
 
   React.useEffect(() => {
     if (merchantInfo) {

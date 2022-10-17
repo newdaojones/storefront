@@ -38,8 +38,8 @@ export const Main = () => {
   const onDisconnect = () => {
     console.info(`onDisconnect called session ${session}`);
     toast.info("Disconnecting...", {autoClose: 1000})
-    disconnect().then(r => {
-      console.info(`disconnected. reloading page in a second....`)
+    session && disconnect(true).then(r => {
+      console.info(`disconnected. reloading page...`)
       setTimeout(() => {
         window.location.reload();
       }, 200);

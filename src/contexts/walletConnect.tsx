@@ -38,7 +38,7 @@ interface IContext {
   client: Client | undefined;
   session: SessionTypes.Struct | undefined;
   connect: (pairing?: { topic: string }) => Promise<void>;
-  disconnect: () => Promise<void>;
+  disconnect: (userRequested: boolean) => Promise<void>;
   refreshBalances: (accounts: string[]) => Promise<void>;
   switchAccount: (account: string) => Promise<void>;
   isInitializing: boolean;
@@ -88,6 +88,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   const [balances, setBalances] = useState<AccountBalances>({});
 
   const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>({isMerchantUser: false, merchantExists: false});
+
+  const [showToasts, setShowToasts] = useState(true);
 
   let pathname = useLocation().pathname;
 
@@ -241,7 +243,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
       } catch (err: any) {
         console.error(`login exception: ${err} ${err?.message}. Disconnecting...`)
-        toast.error(err.message);
+
+        if (showToasts) {
+          toast.error(err.message);
+        }
         disconnect();
       } finally {
         setIsLoading(false);
@@ -313,7 +318,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         } catch (err: any) {
           localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
           console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
-          toast.error(`Error: ${err.message}.`);
+
+          if (showToasts) {
+            toast.error(`Error: ${err.message}.`);
+          }
 
           disconnect().then(() => console.log(`disconnect done.`));
 
@@ -355,7 +363,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       } catch (e: any) {
         const message = `connect error: ${e?.message || ""}. Disconnecting...`;
         console.log(message)
-        toast.error(message);
+        if (showToasts) {
+          toast.error(message);
+        }
         disconnect().then(() => {
           console.log(`disconnect done.`)
           //FIXME review the reload needed or not
@@ -370,7 +380,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     [chains, client, onSessionConnected]
   );
 
-  const disconnect = useCallback(async () => {
+  const disconnect = useCallback(async (userRequested: boolean = false) => {
     try {
       if (typeof client === 'undefined') {
         throw new Error('WalletConnect is not initialized');
@@ -379,6 +389,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         throw new Error('Session is not connected');
       }
       setIsLoading(true);
+      setShowToasts(false);
 
       await client.disconnect({
         topic: session.topic,

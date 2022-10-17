@@ -45,7 +45,12 @@ export const MerchantMain = () => {
   };
 
   const onDisconnect = () => {
-    session && disconnect();
+    session && disconnect(true).then(r => {
+      console.info(`disconnected. reloading page...`)
+      setTimeout(() => {
+        window.location.reload();
+      }, 200);
+    });
   };
 
   React.useEffect(() => {
