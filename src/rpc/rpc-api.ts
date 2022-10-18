@@ -1,8 +1,9 @@
 import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
 import {apiGetAccountBalance, apiGetAccountNonce, apiGetAccountTransactions, apiGetGasPrices} from "./api";
 import {
+    getPendingTransactions,
     infuraGetAccountBalances,
-    infuraGetAccountNonce,
+    infuraGetAccountNonce, infuraGetAccountTransactions,
     infuraGetGasPrices,
     infuraGetTransactionByHash
 } from "./infura-api";
@@ -14,6 +15,7 @@ export interface RpcApi {
     getGasPrices(chainId: string): Promise<string>;
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]>;
     getTransactionByHash(address: string, chainId: string): Promise<TxDetails>;
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]>;
 }
 
 export class InfuraApi implements RpcApi {
@@ -41,6 +43,10 @@ export class InfuraApi implements RpcApi {
 
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
         return Promise.resolve([]);
+    }
+
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return getPendingTransactions(address, chainId);
     }
 
 }
@@ -76,6 +82,10 @@ export class EthereumXyzApi implements RpcApi {
         //
         throw new Error("not impl");
     }
+
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return Promise.resolve([]);
+    }
 }
 
 export class RpcSourceAdapter implements RpcApi {
@@ -102,11 +112,16 @@ export class RpcSourceAdapter implements RpcApi {
     }
 
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
+        //TODO add infura support for this to break eth.xyz dep
         return this.ethereumXyzRpcApi.getAccountTransactions(address, chainId);
     }
 
     getTransactionByHash(hash: string, chainId: string): Promise<TxDetails> {
         return infuraGetTransactionByHash(hash, chainId);
+    }
+
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return this.infuraRpcApi.getAccountPendingTransactions(address, chainId);
     }
 
 }

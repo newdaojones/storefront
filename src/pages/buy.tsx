@@ -27,7 +27,7 @@ import {
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
-import {getFormattedTokenValue} from "../utils";
+import {getAccountAddress, getFormattedTokenValue} from "../utils";
 import {BigNumber} from "ethers";
 import {formatFixed} from "@ethersproject/bignumber";
 
@@ -111,6 +111,16 @@ export const BuyPage = () => {
       }
     }
   }, [transaction])
+
+  useEffect(() => {
+    //TODO
+    if (transactionInProgress === TransactionState.IN_PROGRESS) {
+      // check for transaction in the network
+      //FIXME enable pending transaction checks to avoid double spends
+      // dispatch(userAction.getPendingTransactions({address: getAccountAddress(accountBalance.account)}));
+    }
+
+  }, [transactionInProgress]);
 
 
   const onBuyClick = (): void => {

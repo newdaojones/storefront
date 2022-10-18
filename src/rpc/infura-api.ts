@@ -138,7 +138,31 @@ async function infuraGetPolygonAccountBalance(data: any): Promise<AssetData> {
 }
 
 /**
- * https://docs.infura.io/infura/networks/ethereum/json-rpc-methods/parity_nextnonce
+ * Subscribe to pend trxs.
+ * SEE https://docs.infura.io/infura/tutorials/ethereum/subscribe-to-pending-transactions#4.-subscribe-to-pending-transactions
+ */
+
+export const getPendingTransactions = async (address: string, chainId: string): Promise<TxDetails[]> => {
+    ///"eth_subscribe", "params": ["newPendingTransactions"]}'
+    const data = {
+        "jsonrpc": "2.0",
+        "method": "eth_subscribe",
+        "params": ["newPendingTransactions"],
+        "id": 1
+    };
+    const response = await ethInstance.post(
+        "",
+        data
+    );
+    const {result} = response.data;
+    console.info(`got getPendingTransactions: ${result}`)
+    return result;
+}
+
+
+
+/**
+
  * @param address
  * @param chainId
  */

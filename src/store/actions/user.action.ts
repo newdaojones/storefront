@@ -169,6 +169,14 @@ const getOrder = (payload: { orderTrackingId: String }) => {
   };
 };
 
+
+const getPendingTransactions = (payload: { address: String }) => {
+  return {
+    type: EUserActionTypes.GET_ORDER,
+    payload
+  };
+};
+
 export const userAction = {
   loginSuccess,
   getAccountInfoSuccess,
@@ -190,5 +198,6 @@ export const userAction = {
   setCreateMerchantSuccess,
   updateMerchant,
   updateMerchantSuccess,
-  unsetCurrentOrder
+  unsetCurrentOrder,
+  getPendingTransactions
 };
