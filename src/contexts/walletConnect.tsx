@@ -8,7 +8,7 @@ import * as encoding from '@walletconnect/encoding';
 import {
   DEFAULT_APP_METADATA,
   DEFAULT_CHAINS,
-  DEFAULT_EIP155_METHODS,
+  DEFAULT_EIP155_METHODS, DEFAULT_LOGGER, DEFAULT_MERCHANT_APP_METADATA,
   DEFAULT_PROJECT_ID,
   DEFAULT_RELAY_URL,
 } from '../consts';
@@ -516,13 +516,15 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     try {
       setIsInitializing(true);
 
+      const metadata = merchantLogin.isMerchantUser ? DEFAULT_MERCHANT_APP_METADATA : DEFAULT_APP_METADATA;
+
       const _client = await Client.init({
-        // logger: DEFAULT_LOGGER,
+        logger: DEFAULT_LOGGER,
         relayUrl: DEFAULT_RELAY_URL,
         projectId: DEFAULT_PROJECT_ID,
-        metadata: getAppMetadata() || DEFAULT_APP_METADATA,
+        metadata: getAppMetadata() || metadata,
       });
-      console.log("CREATED CLIENT: ", _client);
+      console.info(`CREATED CLIENT ${_client} with metadata: ${metadata}`);
       setClient(_client);
       await _subscribeToEvents(_client);
       await _checkPersistedState(_client);
@@ -537,6 +539,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   useEffect(() => {
     if (!client) {
       try {
+        //TODO change the client data according to whether is merchant or consumer
         createClient().then(value => {
           console.debug(`client created ok: ${value}`)
         }).catch(reason => {

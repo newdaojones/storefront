@@ -31,11 +31,20 @@ export const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.com';
 export const DEFAULT_LOGGER = 'info';
 
 const APP_URL = isTestnetMode() ? 'https://test.jxndao.com/storefront': 'https://jxndao.com/storefront'
+const MERCHANT_APP_URL = isTestnetMode() ? 'https://test.jxndao.com/storefront/merchant': 'https://jxndao.com/storefront/merchant'
+
 // TODO Change app data
 export const DEFAULT_APP_METADATA = {
   name: 'NDJ Storefront',
   description: 'StoreFront Pay DApp',
   url: APP_URL,
+  icons: ['https://jxndao.com/logo192.png'],
+};
+
+export const DEFAULT_MERCHANT_APP_METADATA = {
+  name: 'Storefront Merchant',
+  description: 'StoreFront Merchant Dashboard',
+  url: MERCHANT_APP_URL,
   icons: ['https://jxndao.com/logo192.png'],
 };
 
