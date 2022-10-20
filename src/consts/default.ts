@@ -16,7 +16,7 @@ export const DEFAULT_TEST_CHAINS = [
   "eip155:5",//ethereum gorli
   // "eip155:42",//ethereum kovan
   // "eip155:69",
-  "eip155:80001",//polygon mumbai
+  // "eip155:80001",//polygon mumbai
   // "eip155:421611",
   // "eip155:44787",
   // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",
