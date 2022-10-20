@@ -95,7 +95,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   let pathname = useLocation().pathname;
 
   const reset = () => {
-    console.info(`resetting balances`);
+    console.info(`reset`);
     setPairings([]);
     setQRCodeUri(undefined);
     setBalances({});
@@ -111,6 +111,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       }
     }
     localStorage.removeItem(NDJ_ADDRESS);
+    localStorage.removeItem(SIGNATURE_PREFIX);
   };
 
   const getAccountBalances = async (_accounts: string[]) => {
@@ -344,9 +345,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         if (typeof client === 'undefined') {
           throw new Error('WalletConnect is not initialized');
         }
-        console.log("connect, pairing topic is:", pairing?.topic);
+        console.debug("connect, pairing topic is:", pairing?.topic);
         const requiredNamespaces = getRequiredNamespaces(chains);
-        console.log("requiredNamespaces config for connect:", requiredNamespaces);
+        console.debug("requiredNamespaces config for connect:", requiredNamespaces);
 
         let connectParams = {
           pairingTopic: pairing?.topic,
@@ -360,12 +361,13 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         }
 
         const session = await approval();
-        console.log("Established session:", session);
-        onSessionConnected(session);
+        console.info("Established session:", session);
+        setIsLoading(true);
+        await onSessionConnected(session);
 
       } catch (e: any) {
         const message = `connect error: ${e?.message || ""}. Disconnecting...`;
-        console.log(message)
+        console.info(message)
         if (showToasts) {
           toast.error(message);
         }
@@ -373,10 +375,12 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         if (!showToasts) {
           disconnect().then(() => {
             console.log(`disconnect done.`)
-            //FIXME review the reload needed or not. it's needed to show the new qr after disconnecting. it could be done here, or in disconnect
+            //FIXME review the reload needed or not.
+            // it's needed to show the new qr after disconnecting. it could be done here, or in disconnect
+            // this is a bad place cause the hook can be called multiple times, maybe move it to client code, but that means that automatic disconnects (connect errors) won't refresh the qr
             setTimeout(() => {
               window.location.reload();
-            }, 2000);
+            }, 1000);
           });
         }
 
@@ -397,9 +401,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       }
       setIsLoading(true);
 
-      //FIXME
-      //setShowToasts(false);
-
       await client.disconnect({
         topic: session.topic,
         reason: getSdkError("USER_DISCONNECTED"),
@@ -407,17 +408,15 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
       // Reset app state after disconnect.
       reset();
-
-      //TODO mode the local storage calls here
-      localStorage.removeItem(NDJ_ADDRESS);
-      localStorage.removeItem(SIGNATURE_PREFIX);
-
-
     } catch (err: any) {
-      //FIXME in case of thrown errors here the local storage items won' get replaced, and then the app will think it's logged it.
+      // FIXME in case of thrown errors here the local storage items won' get replaced, and then the app will think it's logged it.
       // maybe cause it's not connected it won't.
-      console.log(`disconnect error ${err?.message}`)
+      console.warn(`disconnect error ${err?.message}`);
 
+      if (err?.message.includes('No matching key')) {
+        // FIXME maybe needs to be done finally block? if there's a bunch of unrecoverable error messages?
+        reset();
+      }
     } finally {
       setIsLoading(false);
 

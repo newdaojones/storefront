@@ -175,7 +175,7 @@ export const BuyPage = () => {
             handleSuccessfulTransaction(res);
           } else {
             toast.error(`Error sending transaction: ${res?.result}`|| "Something went wrong, please try again. ");
-            console.info(`valid = false. transaction result ${res?.result}`)
+            console.debug(`valid = false. transaction result ${res?.result}`)
             dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           }
         })
