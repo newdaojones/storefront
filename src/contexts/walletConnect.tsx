@@ -541,7 +541,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         logger: DEFAULT_LOGGER,
         relayUrl: DEFAULT_RELAY_URL,
         projectId: DEFAULT_PROJECT_ID,
-        metadata: getAppMetadata() || metadata,
+        metadata: metadata || getAppMetadata(),
       });
       console.info(`CREATED CLIENT ${_client} with metadata: ${metadata}`);
       setClient(_client);

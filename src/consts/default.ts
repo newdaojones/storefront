@@ -35,7 +35,7 @@ const MERCHANT_APP_URL = isTestnetMode() ? 'https://test.jxndao.com/storefront/m
 
 // TODO Change app data
 export const DEFAULT_APP_METADATA = {
-  name: 'NDJ Storefront',
+  name: 'Storefront Pay',
   description: 'StoreFront Pay DApp',
   url: APP_URL,
   icons: ['https://jxndao.com/logo192.png'],
