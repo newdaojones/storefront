@@ -54,6 +54,7 @@ export async function generateTransaction(account: string, toAddress: string, se
     let _nonce;
     try {
         _nonce = await currentRpcApi.getAccountNonce(address, chainId);
+        console.info(`nonce: ${_nonce}`);
     } catch (error) {
         throw new Error(`failed to fetch nonce for address ${address} on chain ${chainId}`);
     }
@@ -173,6 +174,7 @@ export function getPreferredAccountBalance(accounts: string[], balances: Account
 
 /**
  *  @returns the first account in the list with non-zero balance of any token
+ *
  */
 function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
     let balanceString = "0.00";
