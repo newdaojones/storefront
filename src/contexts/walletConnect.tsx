@@ -52,6 +52,7 @@ interface IContext {
   balances: AccountBalances;
   setChains: any;
   merchantLogin: MerchantLoginStatus;
+  enableToasts: (enabled: boolean) => Promise<void>;
 }
 
 export interface MerchantLoginStatus {
@@ -247,7 +248,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         if (showToasts) {
           toast.error(err.message);
         }
-        disconnect();
+
+        await disconnect();
       } finally {
         setIsLoading(false);
       }
@@ -325,9 +327,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
           disconnect().then(() => console.log(`disconnect done.`));
 
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+          //FIXME is this really needed for a disconnect?
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 2000);
         } finally {
           setIsLoading(false);
         }
@@ -366,18 +369,22 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         if (showToasts) {
           toast.error(message);
         }
-        disconnect().then(() => {
-          console.log(`disconnect done.`)
-          //FIXME review the reload needed or not
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        });
+
+        if (!showToasts) {
+          disconnect().then(() => {
+            console.log(`disconnect done.`)
+            //FIXME review the reload needed or not. it's needed to show the new qr after disconnecting. it could be done here, or in disconnect
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          });
+        }
+
       } finally {
         setIsLoading(false);
       }
     },
-    [chains, client, onSessionConnected]
+    [chains, client, onSessionConnected, showToasts]
   );
 
   const disconnect = useCallback(async (userRequested: boolean = false) => {
@@ -389,7 +396,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         throw new Error('Session is not connected');
       }
       setIsLoading(true);
-      setShowToasts(false);
+
+      //FIXME
+      //setShowToasts(false);
 
       await client.disconnect({
         topic: session.topic,
@@ -402,13 +411,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       //TODO mode the local storage calls here
       localStorage.removeItem(NDJ_ADDRESS);
       localStorage.removeItem(SIGNATURE_PREFIX);
+
+
     } catch (err: any) {
       //FIXME in case of thrown errors here the local storage items won' get replaced, and then the app will think it's logged it.
       // maybe cause it's not connected it won't.
       console.log(`disconnect error ${err?.message}`)
-      //toast.error(err.message);
+
     } finally {
       setIsLoading(false);
+
     }
   }, [client, session]);
 
@@ -447,6 +459,14 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       }
     },
     [client, session, login]
+  );
+
+  const enableToasts = useCallback(
+      async (enabled: boolean) => {
+        console.warn('enableToasts', enabled);
+        setShowToasts(enabled);
+      },
+      []
   );
 
   const _subscribeToEvents = useCallback(
@@ -572,6 +592,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       setChains,
       switchAccount,
       merchantLogin,
+      enableToasts
     }),
     [
       pairings,
@@ -592,7 +613,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       refreshBalances,
       setChains,
       switchAccount,
-      merchantLogin
+      merchantLogin,
+      enableToasts
     ]
   );
 
