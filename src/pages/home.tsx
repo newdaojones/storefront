@@ -160,6 +160,12 @@ export const HomePage = () => {
       return;
     }
 
+    if (order.transactionHash && order.transactionHash.length > 0) {
+      toast.error("Order has already been paid")
+      setLoading(false);
+      return;
+    }
+
     if (!order.trackingId) {
       toast.error("Invalid order tracking ID");
       setLoading(false);
