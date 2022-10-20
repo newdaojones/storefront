@@ -51,7 +51,7 @@ You can deploy to the test env or prod by using
     git checkout or copy the node_modules/lib directory, and build it. 
 
 ### Link libraries react to the main project react and build
-go into the library folder (deps/lib), and link react libary to the projects, like in https://reactjs.org/warnings/invalid-hook-call-warning.html
+go into the library folder (deps/lib), and link react library to the projects, like in https://reactjs.org/warnings/invalid-hook-call-warning.html
     
     cd node_modules/react; yarn link; cd ../..
     cd deps/react-qr-reader; yarn link react; cd ../..
