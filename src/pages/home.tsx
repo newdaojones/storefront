@@ -104,6 +104,13 @@ export const HomePage = () => {
       return;
     }
 
+    if (currentOrder.transactionHash && currentOrder.transactionHash.length > 0) {
+      toast.error("Order has already been paid")
+      setLoading(false);
+      return;
+    }
+
+
     if (currentOrder.trackingId && currentOrder.amount && !paymentRequestCreated) {
       setPaymentRequestCreated(true);
       console.warn("non null order found, creating payment request");
@@ -160,11 +167,6 @@ export const HomePage = () => {
       return;
     }
 
-    if (order.transactionHash && order.transactionHash.length > 0) {
-      toast.error("Order has already been paid")
-      setLoading(false);
-      return;
-    }
 
     if (!order.trackingId) {
       toast.error("Invalid order tracking ID");
