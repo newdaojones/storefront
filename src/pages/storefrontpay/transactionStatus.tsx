@@ -75,11 +75,11 @@ export const TransactionStatus = () => {
                     } else {
                         console.warn(`invalid response from transaction api ${response}`);
                     }
-                    if (response?.blockHash) {
-                        console.log(`transaction details block hash: ${response.blockHash}`);
+                    if (response?.hash) {
+                        console.log(`transaction hash: ${response.hash}`);
                         setConfirmed(true);
                     } else {
-                        console.warn(`invalid blockHash from transaction api ${response}`);
+                        console.warn(`invalid blockHash from transaction api ${response} blockHash: ${response.blockHash} hash: ${response.hash}`);
                     }
                 }
             )
@@ -144,7 +144,7 @@ export const TransactionStatus = () => {
                         <p>Block Hash</p>
                         {/*FIXME hardcoded explorer url*/}
                         <a href={`https://goerli.etherscan.io/tx/${blockTransactionData?.hash}`}>
-                            <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.blockHash)}</p>
+                            <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.hash)}</p>
                         </a>
                         {/*<div className="flex pt-2">*/}
                             <p className="pt-2">Native Amount</p>

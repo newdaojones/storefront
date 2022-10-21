@@ -117,7 +117,7 @@ export class RpcSourceAdapter implements RpcApi {
     }
 
     getTransactionByHash(hash: string, chainId: string): Promise<TxDetails> {
-        return infuraGetTransactionByHash(hash, chainId);
+        return this.infuraRpcApi.getTransactionByHash(hash, chainId);
     }
 
     getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {

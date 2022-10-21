@@ -182,6 +182,17 @@ export const infuraGetAccountTransactions = async (address: string, chainId: str
     return result;
 };
 
+
+/**
+ * {"jsonrpc":"2.0","id":1,"result":
+ * {"accessList":[],"blockHash":null,"blockNumber":null,"chainId":"0x5","from":"0xa6fbde8dfae4526fd486bf6828657d8e904931c4",
+ * "gas":"0x18af8","gasPrice":"0x34e62ce00","hash":"0x106376ce712aca5cc1287804395568456d8289bfd110f80e05af72b805637c60","input":"0x",
+ * "maxFeePerGas":"0x34e62ce00","maxPriorityFeePerGas":"0x34e62ce00","nonce":"0x3","r":"0x84602d5118103dc3bebe9e8249f4a16f23b8b565a88f49f0515585e3e29a54c6",
+ * "s":"0x7890c0073ce1337f2858446fdff9b030e0c4fed9caac568afd426cceab6cbbc0",
+ * "to":"0xc41fac9a01c1ad46dcb7c51af63c653fbd9decf5","transactionIndex":null,"type":"0x2","v":"0x1","value":"0x10f10d0ddb6ff"}}
+ * @param hash
+ * @param chainId
+ */
 export const infuraGetTransactionByHash = async (hash: string, chainId: string): Promise<TxDetails> => {
     const data = {
         "jsonrpc": "2.0",
