@@ -121,9 +121,21 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       decimals = 6;
     }
     const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId, decimals));
+    const order : IOrder = {
+      externalOrderId: "",
+      amount: action.payload.amount,
+      nativeAmount: '0',
+      orderDescription: null,
+      testnet: true,
+      toAddress: action.payload.toAddress,
+      token: action.payload.token,
+      trackingId: action.payload.orderTrackingId,
+      transactionHash: null
+
+    }
     const transactionOrder: ITransactionOrder = {
       transaction: res,
-      orderTrackingId: action.payload.orderTrackingId
+      order: order
     }
     yield put(userAction.setCreateTransactionSuccess(transactionOrder));
   } catch (err: any) {

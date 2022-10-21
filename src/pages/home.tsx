@@ -174,6 +174,7 @@ export const HomePage = () => {
       return;
     }
 
+    //TODO this dispatch gets the nonce and fees when scanning / pasting the link instead than when hitting send
     dispatch(userAction.setCreateTransaction({
       account: accountBalance.account,
       toAddress: order.toAddress,

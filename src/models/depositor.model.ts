@@ -54,7 +54,7 @@ export interface IUpdateAddressRequest {
 
 export interface ITransactionOrder {
   transaction: ITransaction;
-  orderTrackingId: string;
+  order: IOrder;
 }
 
 export interface ITransactionInfo {

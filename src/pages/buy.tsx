@@ -17,7 +17,7 @@ import {ellipseAddress, isMobile} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
-  AccountBalance,
+  AccountBalance, generateTransaction,
   getHexValueAsBigNumber,
   getHexValueAsString,
   getPreferredAccountBalance,
@@ -88,7 +88,7 @@ export const BuyPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!transaction || !transaction.orderTrackingId || transaction.transaction.value === '0') {
+    if (!transaction || !transaction.order.trackingId || transaction.order.amount === 0) {
       console.warn(`detected invalid order: ${transaction} without tracking id or valued 0. Going back to home.`);
       onBackPressed();
       return;
@@ -123,7 +123,7 @@ export const BuyPage = () => {
   }, [transactionInProgress]);
 
 
-  const onBuyClick = (): void => {
+  const onBuyClick = async (): Promise<void> => {
     if (transactionInProgress === TransactionState.IN_PROGRESS) {
       console.debug("skipping click while there's an ongoing trx");
       return;
@@ -134,7 +134,28 @@ export const BuyPage = () => {
     }
 
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
-    onSendTransaction(accountBalance).then(_ => {});
+    if (!transaction?.order.trackingId || !transaction?.order.toAddress || !transaction?.order.amount) {
+      toast.error(`Invalid order data ${transaction?.order}`);
+      return;
+    }
+
+    // TODO use decimals if USDC
+    console.warn(`updating transaction ${transaction.transaction}`);
+    const updatedTransaction = await generateTransaction(accountBalance.account, transaction?.order.toAddress, transaction?.order.amount, transaction?.order.trackingId)
+
+    console.warn(`updated- transaction ${transaction.transaction}`);
+
+    //FIXME maybe need to wait for this dispatch to be done before doing onSendTransaction, although it uses a local variable.
+    dispatch(userAction.setCreateTransaction({
+      account: accountBalance.account,
+      toAddress: transaction?.order.toAddress,
+      amount: transaction?.order.amount,
+      token: transaction?.order.token,
+      orderTrackingId: transaction?.order.trackingId
+    }));
+
+    onSendTransaction(accountBalance, updatedTransaction).then(_ => {
+    });
   };
 
   function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
@@ -146,7 +167,7 @@ export const BuyPage = () => {
       paymentFeeUsd: paymentFeeUsd,
       paymentTotalUSD: paymentTotalUSD,
       date: null,
-      orderTrackingId: transaction?.orderTrackingId || "n/a",
+      orderTrackingId: transaction?.order.trackingId || null,
     }
 
     dispatch(userAction.setTransactionInfoWallet(transactionInfo));
@@ -156,7 +177,7 @@ export const BuyPage = () => {
     }, 1000);
   }
 
-  const onSendTransaction = async (accountBalance: AccountBalance) => {
+  const onSendTransaction = async (accountBalance: AccountBalance, transaction: ITransaction) => {
     const account = accountBalance.account;
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
@@ -167,7 +188,7 @@ export const BuyPage = () => {
     }
 
     //TODO this should be moved to a redux action, with a dispatcher & reducer
-    await ethereumRpc.testSendTransaction(chainId, address, transaction.transaction)
+    await ethereumRpc.testSendTransaction(chainId, address, transaction)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
