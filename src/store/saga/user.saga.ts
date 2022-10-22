@@ -8,8 +8,8 @@ import {ens} from '../../utils/walletConnect';
 import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
 import {generateTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
-import {isUSDStableToken} from "../../utils";
-import { createBrowserHistory } from 'history';
+import {createBrowserHistory} from "history";
+import {getCurrencyByToken} from "../../config/currencyConfig";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -116,11 +116,8 @@ function* watchGetTickers() {
 
 function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; toAddress: string; amount: number, token: string, orderTrackingId: string }}) {
   try {
-    let decimals = 18;
-    if (isUSDStableToken(action.payload.token)) {
-      decimals = 6;
-    }
-    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId, decimals));
+    const currency = getCurrencyByToken(action.payload.token);
+    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId, currency.decimals));
     const order : IOrder = {
       externalOrderId: "",
       amount: action.payload.amount,
