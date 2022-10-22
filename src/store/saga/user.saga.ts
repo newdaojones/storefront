@@ -5,9 +5,11 @@ import {UserService} from '../../services';
 import {userAction} from '../actions';
 import {toast} from 'react-toastify';
 import {ens} from '../../utils/walletConnect';
-import {IMerchant, IOrder, ITicker, ITransactionOrder, IUserInfo} from '../../models';
+import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
 import {generateTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
+import {isUSDStableToken} from "../../utils";
+import { createBrowserHistory } from 'history';
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -55,15 +57,6 @@ function* watchGetEnsName(action: { type: EUserActionTypes; payload: string }) {
     }
 
     yield put(userAction.getEnsNameSuccess(ensName));
-  } catch (err: any) {
-    toast.error(err.message);
-  }
-}
-
-function* watchGetAccountInfo() {
-  try {
-    const res: AxiosResponse<IUserInfo> = yield call(UserService.getMeApi);
-    yield put(userAction.getAccountInfoSuccess(res.data));
   } catch (err: any) {
     toast.error(err.message);
   }
@@ -121,12 +114,28 @@ function* watchGetTickers() {
   }
 }
 
-function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; toAddress: string; amount: number, orderTrackingId: string }}) {
+function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; toAddress: string; amount: number, token: string, orderTrackingId: string }}) {
   try {
-    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId));
+    let decimals = 18;
+    if (isUSDStableToken(action.payload.token)) {
+      decimals = 6;
+    }
+    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId, decimals));
+    const order : IOrder = {
+      externalOrderId: "",
+      amount: action.payload.amount,
+      nativeAmount: '0',
+      orderDescription: null,
+      testnet: true,
+      toAddress: action.payload.toAddress,
+      token: action.payload.token,
+      trackingId: action.payload.orderTrackingId,
+      transactionHash: null
+
+    }
     const transactionOrder: ITransactionOrder = {
       transaction: res,
-      orderTrackingId: action.payload.orderTrackingId
+      order: order
     }
     yield put(userAction.setCreateTransactionSuccess(transactionOrder));
   } catch (err: any) {
@@ -134,9 +143,12 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
   }
 }
 
+const browserHistory = createBrowserHistory();
 function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
   try {
     yield put(userAction.setCreateTransactionSuccess(null));
+    yield put(userAction.setCreateOrderSuccess(null));
+    browserHistory.back();
   } catch (err: any) {
     toast.error(err.message);
   }

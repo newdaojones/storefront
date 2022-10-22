@@ -1,10 +1,11 @@
 import React from 'react';
 
 import menuIcon from '../../assets/images/menu_icon.svg';
-import {IMenuItem} from '../../models';
+import {IMenuItem, TransactionState} from '../../models';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
-import {useHistory} from "react-router-dom";
+import {userAction} from "../../store/actions";
+import {useDispatch} from "react-redux";
 
 export const Menu = ({
                        size,
@@ -16,7 +17,8 @@ export const Menu = ({
                        ensName = null,
                        account = '',
                      }: Props) => {
-      const history = useHistory()
+
+      const dispatch = useDispatch();
       const name = getDisplayName(account, ensName)
 
       const onPaymentsClick = () => {
@@ -24,7 +26,8 @@ export const Menu = ({
       }
       const onHomeClicked = () => {
           console.info(`home clicked`);
-          history.replace("/home")
+          dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
+          dispatch(userAction.unsetTransaction());
       }
 
       return (

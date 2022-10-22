@@ -1,29 +1,28 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, {useState} from 'react';
+import {useSelector} from 'react-redux';
 
-import { AccountModal } from '../../components';
+import {AccountModal} from '../../components';
 
-import { MerchantDashboard} from './merchant_dashboard';
-import { Landing } from '../landing';
+import {MerchantDashboard} from './merchant_dashboard';
+import {Landing} from '../landing';
 
 import FindIcon from '../../assets/images/find.svg';
 import StorefrontIcon from '../../assets/images/storefront.svg';
 import SettingsIcon from '../../assets/images/settings.svg';
 
-import {selectEnsName, selectMerchantInfo} from '../../store/selector';
-import { useWalletConnectClient } from '../../contexts/walletConnect';
+import {selectEnsName} from '../../store/selector';
+import {useWalletConnectClient} from '../../contexts/walletConnect';
 import {OrbitalMenu} from "../../components/menu/circular";
 import {MerchantLogin} from "./merchant_login";
 import {RegisterMerchant} from "../storefrontpay/register";
+
 /**
  * http://localhost:3000/storefront/merchant
  * @constructor
  */
 export const MerchantMain = () => {
   const ensName = useSelector(selectEnsName);
-  // const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
-  const merchantInfo = useSelector(selectMerchantInfo);
 
   // Initialize the WalletConnect client.
   const {
@@ -46,7 +45,12 @@ export const MerchantMain = () => {
   };
 
   const onDisconnect = () => {
-    session && disconnect();
+    session && disconnect(true).then(r => {
+      console.info(`disconnected. reloading page...`)
+      setTimeout(() => {
+        window.location.reload();
+      }, 200);
+    });
   };
 
   React.useEffect(() => {

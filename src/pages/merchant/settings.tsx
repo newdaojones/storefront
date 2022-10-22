@@ -6,12 +6,11 @@ import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {ellipseAddress} from "../../helpers";
 import {userAction} from "../../store/actions";
 import {IMerchant} from "../../models";
-import logoIcon from "../../assets/images/logo.svg";
 import {toast} from "react-toastify";
 
 export const SettingsPage = () => {
   const dispatch = useDispatch();
-  const { account, disconnect} = useWalletConnectClient();
+  const { enableToasts, session, account, disconnect} = useWalletConnectClient();
   let merchantInfo = useSelector(selectMerchantInfo);
   const [enabled, setEnabled] = useState(true);
   const [polygonEnabled, setPolygonEnabled] = useState(true);
@@ -22,21 +21,23 @@ export const SettingsPage = () => {
   const onDisconnect = () => {
     console.info(`onDisconnect called`);
     toast.info("Disconnecting...", {autoClose: 1000})
-    disconnect().then(r => console.info(`disconnected!`));
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+    enableToasts(false).then(r => {
+      session && disconnect(true).then(r => {
+        console.info(`disconnected`)
+      });
+    });
+
+    session && disconnect(true).then(r => {
+      console.info(`disconnected!`)
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
   };
 
   const logoutButton =  <button onClick={onDisconnect} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
     <p className="font-righteous">Logout</p>
   </button>
-
-  React.useEffect(() => {
-    if (account) {
-      //payButton = storefrontPayButton(getAddressFromAccount(account), "1", 0.15);
-    }
-  }, [account]);
 
   React.useEffect(() => {
     if (merchantInfo) {
@@ -76,7 +77,7 @@ export const SettingsPage = () => {
             </div>
           </div>
           <div className="w-full flex items-center justify-between mt-10">
-              <p className="text-center text-white mr-8">Store Name</p>
+              <p className="text-center text-white mr-8">Merchant Name</p>
               <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
                 {merchantInfo?.merchantName}
               </div>

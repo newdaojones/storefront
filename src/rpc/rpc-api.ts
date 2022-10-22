@@ -1,24 +1,30 @@
 import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
 import {apiGetAccountBalance, apiGetAccountNonce, apiGetAccountTransactions, apiGetGasPrices} from "./api";
 import {
-    infuraGetAccountBalance,
-    infuraGetAccountNonce,
+    getPendingTransactions,
+    infuraGetAccountBalances,
+    infuraGetAccountNonce, infuraGetAccountTransactions,
     infuraGetGasPrices,
     infuraGetTransactionByHash
 } from "./infura-api";
 import {toWad} from "../helpers";
 
 export interface RpcApi {
-    getAccountBalance(address: string, chainId: string): Promise<AssetData>;
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]>;
     getAccountNonce(address: string, chainId: string): Promise<number>;
     getGasPrices(chainId: string): Promise<string>;
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]>;
     getTransactionByHash(address: string, chainId: string): Promise<TxDetails>;
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]>;
 }
 
 export class InfuraApi implements RpcApi {
-    getAccountBalance(address: string, chainId: string): Promise<AssetData> {
-        return infuraGetAccountBalance(address, chainId);
+    // getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    //     return infuraGetAccountBalance(address, chainId);
+    // }
+
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
+        return infuraGetAccountBalances(address, chainId);
     }
 
     getAccountNonce(address: string, chainId: string): Promise<number> {
@@ -39,6 +45,10 @@ export class InfuraApi implements RpcApi {
         return Promise.resolve([]);
     }
 
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return getPendingTransactions(address, chainId);
+    }
+
 }
 
 /**
@@ -48,7 +58,7 @@ export class InfuraApi implements RpcApi {
  * https://ethereum-api.xyz/supported-chains
  */
 export class EthereumXyzApi implements RpcApi {
-    getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
         return apiGetAccountBalance(address, chainId);
     }
 
@@ -72,18 +82,23 @@ export class EthereumXyzApi implements RpcApi {
         //
         throw new Error("not impl");
     }
+
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return Promise.resolve([]);
+    }
 }
 
 export class RpcSourceAdapter implements RpcApi {
     infuraRpcApi: RpcApi = new InfuraApi();
     ethereumXyzRpcApi = new EthereumXyzApi();
 
-    getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
         if (chainId.includes('eip155:80001')) {
             //EthereumXYZ does not support polygon! ()
             return this.infuraRpcApi.getAccountBalance(address, chainId);
         }
-        return this.ethereumXyzRpcApi.getAccountBalance(address, chainId);
+        return this.infuraRpcApi.getAccountBalance(address, chainId);
+        //return this.ethereumXyzRpcApi.getAccountBalance(address, chainId);
     }
 
     getAccountNonce(address: string, chainId: string): Promise<number> {
@@ -97,11 +112,16 @@ export class RpcSourceAdapter implements RpcApi {
     }
 
     getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
+        //TODO add infura support for this to break eth.xyz dep
         return this.ethereumXyzRpcApi.getAccountTransactions(address, chainId);
     }
 
     getTransactionByHash(hash: string, chainId: string): Promise<TxDetails> {
-        return infuraGetTransactionByHash(hash, chainId);
+        return this.infuraRpcApi.getTransactionByHash(hash, chainId);
+    }
+
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return this.infuraRpcApi.getAccountPendingTransactions(address, chainId);
     }
 
 }

@@ -54,7 +54,7 @@ export interface IUpdateAddressRequest {
 
 export interface ITransactionOrder {
   transaction: ITransaction;
-  orderTrackingId: string;
+  order: IOrder;
 }
 
 export interface ITransactionInfo {
@@ -81,6 +81,7 @@ export interface IOrder {
   merchantName?: string,
   toAddress: string,
   nativeAmount: string | null,
+  orderDescription: string | null,
 
   /**
    * externalOrderId	"28"

@@ -11,7 +11,7 @@ export const userState: IUserState = {
   transactionInfo: null,
   transactionInProgress: TransactionState.INITIAL,
   accountInfo: undefined,
-  transactionData: null,
+  transactionData: null, //FIXME orderPaymentRequest, a more appropriate name for this is.
   userInfo: undefined,
   order: null,
 };

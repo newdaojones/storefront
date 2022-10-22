@@ -8,7 +8,6 @@ import {useLocation} from "react-use";
 import {extractOrderFromUrl} from "../../utils/path_utils";
 import {useHistory} from "react-router-dom";
 import QRCode from 'react-qr-code';
-import {storefrontPayBaseUrl} from "../../StorefrontPaySdk";
 import {useDispatch, useSelector} from "react-redux";
 import {userAction} from "../../store/actions";
 import {selectCurrentOrder} from "../../store/selector";
@@ -32,7 +31,7 @@ export const Pay = () => {
     let query = useLocation().search;
     const history = useHistory();
     const dispatch = useDispatch();
-    const [ showBlackWhite, setShowBlackWhite ] = useState(true)
+    const [ showBlackWhite ] = useState(true)
     const [background] = useState('#FFFFFF');
     const [foreground] = useState('#000000');
     const [size] = useState(300);
@@ -127,9 +126,9 @@ export const Pay = () => {
         }
     }, [currentOrder, showBlackWhite, qrCodeUri, size]);
 
-    function onTroubleScanningClicked() {
-        setShowBlackWhite(!showBlackWhite);
-    }
+    // function onTroubleScanningClicked() {
+    //     setShowBlackWhite(!showBlackWhite);
+    // }
 
     function onCopyLinkClicked() {
         navigator.clipboard.writeText(qrCodeUri).then(r => {
@@ -189,7 +188,7 @@ export const Pay = () => {
                     </a>
                 )}
                 {currentOrder && showBlackWhite && (
-                    <a href={qrCodeUri} target={'_blank'}>
+                    <a href={qrCodeUri} target={'_blank'} rel={'noreferrer'}>
                         <div className="flex items-center justify-center">
                             <QRCode
                                 title="Storefront Pay"

@@ -1,10 +1,15 @@
 import * as encoding from "@walletconnect/encoding";
 import {BigNumber, utils} from "ethers";
 
-import {toWad} from "./utilities";
+import {fromWad, toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
+
+//FIXME move to a constants file
+export const PAY_WITH_USDC_ENABLED = false;
+const USDC_TOKEN = 'USDC';
+export const USDC_DECIMALS = 6;
 
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
@@ -42,13 +47,14 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * @param sendAmount
  * @param orderTrackingId
  */
-export async function generateTransaction(account: string, toAddress: string, sendAmount: number, orderTrackingId: string): Promise<ITransaction> {
+export async function generateTransaction(account: string, toAddress: string, sendAmount: number, orderTrackingId: string, decimals: number = 18): Promise<ITransaction> {
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
 
     let _nonce;
     try {
         _nonce = await currentRpcApi.getAccountNonce(address, chainId);
+        console.info(`nonce: ${_nonce}`);
     } catch (error) {
         throw new Error(`failed to fetch nonce for address ${address} on chain ${chainId}`);
     }
@@ -60,16 +66,17 @@ export async function generateTransaction(account: string, toAddress: string, se
     const gasPrice = _gasPrice;
     console.info(`gasPrice-> hex:${_gasPrice} number: ${gasNumber} encodedGasPrice: ${gasPrice}`);
 
+
     // FIXME this should also be a param
     // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
-    //const _gasLimit = 101112;
-    const _gasLimit: number = 862032;
     // const _gasLimit = 21112;
+    const _gasLimit = 101112;
+    // const _gasLimit: number = 862032;
 
     const gasLimit = encodeNumberAsHex(_gasLimit)
     console.info(`gasLimit-> number: ${_gasLimit} encodedGasLimit: ${gasLimit}`);
 
-    const _value = toWad(sendAmount.toString());
+    const _value = toWad(sendAmount.toString(), decimals);
     console.info(`send amount ${sendAmount} toWad -> ${_value} `)
     // const _value = 123500000000000; //transaction value: 123500000000000 WEI formatted: 0.0001235 ETH
 
@@ -139,6 +146,8 @@ export interface AccountBalance {
     token: string;
 }
 
+
+
 /**
  *
  * @param accounts
@@ -151,15 +160,21 @@ export function getPreferredAccountBalance(accounts: string[], balances: Account
         console.error("undefined or null balances");
         throw Error("undefined AccountBalances");
     }
-    const accountWithUSDC = getAccountWithNonZeroUSDCBalance(accounts, balances);
-    if (accountWithUSDC) {
-        return accountWithUSDC;
+
+    if (PAY_WITH_USDC_ENABLED) {
+        const accountWithUSDC = getAccountWithNonZeroUSDCBalance(accounts, balances);
+        if (accountWithUSDC) {
+            console.info(`Found USDC account using that ${accountWithUSDC.balance} ${accountWithUSDC.token}`)
+            return accountWithUSDC;
+        }
     }
+
     return getNonZeroAccountBalance(accounts, balances);
 }
 
 /**
  *  @returns the first account in the list with non-zero balance of any token
+ *
  */
 function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
     let balanceString = "0.00";
@@ -194,7 +209,7 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
         }
     })
     return {
-        token: balanceToken || 'ETH',
+        token: balanceToken || 'ETH', //FIXME remove eth default?
         account: firstNonZeroAccount,
         balance: accountBalance,
         balanceUsd: accountBalanceUSD,
@@ -202,24 +217,30 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
     }
 }
 
+
+
+
 function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance | null {
-    const usdcAccount = accounts.find(value => {
-        let accountBalances = balances[value];
-        return !!(accountBalances.find(value1 => value1.symbol === 'USDC'))
-    })
+    // const usdcAccount = accounts.find(value => {
+    //     let accountBalances = balances[value];
+    //     return !!(accountBalances.find(value1 => value1.symbol === USDC_TOKEN))
+    // })
 
-    if (usdcAccount) {
-        const usdcAccountBalance = balances[usdcAccount];
-        const usdcTokenAsset = usdcAccountBalance.find(value => value.symbol === 'USDC');
-        console.info(`found USDC account ${usdcAccount} with tokens ${usdcAccountBalance.map(value => value.symbol).join(",")}`);
-        return {
-            token: 'USDC',
-            account: usdcAccount,
-            balance: BigNumber.from(usdcTokenAsset?.balance || 0),
-            balanceUsd: BigNumber.from(usdcTokenAsset?.balance || 0),
-            balanceString: BigNumber.from(usdcTokenAsset?.balance || 0).toString(),
+    for (const account of accounts) {
+        let accountBalances = balances[account];
+        const usdcTokenAsset = accountBalances.find(value => value.symbol === USDC_TOKEN && Number(value.balance) > 0);
+        if (usdcTokenAsset && usdcTokenAsset.balance) {
+            console.info(`found USDC account ${account} with tokens ${accountBalances.map(value => `${value.symbol} ${value.balance}`).join(",")}`);
+            const numValue = fromWad(usdcTokenAsset.balance, USDC_DECIMALS);
+            return {
+                token: USDC_TOKEN,
+                account: account,
+                balance: BigNumber.from(numValue || 0),
+                balanceUsd: BigNumber.from(numValue),
+                balanceString: numValue.toString(),
+            }
         }
-    }
 
+    }
     return null;
 }

@@ -40,12 +40,18 @@ Instead, it will copy all the configuration files and the transitive dependencie
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
 
+### Deploy to test/prod envs `./deploy.sh`
+    
+You can deploy to the test env or prod by using
+    ./deploy.sh test
+    ./deploy.sh prod
+
 ## QR Code library
 ### How to use local copy that needs overflow:visible change
     git checkout or copy the node_modules/lib directory, and build it. 
 
-### Link librarys react to the main project react and build
-go into the library folder (deps/lib), and link react libary to the projects, like in https://reactjs.org/warnings/invalid-hook-call-warning.html
+### Link libraries react to the main project react and build
+go into the library folder (deps/lib), and link react library to the projects, like in https://reactjs.org/warnings/invalid-hook-call-warning.html
     
     cd node_modules/react; yarn link; cd ../..
     cd deps/react-qr-reader; yarn link react; cd ../..

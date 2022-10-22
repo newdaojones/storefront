@@ -9,7 +9,7 @@ import pendingIcon from '../../assets/images/loading.svg';
 import {useLocation} from "react-use";
 import {extractTransactionIdFromUrl, ITransactionStatus} from "../../utils/path_utils";
 import {useHistory} from "react-router-dom";
-import {currentRpcApi, getPreferredAccountBalance} from "../../helpers/tx";
+import {currentRpcApi} from "../../helpers/tx";
 import {ellipseAddress, TxDetails} from "../../helpers";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {toast} from "react-toastify";
@@ -64,17 +64,22 @@ export const TransactionStatus = () => {
 
     React.useEffect(() => {
         if (transactionId && account && !blockTransactionData) {
-            const [namespace, reference, address] = account.split(":");
+            const [namespace, reference] = account.split(":");
             const chainId = `${namespace}:${reference}`;
+            //TODO this should be turned into a redux action
             const txDetailsPromise = currentRpcApi.getTransactionByHash(transactionId.transactionId, chainId);
             txDetailsPromise.then(
                 response => {
                     if (response) {
                         setBlockTransactionData(response)
+                    } else {
+                        console.warn(`invalid response from transaction api ${response}`);
                     }
-                    if (response?.blockHash) {
-                        console.log(`transaction details block hash: ${response.blockHash}`);
+                    if (response?.hash) {
+                        console.log(`transaction hash: ${response.hash}`);
                         setConfirmed(true);
+                    } else {
+                        console.warn(`invalid blockHash from transaction api ${response} blockHash: ${response.blockHash} hash: ${response.hash}`);
                     }
                 }
             )
@@ -121,7 +126,7 @@ export const TransactionStatus = () => {
 
 
                 {transactionId && (
-                    <a>
+                    // <a href='#'>
                         <div className="h-40 flex items-center justify-center">
                             <div className="w-3/4 flex justify-center items-center pb-4">
                                 <div className="flex flex-col justify-center items-center pb-4">
@@ -131,14 +136,15 @@ export const TransactionStatus = () => {
                                 <img className="w-20 h-20 ml-4" style = {{animation: confirmed ? '': `spin 3s linear infinite` }} src={confirmed? confirmedIcon: pendingIcon} alt="" />
                             </div>
                         </div>
-                    </a>
+                    // </a>
                 )}
 
-                <p className="text-xs mt-1 ">{confirmed?
+                <div className="text-xs mt-1 ">{confirmed?
                     <div className="flex flex-col justify-center items-center">
                         <p>Block Hash</p>
+                        {/*FIXME hardcoded explorer url*/}
                         <a href={`https://goerli.etherscan.io/tx/${blockTransactionData?.hash}`}>
-                            <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.blockHash)}</p>
+                            <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.hash)}</p>
                         </a>
                         {/*<div className="flex pt-2">*/}
                             <p className="pt-2">Native Amount</p>
@@ -146,7 +152,7 @@ export const TransactionStatus = () => {
                         {/*</div>*/}
                     </div>
                     : `Trouble verifying?`}
-                </p>
+                </div>
                 <p className="mt-40 mb-40 mx-10 text-center">Please allow for the network to verify the transaction <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Block Explorer</a> to learn more.</p>
 
             </div>

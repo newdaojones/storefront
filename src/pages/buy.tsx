@@ -17,14 +17,26 @@ import {ellipseAddress, isMobile} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
-  AccountBalance,
+  AccountBalance, generateTransaction,
   getHexValueAsBigNumber,
-  getHexValueAsString, getPreferredAccountBalance,
-  ITransaction
+  getHexValueAsString,
+  getPreferredAccountBalance,
+  ITransaction,
+  USDC_DECIMALS
 } from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
+import {getAccountAddress, getFormattedTokenValue} from "../utils";
+import {BigNumber} from "ethers";
+import {formatFixed} from "@ethersproject/bignumber";
+
+export interface IPaymentInformation {
+  paymentValueToken: BigNumber;
+  paymentValueUsd: number;
+  paymentFeeUsd: number;
+  paymentTotalUSD: number;
+}
 
 /**
  * Test code
@@ -38,11 +50,12 @@ export const BuyPage = () => {
   let transactionInProgress = useSelector(selectTransactionInProgress)
   const tickers = useSelector(selectTickers)
   const { accounts, balances } = useWalletConnectClient();
-  const accountBalance = getPreferredAccountBalance(accounts, balances);
 
+  const accountBalance = getPreferredAccountBalance(accounts, balances);
   const transaction = useSelector(selectCreateTransaction)
+
   const helpMessages = ['Tap the button above to submit the signing request',
-    'Open your wallet app and sign the transaction. Click here to open it.',
+    'Open your wallet app and sign the transaction.',
     'Sending transaction...']
 
   const {
@@ -50,38 +63,99 @@ export const BuyPage = () => {
     ethereumRpc,
   } = useJsonRpc();
 
-  const [ locationKeys ] = useState("")
+  const [ paymentValueToken, setPaymentValueToken ] = useState(BigNumber.from(0));
+  const [ paymentValueUsd, setPaymentValueUsd ] = useState(0);
+  const [ paymentFeeUsd, setPaymentFeeUsd ] = useState(0);
+  const [ paymentTotalUSD, setPaymentTotalUSD ] = useState(0);
+
+  function onBackPressed() {
+    console.warn(`onBackPressed event, clearing trx. `)
+    dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
+    dispatch(userAction.unsetTransaction());
+  }
+
+  const onBackButtonEvent = (e: Event) => {
+    e.preventDefault();
+    onBackPressed();
+  }
 
   useEffect(() => {
-    return history.listen(location => {
-      if (history.action === 'PUSH') {
-      }
-      if (history.action === 'POP') {
-        if (locationKeys[1] === location.key) {
-          // Handle forward event
-        } else {
-          console.info(`back event, clearing trx. `)
-          dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
-          dispatch(userAction.unsetTransaction());
-          history.push("/home");
-        }
-      }
-    })
-  }, [ locationKeys, dispatch, history])
+    window.history.pushState(null, '', window.location.pathname);
+    window.addEventListener('popstate', onBackButtonEvent);
+    return () => {
+      window.removeEventListener('popstate', onBackButtonEvent);
+    };
+  }, []);
 
-  const onBuyClick = (): void => {
+  useEffect(() => {
+    if (!transaction || !transaction.order.trackingId || transaction.order.amount === 0) {
+      console.warn(`detected invalid order: ${transaction} without tracking id or valued 0. Going back to home.`);
+      onBackPressed();
+      return;
+    }
+
+    if (transaction && accountBalance && paymentValueUsd === 0) {
+      if (!accountBalance.token) {
+        toast.error("Invalid or empty token found. Cannot initialize payment data");
+        return;
+      }
+      console.info(`calculating prices for trx value: ${transaction.transaction.value}`)
+      try {
+        const paymentInfo = initializePaymentData(accountBalance, transaction.transaction);
+        setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
+        setPaymentValueUsd(paymentInfo.paymentValueUsd);
+        setPaymentValueToken(paymentInfo.paymentValueToken);
+        setPaymentTotalUSD(paymentInfo.paymentTotalUSD);
+      } catch (e) {
+        toast.error(`Error: ${e}`);
+      }
+    }
+  }, [transaction])
+
+  useEffect(() => {
+    //TODO
+    if (transactionInProgress === TransactionState.IN_PROGRESS) {
+      // check for transaction in the network
+      //FIXME enable pending transaction checks to avoid double spends
+      // dispatch(userAction.getPendingTransactions({address: getAccountAddress(accountBalance.account)}));
+    }
+
+  }, [transactionInProgress]);
+
+
+  const onBuyClick = async (): Promise<void> => {
     if (transactionInProgress === TransactionState.IN_PROGRESS) {
       console.debug("skipping click while there's an ongoing trx");
       return;
     }
     if (!accountBalance) {
-      toast.error("Error fetching account balance");
+      toast.error("Error fetching account balance. Please try again later.");
       return;
     }
 
     dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
-    onSendTransaction(accountBalance).then(r => {})
+    if (!transaction?.order.trackingId || !transaction?.order.toAddress || !transaction?.order.amount) {
+      toast.error(`Invalid order data ${transaction?.order}`);
+      return;
+    }
 
+    // TODO use decimals if USDC
+    console.warn(`updating transaction ${transaction.transaction}`);
+    const updatedTransaction = await generateTransaction(accountBalance.account, transaction?.order.toAddress, transaction?.order.amount, transaction?.order.trackingId)
+
+    console.warn(`updated- transaction ${transaction.transaction}`);
+
+    //FIXME maybe need to wait for this dispatch to be done before doing onSendTransaction, although it uses a local variable.
+    dispatch(userAction.setCreateTransaction({
+      account: accountBalance.account,
+      toAddress: transaction?.order.toAddress,
+      amount: transaction?.order.amount,
+      token: transaction?.order.token,
+      orderTrackingId: transaction?.order.trackingId
+    }));
+
+    onSendTransaction(accountBalance, updatedTransaction).then(_ => {
+    });
   };
 
   function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
@@ -93,7 +167,7 @@ export const BuyPage = () => {
       paymentFeeUsd: paymentFeeUsd,
       paymentTotalUSD: paymentTotalUSD,
       date: null,
-      orderTrackingId: transaction?.orderTrackingId || "n/a",
+      orderTrackingId: transaction?.order.trackingId || null,
     }
 
     dispatch(userAction.setTransactionInfoWallet(transactionInfo));
@@ -103,7 +177,7 @@ export const BuyPage = () => {
     }, 1000);
   }
 
-  const onSendTransaction = async (accountBalance: AccountBalance) => {
+  const onSendTransaction = async (accountBalance: AccountBalance, transaction: ITransaction) => {
     const account = accountBalance.account;
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
@@ -114,69 +188,77 @@ export const BuyPage = () => {
     }
 
     //TODO this should be moved to a redux action, with a dispatcher & reducer
-    await ethereumRpc.testSendTransaction(chainId, address, transaction.transaction)
+    await ethereumRpc.testSendTransaction(chainId, address, transaction)
         .then((res) => {
           console.info(`trxSignResult result:${res?.result} method: ${res?.method}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
           if (res?.valid) {
             handleSuccessfulTransaction(res);
           } else {
-            toast.error(res?.result || "Something went wrong, please try again. ");
-            console.info(`valid = false. transaction result ${res?.result}`)
+            toast.error(`Error sending transaction: ${res?.result}`|| "Something went wrong, please try again. ");
+            console.debug(`valid = false. transaction result ${res?.result}`)
             dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           }
         })
         .catch((error) => {
-          toast.error(error || "Something went wrong sending the transaction, please try again. ");
+          toast.error(`Error sending transaction: ${error}` || "Something went wrong sending the transaction, please try again. ");
           console.log(`error on signing trx ${error} state: ${rpcResult}`)
           dispatch(userAction.setTransactionInProgress(TransactionState.FINISHED));
         })
   };
 
-  function initializePaymentData(transaction: ITransaction) {
+  function initializePaymentData(accountBalance: AccountBalance, transaction: ITransaction): IPaymentInformation {
     let paymentFeeUsd = 0;
-    let paymentValueUsd = 0;
-
+    let paymentValueUSD = 0;
     let paymentTotalUSD = 0;
-    let paymentValueEth: string = "0";
-    const token = 'ETH';
+    const token = accountBalance.token;
+
     if (transaction?.value) {
-      console.debug(`payment value: ${transaction?.value}`)
-      paymentValueEth = getHexValueAsString(transaction?.value);
+      const paymentValueInTokenBn = getHexValueAsBigNumber(transaction?.value);
 
       const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
       const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
       console.info(`gasPrice hex: ${transaction?.gasPrice} = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
-      //const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
       const gasLimitNumber = getHexValueAsString(transaction?.gasLimit);
       const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
       console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
-      const trxValueAsNumber = Number(paymentValueEth);
-      const trxPriceUsd = convertTokenToUSD(trxValueAsNumber, token, tickers);
-
-      if (trxPriceUsd && gasPriceUsd) {
-        paymentValueUsd = trxPriceUsd;
-        paymentFeeUsd = gasPriceUsd;
-        paymentTotalUSD = trxPriceUsd + gasPriceUsd;
+      if (token === 'ETH') {
+        const paymentValueEth = getHexValueAsString(transaction?.value);
+        const trxValueAsNumber = Number(paymentValueEth);
+        paymentValueUSD = convertTokenToUSD(trxValueAsNumber, token, tickers) || 0;
+        console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${paymentValueUSD} USD`)
+      } else if (token === 'USDC') {
+        const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, USDC_DECIMALS);
+        paymentValueUSD = Number(paymentValueInTokenString);
+        console.debug(`payment value hex:${transaction?.value} 
+         bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)
       } else {
-        console.info(`unable to calculate total trx price in USD`);
+        const message = `token ${token} not implemented`;
+        toast.error(message)
+        throw new Error(message);
       }
 
-      console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${trxPriceUsd} USD`)
-      console.debug(`payment value ${paymentTotalUSD} USD  = trx s${trxPriceUsd} USD + fee ${gasPriceUsd} USD`)
+      if (paymentValueUSD && gasPriceUsd) {
+        paymentFeeUsd = gasPriceUsd;
+        paymentTotalUSD = paymentValueUSD + gasPriceUsd;
+      } else {
+        console.info(`unable to calculate total trx price in USD. paymentValueUSD: ${paymentValueUSD} gasPrice: ${gasPriceUsd}`);
+      }
+
+      console.debug(`payment value ${paymentTotalUSD} USD  = trx ${paymentValueUSD} USD + fee ${gasPriceUsd} USD`)
+
+      return {paymentFeeUsd: paymentFeeUsd, paymentValueUsd: paymentValueUSD,
+        paymentTotalUSD: paymentTotalUSD, paymentValueToken: paymentValueInTokenBn};
+
     } else {
       console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
       history.replace("/home");
+      throw new Error(`transaction value not available. maybe should go back?. redirecting to /home page`);
     }
-    return {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth};
   }
 
-  //TODO all this block should be a hook or effect, and run before the view is rendered.
-  let {paymentFeeUsd, paymentValueUsd, paymentTotalUSD, paymentValueEth} = initializePaymentData(transaction?.transaction!!);
-
-  const buyProgress = transactionInProgress.valueOf();
 
   let animatedBuyButton = <button onClick={onBuyClick} style={{
     backgroundColor: '#615793',
@@ -189,19 +271,19 @@ export const BuyPage = () => {
   }} className="wfullm h-16 flex items-center justify-center text-white mt-8 mb-2 ">
     {transactionInProgress === TransactionState.IN_PROGRESS ?
         <div className="thecube w-8 h-8 m-1">
-          <div className="cube c1"></div>
-          <div className="cube c2"></div>
-          <div className="cube c4"></div>
-          <div className="cube c3"></div>
+          <div className="cube c1"/>
+          <div className="cube c2"/>
+          <div className="cube c4"/>
+          <div className="cube c3"/>
         </div> :
         <div className="w-full flex flex-col items-center justify-center">
           <p className="text-white text-start font-righteous font-bold mr-2">{`Pay $${paymentTotalUSD.toFixed(2)}`}</p>
-          <p className="text-white text-start text-xs mr-2">{`${paymentValueEth?.substring(0,8)} ETH`}</p>
+          <p className="text-white text-start text-xs mr-2">{getFormattedTokenValue(accountBalance.token, paymentValueToken)}</p>
         </div>}
   </button>;
 
   const helperTextMessage = <p style={{fontFamily: 'Righteous', fontStyle: 'normal'}}
-               className="text-center text-xs m-4 mb-8">{helpMessages[buyProgress]}</p>
+               className="text-center text-xs m-4 mb-8">{helpMessages[transactionInProgress.valueOf()]}</p>
 
   return (
     <div className="w-full h-full flex justify-between">
@@ -224,7 +306,7 @@ export const BuyPage = () => {
                 {`${ellipseAddress(accountInfo?.address)}`}</p>
               <div className="flex w-full justify-between"
                    style={{fontFamily: 'Righteous', fontStyle: 'normal', color: '#8E8EA9'}}>
-                <p className="text-grey text-sm">notdevin.eth</p>
+                <p className="text-grey text-sm">{accountBalance.token}</p>
                 <p className="text-grey text-sm">Ethereum</p>
               </div>
             </div>
@@ -272,9 +354,9 @@ export const BuyPage = () => {
                   {transactionInProgress === TransactionState.FINISHED &&
                   <img className="w-full absolute mr-8" src={ProgressFull} alt=""/>}
                 </div>
-                <p className="mt-4">{`${buyProgress + 1}/3`}</p>
+                <p className="mt-8">{`${transactionInProgress.valueOf() + 1}/3`}</p>
                 {
-                  isMobile() && buyProgress === 1 ? <a href={"wc://"} className="">
+                  isMobile() && transactionInProgress.valueOf() === 1 ? <a href={"wc://"} className="">
                     {helperTextMessage}
                   </a> : helperTextMessage
                 }

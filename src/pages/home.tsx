@@ -15,6 +15,7 @@ import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
 import {IOrder} from "../models";
+import {isUSDStableToken} from "../utils";
 
 /**
  * https://test.jxndao.com/storefront/home
@@ -28,8 +29,10 @@ export const HomePage = () => {
   let query = useLocation().search;
   const [ loading, setLoading ] = useState(false)
   const [ scanning, setScanning ] = useState(false)
+
   const [ redirected, setRedirected ] = useState(false)
-  const [ transactionCreatedLock, setTransactionCreatedLock ] = useState(false)
+  const [ paymentRequestCreated, setPaymentRequestCreated] = useState(false)
+
   const { accounts, balances, refreshBalances } = useWalletConnectClient();
 
   const accountBalance = getPreferredAccountBalance(accounts, balances);
@@ -37,19 +40,34 @@ export const HomePage = () => {
 
   const tickers = useSelector(selectTickers);
   const currentOrder = useSelector(selectCurrentOrder);
-  const trxCreated = useSelector(selectCreateTransaction);
+  const transaction = useSelector(selectCreateTransaction)
+
+  const clearUrlParams = () => {
+    const queryParams = ""
+    history.replace({
+      search: queryParams,
+    });
+  }
 
   useEffect(() => {
-    console.info(`useEffect transactionCreatedLock: ${transactionCreatedLock} trxCreated: ${trxCreated} transaction: ${trxCreated?.transaction}`)
-    if (trxCreated?.transaction && trxCreated.transaction.value && !transactionCreatedLock) {
-      setTransactionCreatedLock(true);
+    if (transaction?.transaction && transaction.transaction.value && paymentRequestCreated) {
       if (!redirected) {
+        setRedirected(true);
+
+        console.warn(`clearing url params`);
+        clearUrlParams();
+
+        console.warn("**** redirecting to buy ****");
         history.push("/buy");
+        setLoading(false);
+
       } else {
-        history.replace("/buy");
+        console.warn("**** already redirected, removing home query ****");
       }
+    } else {
+      console.debug("no trx request found")
     }
-  }, [trxCreated, transactionCreatedLock, setTransactionCreatedLock, history]);
+  }, [transaction, paymentRequestCreated]);
 
   useEffect(() => {
     if (query && tickers?.length > 0) {
@@ -59,10 +77,12 @@ export const HomePage = () => {
           toast.error(`Invalid orderTrackingId`)
           return;
         }
+        console.warn(`****** detected order in query ${order.orderTrackingId}. Dispatching get order`);
         dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
+
       } catch (e: any) {
         console.log(e);
-        toast.error(`${e?.message}`)
+        toast.error(`error fetching order data. ${e?.message}`)
       }
     }
 
@@ -73,11 +93,28 @@ export const HomePage = () => {
     if (!currentOrder) {
       return;
     }
-    if (currentOrder.trackingId && currentOrder.amount && !redirected) {
-      setRedirected(true);
-      createTransaction(currentOrder);
-    } else {
-      console.debug(`not creating trx`)
+
+    if (currentOrder.amount === 0) {
+      toast.error("invalid order amount");
+      return;
+    }
+
+    if (!currentOrder.trackingId) {
+      toast.error("invalid order trackingId");
+      return;
+    }
+
+    if (currentOrder.transactionHash && currentOrder.transactionHash.length > 0) {
+      toast.error("Order has already been paid")
+      setLoading(false);
+      return;
+    }
+
+
+    if (currentOrder.trackingId && currentOrder.amount && !paymentRequestCreated) {
+      setPaymentRequestCreated(true);
+      console.warn("non null order found, creating payment request");
+      createOrderPaymentRequest(currentOrder);
     }
   }, [currentOrder]);
 
@@ -93,7 +130,6 @@ export const HomePage = () => {
 
   const pastePaymentLink = async () => {
     console.debug(`paste link `)
-
     try {
       const text = await navigator.clipboard.readText();
       processScanResult(text);
@@ -104,36 +140,56 @@ export const HomePage = () => {
 
 
   /**
-   * Create Payment Transaction (not blockchain transaction)
+   * Create Order Payment Request (not blockchain transaction)
    * @param order
    */
-  const createTransaction = (order: IOrder): void => {
+  const createOrderPaymentRequest = (order: IOrder): void => {
+    console.info("creating orderPaymentRequest")
     const paymentSubtotalUsd = order.amount;
     const currencySymbol = accountBalance.token;
-    const ethTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers);
-    if (!ethTotal) {
-      toast.error(`Could not convert value to crypto. Invalid tickers ${tickers.length}`);
-      return;
+
+    let nativeTotal: number;
+    if (!isUSDStableToken(currencySymbol)) {
+      console.log(`using non stable coin ${currencySymbol}`);
+      nativeTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers) || 0;
+      if (!nativeTotal || nativeTotal === 0) {
+        toast.error(`Could not convert value to crypto. Invalid tickers ${tickers}`);
+        return;
+      }
+    } else {
+      nativeTotal = order.amount;
     }
     setLoading(true);
 
-    if (!order.trackingId) {
-      toast.error("Invalid order tracking ID")
-    } else {
-      dispatch(userAction.setCreateTransaction({
-        account: accountBalance.account,
-        toAddress: order.toAddress,
-        amount: ethTotal,
-        orderTrackingId: order.trackingId
-      }));
+    if (accountBalance.account.includes(order.toAddress)) {
+      toast.error("Merchant can't pay for their own orders")
+      setLoading(false);
+      return;
     }
+
+
+    if (!order.trackingId) {
+      toast.error("Invalid order tracking ID");
+      setLoading(false);
+      return;
+    }
+
+    //TODO this dispatch gets the nonce and fees when scanning / pasting the link instead than when hitting send
+    dispatch(userAction.setCreateTransaction({
+      account: accountBalance.account,
+      toAddress: order.toAddress,
+      amount: nativeTotal,
+      token: currencySymbol,
+      orderTrackingId: order.trackingId
+    }));
   };
 
   const onHomeClick = async () => {
-    console.info(`refreshing balances `)
+    console.warn(`onHomeClick. refreshing balances `)
     await refreshBalances(accounts);
   }
 
+  //FIXME get the usdc balance and fallback to eth
   const balanceN = Number(accountBalance.balanceString);
   const currencySymbol = accountBalance.token;
   const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);
@@ -149,7 +205,7 @@ export const HomePage = () => {
       dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
     } catch (e) {
       console.info(`Invalid QrCode url`);
-      toast.error(`Invalid Payment Link`);
+      toast.error(`Invalid Payment Link`, {autoClose: 2000});
     }
   }
 
@@ -201,7 +257,7 @@ export const HomePage = () => {
 
 
               <div className="mt-4">
-                <p className="text-white mt-8 text-center font-bold">Scan Payment QR or </p>
+                <p className="text-white mt-8 text-center font-bold">Scan Payment QR </p>
                 <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
                   Scan the payment QR code provided by the store to checkout</p>
               </div>

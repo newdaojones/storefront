@@ -64,7 +64,7 @@ const setTransactionInfoWallet = (payload: ITransactionInfo) => {
   };
 };
 
-const setCreateTransaction = (payload: { amount: number;  account: string; toAddress: string; orderTrackingId: string}) => {
+const setCreateTransaction = (payload: { amount: number;  account: string; token: string, toAddress: string; orderTrackingId: string}) => {
   return {
     type: EUserActionTypes.SET_CREATE_TRANSACTION,
     payload
@@ -169,6 +169,14 @@ const getOrder = (payload: { orderTrackingId: String }) => {
   };
 };
 
+
+const getPendingTransactions = (payload: { address: String }) => {
+  return {
+    type: EUserActionTypes.GET_ORDER,
+    payload
+  };
+};
+
 export const userAction = {
   loginSuccess,
   getAccountInfoSuccess,
@@ -190,5 +198,6 @@ export const userAction = {
   setCreateMerchantSuccess,
   updateMerchant,
   updateMerchantSuccess,
-  unsetCurrentOrder
+  unsetCurrentOrder,
+  getPendingTransactions
 };

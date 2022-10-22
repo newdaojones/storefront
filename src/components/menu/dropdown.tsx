@@ -56,16 +56,16 @@ export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, conne
                             }
                             style={{ minWidth: "12rem" }}
                         >
-                            <a
-                                href="/orders"
-                                className={
-                                    "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
-                                    (color === "white" ? " text-slate-700" : "text-white")
-                                }
-                                onClick={onPayments}
-                            >
-                                List Orders
-                            </a>
+                            {/*<a*/}
+                            {/*    href="/orders"*/}
+                            {/*    className={*/}
+                            {/*        "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +*/}
+                            {/*        (color === "white" ? " text-slate-700" : "text-white")*/}
+                            {/*    }*/}
+                            {/*    onClick={onPayments}*/}
+                            {/*>*/}
+                            {/*    List Orders*/}
+                            {/*</a>*/}
                             <p
                                 className={
                                     "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent cursor-pointer" +

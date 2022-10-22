@@ -9,13 +9,12 @@ import {Landing} from './landing';
 
 import VaultIcon from '../assets/images/menu_icon.svg';
 
-import { selectAccountInfo, selectEnsName } from '../store/selector';
+import {selectEnsName} from '../store/selector';
 import {useWalletConnectClient} from '../contexts/walletConnect';
 import {toast} from "react-toastify";
 
 export const Main = () => {
   const ensName = useSelector(selectEnsName);
-  const accountInfo = useSelector(selectAccountInfo);
   const [openSwitchAccount, setOpenSwitchAccount] = useState(false);
 
   // Initialize the WalletConnect client.
@@ -29,6 +28,7 @@ export const Main = () => {
     account,
     isLoading,
     accounts,
+    enableToasts
   } = useWalletConnectClient();
 
   const onSelectAccount = (item: string) => {
@@ -39,13 +39,14 @@ export const Main = () => {
   const onDisconnect = () => {
     console.info(`onDisconnect called session ${session}`);
     toast.info("Disconnecting...", {autoClose: 1000})
-    disconnect().then(r => {
-      console.info(`disconnected. reloading page in a second....`)
-      setTimeout(() => {
-        window.location.reload();
-      }, 200);
+    enableToasts(false).then(r => {
+      session && disconnect(true).then(r => {
+        console.info(`disconnected. reloading page...`)
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 2000);
+      });
     });
-
   };
 
   React.useEffect(() => {
