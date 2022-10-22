@@ -3,11 +3,8 @@ import {AssetData, TxDetails} from "../helpers/types";
 import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
 import {web3} from "../utils/walletConnect";
 import {AbiInput, AbiOutput, AbiType, StateMutabilityType} from "web3-utils";
-import {PAY_WITH_USDC_ENABLED} from "../helpers/tx";
+import {getCurrency, PAY_WITH_USDC_ENABLED, USDC_TOKEN} from "../config/currencyConfig";
 
-//TODO this should be merged with the 'USDC' constant in some other files
-//FIXME this should have a corresponding mainnet address
-const USDCContractAddress = "0x07865c6e87b9f70255377e024ace6630c1eaa37f";
 
 const ethInstance: AxiosInstance = axios.create({
     baseURL: ethereumRpcUrl,
@@ -30,9 +27,8 @@ const polygonInstance: AxiosInstance = axios.create({
 export async function infuraGetAccountBalances(address: string, chainId: string): Promise<AssetData[]> {
     const ethBalance = await infuraGetAccountBalance(address, chainId);
 
-    //TODO this should be extended to mainnet
-    if (PAY_WITH_USDC_ENABLED && chainId.includes("5")) {
-        const usdcEthBalance = await infuraGetCustomTokenAccountBalance(address, USDCContractAddress, chainId);
+    if (PAY_WITH_USDC_ENABLED) {
+        const usdcEthBalance = await infuraGetCustomTokenAccountBalance(address, USDC_TOKEN, chainId);
         return [ethBalance, usdcEthBalance];
     } else {
         return [ethBalance];
@@ -47,6 +43,7 @@ export async function infuraGetAccountBalance(address: string, chainId: string):
         "params": [address, "latest"],
         "id": 1
     };
+    //FIXME this should be removed when support for polygon mainnet is ready
     if (chainId.includes("80001")) {
         return infuraGetPolygonAccountBalance(data);
     }
@@ -66,43 +63,32 @@ interface AbiItem {
     gas?: number;
 }
 
-export async function infuraGetCustomTokenAccountBalance(address: string, contractAddress: string, chainId: string): Promise<AssetData> {
-    // const data = {
-    //     "jsonrpc": "2.0",
-    //     "method": "eth_getBalance",
-    //     "params": [{"to": contractAddress, "data": address}, "latest"],
-    //     "id": 1
-    // };
-    //see https://chainstack.com/ultimate-guide-erc20-token-balance/
+export async function infuraGetCustomTokenAccountBalance(address: string, token: string, chainId: string): Promise<AssetData> {
+    const currency = getCurrency(chainId, token);
+
+    if (!currency) {
+        throw new Error(`currency not supported: ${token} on chain: ${chainId}`);
+    }
 
     let minABI: AbiItem[] = [
         {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
         {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"},
         {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function"}
     ];
-    const contract = new web3.eth.Contract(minABI, USDCContractAddress);
+    const contract = new web3.eth.Contract(minABI, currency?.contractAddress);
     const balance = await contract.methods.balanceOf(address).call()
     await balance
-    console.log(`balance for custom token ${balance}`)
+    console.debug(`balance for custom token ${balance}`)
+
     const assetData = {
-        symbol: "USDC",
-        name: "USDC",
-        decimals: "6",
-        contractAddress: USDCContractAddress,
+        symbol: currency?.token,
+        name: currency?.token,
+        decimals: currency?.decimals,
+        contractAddress: currency?.contractAddress,
         balance: balance
     }
+    console.debug(`asset data ${assetData}`)
     return assetData;
-
-    // const data = {
-    //     "jsonrpc": "2.0",
-    //     "method": "eth_getBalance",
-    //     "params": [address, contractAddress, "latest"],
-    //     "id": 1
-    // };
-    // if (chainId.includes("80001")) {
-    //     return infuraGetPolygonAccountBalance(data);
-    // }
-    // return infuraGetEthAccountBalance(data);
 }
 
 async function infuraGetEthAccountBalance(data: any): Promise<AssetData> {
@@ -111,10 +97,11 @@ async function infuraGetEthAccountBalance(data: any): Promise<AssetData> {
         data
     );
     const {result} = response.data;
+    //FIXME this constants should go to the currency stuff
     const assetData = {
         symbol: "ETH",
         name: "Ether",
-        decimals: "18",
+        decimals: 18,
         contractAddress: "",
         balance: result
     }
@@ -127,10 +114,11 @@ async function infuraGetPolygonAccountBalance(data: any): Promise<AssetData> {
         data
     );
     const {result} = response.data;
+    //FIXME this constants should go to the currency stuff
     const assetData = {
         symbol: "MATIC",
         name: "Matic",
-        decimals: "18",
+        decimals: 18,
         contractAddress: "",
         balance: result
     }

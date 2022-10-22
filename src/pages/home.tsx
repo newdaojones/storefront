@@ -15,7 +15,7 @@ import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
 import {IOrder} from "../models";
-import {isUSDStableToken} from "../utils";
+import {isUSDStableToken} from "../config/currencyConfig";
 
 /**
  * https://test.jxndao.com/storefront/home
@@ -149,6 +149,7 @@ export const HomePage = () => {
     const currencySymbol = accountBalance.token;
 
     let nativeTotal: number;
+    //FIXME we can just use usdc price here, instead of assuming 1=1 relation
     if (!isUSDStableToken(currencySymbol)) {
       console.log(`using non stable coin ${currencySymbol}`);
       nativeTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers) || 0;

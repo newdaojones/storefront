@@ -17,19 +17,19 @@ import {ellipseAddress, isMobile} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
-  AccountBalance, generateTransaction,
+  AccountBalance,
+  generateTransaction,
   getHexValueAsBigNumber,
   getHexValueAsString,
   getPreferredAccountBalance,
   ITransaction,
-  USDC_DECIMALS
 } from "../helpers/tx";
 import {ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
-import {getAccountAddress, getFormattedTokenValue} from "../utils";
 import {BigNumber} from "ethers";
 import {formatFixed} from "@ethersproject/bignumber";
+import {ETH_TOKEN, getCurrencyByToken, getFormattedTokenValue, USDC_TOKEN} from "../config/currencyConfig";
 
 export interface IPaymentInformation {
   paymentValueToken: BigNumber;
@@ -223,14 +223,15 @@ export const BuyPage = () => {
       const gasLimitNumber = getHexValueAsString(transaction?.gasLimit);
       const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
       console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
-
-      if (token === 'ETH') {
+      // FIXME eth constant should go into the currency
+      if (token === ETH_TOKEN) {
         const paymentValueEth = getHexValueAsString(transaction?.value);
         const trxValueAsNumber = Number(paymentValueEth);
         paymentValueUSD = convertTokenToUSD(trxValueAsNumber, token, tickers) || 0;
         console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${paymentValueUSD} USD`)
-      } else if (token === 'USDC') {
-        const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, USDC_DECIMALS);
+      } else if (token === USDC_TOKEN) {
+        const currency = getCurrencyByToken(USDC_TOKEN);
+        const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, currency?.decimals);
         paymentValueUSD = Number(paymentValueInTokenString);
         console.debug(`payment value hex:${transaction?.value} 
          bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)

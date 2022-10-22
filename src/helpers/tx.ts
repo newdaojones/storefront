@@ -5,11 +5,8 @@ import {fromWad, toWad} from "./utilities";
 import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
+import {PAY_WITH_USDC_ENABLED, USDC_DECIMALS, USDC_TOKEN} from "../config/currencyConfig";
 
-//FIXME move to a constants file
-export const PAY_WITH_USDC_ENABLED = false;
-const USDC_TOKEN = 'USDC';
-export const USDC_DECIMALS = 6;
 
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
@@ -221,11 +218,6 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
 
 
 function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance | null {
-    // const usdcAccount = accounts.find(value => {
-    //     let accountBalances = balances[value];
-    //     return !!(accountBalances.find(value1 => value1.symbol === USDC_TOKEN))
-    // })
-
     for (const account of accounts) {
         let accountBalances = balances[account];
         const usdcTokenAsset = accountBalances.find(value => value.symbol === USDC_TOKEN && Number(value.balance) > 0);
