@@ -6,7 +6,7 @@ import {userAction} from '../actions';
 import {toast} from 'react-toastify';
 import {ens} from '../../utils/walletConnect';
 import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
-import {generateTransaction, ITransaction} from "../../helpers/tx";
+import {encodeTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
 import {createBrowserHistory} from "history";
 import {getCurrencyByToken} from "../../config/currencyConfig";
@@ -116,13 +116,15 @@ function* watchGetTickers() {
 
 function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; toAddress: string; amount: number, token: string, orderTrackingId: string }}) {
   try {
-    const currency = getCurrencyByToken(action.payload.token);
-    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId, currency.decimals));
+    const res: ITransaction = yield call(() => encodeTransaction(action.payload.account, action.payload.toAddress, action.payload.amount,
+        action.payload.token, action.payload.orderTrackingId));
+
     const order : IOrder = {
       externalOrderId: "",
       amount: action.payload.amount,
       nativeAmount: '0',
       orderDescription: null,
+      //FIXME testnet should default to whatever this merchant or the order has set?
       testnet: true,
       toAddress: action.payload.toAddress,
       token: action.payload.token,
