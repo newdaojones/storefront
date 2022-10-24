@@ -2,7 +2,7 @@ import {formatFixed} from "@ethersproject/bignumber";
 import {BigNumber} from "ethers";
 
 export const ETH_TOKEN = 'ETH';
-const ETH_DECIMALS = 18;
+export const ETH_DECIMALS = 18;
 
 export const PAY_WITH_USDC_ENABLED = true;
 

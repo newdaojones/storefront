@@ -1,6 +1,7 @@
-# Storefront App
+# Storefront Dapp
 
-This project was bootstrapped forked from Member Dashboard's wallet-connect-v2 branch
+Storefront payment system dapp is based react, with react redux, tailwind and walletconnect libraries.
+This project was originally forked from Member Dashboard's wallet-connect-v2 branch
 
 ## Available Scripts
 
