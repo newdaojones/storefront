@@ -4,6 +4,7 @@ import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
 import {web3} from "../utils/walletConnect";
 import {AbiInput, AbiOutput, AbiType, StateMutabilityType} from "web3-utils";
 import {getCurrency, PAY_WITH_USDC_ENABLED, USDC_TOKEN} from "../config/currencyConfig";
+import {toWad} from "../helpers";
 
 
 const ethInstance: AxiosInstance = axios.create({
@@ -61,6 +62,50 @@ interface AbiItem {
     stateMutability?: StateMutabilityType;
     type: AbiType;
     gas?: number;
+}
+
+export const getERC20TransferData = async (fromAddress: string, toAddress: string, sendAmount: number, token: string, chainId: string) => {
+    const currency = getCurrency(chainId, token);
+
+    /**
+     * let contract = new Web3js.eth.Contract(contractABI, tokenAddress, { from: fromAddress })
+
+     let amount = Web3js.utils.toHex(Web3js.utils.toWei("1")); //1 DEMO Token
+
+     let data = contract.methods.transfer(toAddress, amount).encodeABI()
+     */
+
+    let minABI: AbiItem[] = [
+        {
+            "constant": true,
+            "inputs": [{"name": "_owner", "type": "address"}],
+            "name": "balanceOf",
+            "outputs": [{"name": "balance", "type": "uint256"}],
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [{"name": "", "type": "uint8"}],
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}],
+            "name": "transfer",
+            "outputs": [{"name": "", "type": "bool"}],
+            "type": "function"
+        }
+    ];
+    const contract = new web3.eth.Contract(minABI, currency?.contractAddress, {from: fromAddress});
+    console.debug(`got contract instance ${contract}`)
+    const _value = toWad(sendAmount.toString(), currency?.decimals);
+    console.info(`send amount ${sendAmount} toWad -> ${_value} for ${token} with decimals: ${currency?.decimals}`)
+
+    const balanceAbi = await contract.methods.transfer(toAddress, _value).encodeABI();
+    console.warn(`transfer encoded abi call ${balanceAbi}`)
+    return balanceAbi;
 }
 
 export async function infuraGetCustomTokenAccountBalance(address: string, token: string, chainId: string): Promise<AssetData> {
