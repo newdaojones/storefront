@@ -13,7 +13,7 @@ import {
 } from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {ellipseAddress, isMobile} from "../helpers";
+import {ellipseAddress, isMobile, toWad} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
@@ -24,12 +24,18 @@ import {
   getPreferredAccountBalance,
   ITransaction,
 } from "../helpers/tx";
-import {ITransactionInfo, TransactionState} from "../models";
+import {IOrder, ITransactionInfo, TransactionState} from "../models";
 import {useHistory} from "react-router-dom";
 import {convertTokenToUSD} from "../helpers/currency";
 import {BigNumber} from "ethers";
 import {formatFixed} from "@ethersproject/bignumber";
-import {ETH_TOKEN, getCurrencyByToken, getFormattedTokenValue, USDC_TOKEN} from "../config/currencyConfig";
+import {
+    ETH_TOKEN,
+    getCurrencyByToken,
+    getFormattedTokenValue,
+    USDC_DECIMALS,
+    USDC_TOKEN
+} from "../config/currencyConfig";
 
 export interface IPaymentInformation {
   paymentValueToken: BigNumber;
@@ -99,9 +105,9 @@ export const BuyPage = () => {
         toast.error("Invalid or empty token found. Cannot initialize payment data");
         return;
       }
-      console.info(`calculating prices for trx value: ${transaction.transaction.value}`)
+      console.warn(`calculating prices for trx order token:${transaction.order.token} amount:${transaction.order.amount} txValue:${transaction.transaction.value} `)
       try {
-        const paymentInfo = initializePaymentData(accountBalance, transaction.transaction);
+        const paymentInfo = initializePaymentData(accountBalance, transaction.order, transaction.transaction);
         setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
         setPaymentValueUsd(paymentInfo.paymentValueUsd);
         setPaymentValueToken(paymentInfo.paymentValueToken);
@@ -208,15 +214,17 @@ export const BuyPage = () => {
         })
   };
 
-  function initializePaymentData(accountBalance: AccountBalance, transaction: ITransaction): IPaymentInformation {
+  function initializePaymentData(accountBalance: AccountBalance, order: IOrder, transaction: ITransaction): IPaymentInformation {
     let paymentFeeUsd = 0;
     let paymentValueUSD = 0;
     let paymentTotalUSD = 0;
     const token = accountBalance.token;
 
-    if (transaction?.value) {
-      const paymentValueInTokenBn = getHexValueAsBigNumber(transaction?.value);
-
+    if (token === ETH_TOKEN && !transaction?.value) {
+        console.warn(`transaction value not available. maybe should go back?. redirecting to /home page`)
+        history.replace("/home");
+        throw new Error(`transaction value not available. maybe should go back?. redirecting to /home page`);
+    }
       const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
       const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
       console.info(`gasPrice hex: ${transaction?.gasPrice} = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
@@ -224,17 +232,24 @@ export const BuyPage = () => {
       const gasLimitNumber = getHexValueAsString(transaction?.gasLimit);
       const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
       console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
-      // FIXME eth constant should go into the currency
+
+
+      let paymentValueInTokenBn;
       if (token === ETH_TOKEN) {
         const paymentValueEth = getHexValueAsString(transaction?.value);
+        paymentValueInTokenBn = BigNumber.from(paymentValueEth);
+        //FIXME change to bn
         const trxValueAsNumber = Number(paymentValueEth);
         paymentValueUSD = convertTokenToUSD(trxValueAsNumber, token, tickers) || 0;
         console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${paymentValueUSD} USD`)
       } else if (token === USDC_TOKEN) {
+        console.warn(`calling bignumber.from with ${order.amount.toString()}`)
+        paymentValueInTokenBn = toWad(order.amount.toString(), USDC_DECIMALS);
+        //paymentValueInTokenBn = BigNumber.from(order.nativeAmount);
         const currency = getCurrencyByToken(USDC_TOKEN);
         const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, currency?.decimals);
         paymentValueUSD = Number(paymentValueInTokenString);
-        console.debug(`payment value hex:${transaction?.value} 
+        console.debug(`payment value from order nativeAmount: ${order.nativeAmount} amount: ${order.amount}
          bn:${paymentValueInTokenBn} str: ${paymentValueInTokenString} usd:${paymentValueUSD}`)
       } else {
         const message = `token ${token} not implemented`;
@@ -246,19 +261,12 @@ export const BuyPage = () => {
         paymentFeeUsd = gasPriceUsd;
         paymentTotalUSD = paymentValueUSD + gasPriceUsd;
       } else {
-        console.info(`unable to calculate total trx price in USD. paymentValueUSD: ${paymentValueUSD} gasPrice: ${gasPriceUsd}`);
+        console.warn(`unable to calculate total trx price in USD. paymentValueUSD: ${paymentValueUSD} gasPrice: ${gasPriceUsd}`);
       }
 
       console.debug(`payment value ${paymentTotalUSD} USD  = trx ${paymentValueUSD} USD + fee ${gasPriceUsd} USD`)
-
       return {paymentFeeUsd: paymentFeeUsd, paymentValueUsd: paymentValueUSD,
         paymentTotalUSD: paymentTotalUSD, paymentValueToken: paymentValueInTokenBn};
-
-    } else {
-      console.info(`transaction value not available. maybe should go back?. redirecting to /home page`)
-      history.replace("/home");
-      throw new Error(`transaction value not available. maybe should go back?. redirecting to /home page`);
-    }
   }
 
 

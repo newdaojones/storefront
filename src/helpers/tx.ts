@@ -146,7 +146,7 @@ async function encodeERC20Transaction(account: string, toAddress: string, sendAm
         nonce: tx.nonce,
         gasPrice: tx.gasPrice,
         gasLimit: tx.gasLimit,
-        value: '0x0' //FIXME value zero?
+        value: '0x00' //FIXME value zero?
     };
 
 }
