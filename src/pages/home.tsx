@@ -53,16 +53,9 @@ export const HomePage = () => {
     if (transaction?.transaction && transaction.transaction.value && paymentRequestCreated) {
       if (!redirected) {
         setRedirected(true);
-
-        console.warn(`clearing url params`);
         clearUrlParams();
-
-        console.warn("**** redirecting to buy ****");
         history.push("/buy");
         setLoading(false);
-
-      } else {
-        console.warn("**** already redirected, removing home query ****");
       }
     } else {
       console.debug("no trx request found")
@@ -77,11 +70,11 @@ export const HomePage = () => {
           toast.error(`Invalid orderTrackingId`)
           return;
         }
-        console.warn(`****** detected order in query ${order.orderTrackingId}. Dispatching get order`);
+        console.debug(`detected order in query ${order.orderTrackingId}. Dispatching get order`);
         dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
 
       } catch (e: any) {
-        console.log(e);
+        console.log(`error extractOrderFromUrl: ${e}`);
         toast.error(`error fetching order data. ${e?.message}`)
       }
     }
@@ -129,7 +122,7 @@ export const HomePage = () => {
   }
 
   const pastePaymentLink = async () => {
-    console.debug(`paste link `)
+    console.debug(`paste link`)
     try {
       const text = await navigator.clipboard.readText();
       processScanResult(text);

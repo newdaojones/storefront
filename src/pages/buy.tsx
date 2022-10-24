@@ -18,7 +18,7 @@ import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
   AccountBalance,
-  generateTransaction,
+  encodeTransaction,
   getHexValueAsBigNumber,
   getHexValueAsString,
   getPreferredAccountBalance,
@@ -139,9 +139,10 @@ export const BuyPage = () => {
       return;
     }
 
-    // TODO use decimals if USDC
     console.warn(`updating transaction ${transaction.transaction}`);
-    const updatedTransaction = await generateTransaction(accountBalance.account, transaction?.order.toAddress, transaction?.order.amount, transaction?.order.trackingId)
+    const token = transaction?.order.token;
+    const updatedTransaction = await encodeTransaction(accountBalance.account, transaction?.order.toAddress, transaction?.order.amount,
+        token, transaction?.order.trackingId)
 
     console.warn(`updated- transaction ${transaction.transaction}`);
 
