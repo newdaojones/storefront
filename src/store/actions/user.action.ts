@@ -126,7 +126,7 @@ const getOrderSuccess = (payload: IOrder) => {
   };
 };
 
-const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string, nativeAmount: string }) => {
+const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string, nativeAmount: string, token: string }) => {
   return {
     type: EUserActionTypes.SET_ORDER_TRANSACTION_HASH,
     payload
