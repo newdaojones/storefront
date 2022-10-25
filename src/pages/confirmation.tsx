@@ -1,14 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {BigNumber, utils} from "ethers";
 import {useDispatch, useSelector} from "react-redux";
 import {selectBuyTransaction} from "../store/selector";
 import {useHistory} from "react-router-dom";
-import {convertHexToNumber, ellipseAddress} from "../helpers";
+import {convertHexToNumber, ellipseAddress, toWad} from "../helpers";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {userAction} from "../store/actions";
 import logoIcon from "../assets/images/logo.svg";
 import QRCodeStyling from "qr-code-styling";
 import {transactionStatusLink} from "../utils/link_utils";
+import {ETH_TOKEN, getFormattedTokenValue, USDC_DECIMALS, USDC_TOKEN} from "../config/currencyConfig";
+import {toast} from "react-toastify";
 
 export const ConfirmationPage = () => {
   const history = useHistory();
@@ -22,21 +24,39 @@ export const ConfirmationPage = () => {
   const [linkUrl, setLinkUrl] = useState('');
 
     if (!transactionInfo?.transactionHash) {
+        console.warn("transactionHash not present, moving to home.");
         history.replace("/")
     }
 
-    let weiNumber = convertHexToNumber(transactionInfo?.transaction?.value!!) || 0;
-    const bigN = BigNumber.from(weiNumber.toString())
-    const formatted = utils.formatUnits(bigN, "ether")
-    console.info(`wei number ${weiNumber} bigN: ${bigN} formatted: ${formatted}`)
+    function getTotalPriceInNativeToken(): string {
+        if (!transactionInfo?.order.token) {
+            console.warn("Invalid order token");
+            return "";
+        }
+        const token = transactionInfo?.order.token;
+        let amount: BigNumber;
+        if (token === ETH_TOKEN) {
+            const weiNumber = convertHexToNumber(transactionInfo?.transaction?.value!!) || 0;
+            amount = BigNumber.from(weiNumber.toString())
+        } else if (token === USDC_TOKEN) {
+            amount = toWad(transactionInfo?.order.amount.toString(), USDC_DECIMALS);
+        } else {
+            throw new Error("unhandled token");
+        }
 
-    if (!transactionInfo?.orderTrackingId) {
-        console.error(`can't set order transaction hash since orderTrackingId not valid.`)
+        return getFormattedTokenValue(transactionInfo?.order.token, amount)
+    }
+
+    const formatted = getTotalPriceInNativeToken();
+
+    if (!transactionInfo?.order.trackingId || !transactionInfo.transactionHash) {
+        console.error(`can't set order transaction hash since orderTrackingId: ${transactionInfo?.order.trackingId} or transactionHash: ${transactionInfo?.transactionHash} are not valid.`)
     } else {
         dispatch(userAction.setOrderTransactionHash({
-            orderTrackingId: transactionInfo?.orderTrackingId,
-            transactionHash: transactionInfo?.transactionHash!!,
-            nativeAmount: formatted,
+            orderTrackingId: transactionInfo?.order.trackingId,
+            transactionHash: transactionInfo?.transactionHash,
+            nativeAmount: transactionInfo.order.nativeAmount || "0",
+            token: transactionInfo.order.token,
         }));
     }
 
@@ -49,7 +69,12 @@ export const ConfirmationPage = () => {
 
    React.useEffect(() => {
         if (transactionInfo) {
-            const link = transactionStatusLink(transactionInfo?.transactionHash, transactionInfo?.orderTrackingId!!);
+
+            if (!transactionInfo.transactionHash) {
+                console.warn("no transaction hash found");
+                return;
+            }
+            const link = transactionStatusLink(transactionInfo?.transactionHash, transactionInfo?.order.trackingId!!);
             setLinkUrl(link);
             const qrCode = new QRCodeStyling({
                 width: 255,
@@ -129,7 +154,7 @@ export const ConfirmationPage = () => {
                       <a target="_blank" rel='noreferrer' className="link cursor-pointer"
                          href={linkUrl}>
                           {/*<img className="w-8 h-8 mt-2 justify-center" src={SearchIcon} alt=""/>*/}
-                          <p className="text-white text-start text-xs mr-2 mt-2">{ellipseAddress(transactionInfo?.transactionHash)}</p>
+                          <p className="text-white text-start text-xs mr-2 mt-2">{ellipseAddress(transactionInfo?.transactionHash || "")}</p>
                       </a>
 
                   </div>
@@ -143,7 +168,7 @@ export const ConfirmationPage = () => {
                   </div>
                   <div className="w-full flex justify-between pl-4 pr-4 pb-6">
                       <p className="text-white text-start text-xs mr-2">Amount</p>
-                      <p className="text-start text-terciary text-xs mr-2">{`${formatted.substring(0,8)} ETH`}</p>
+                      <p className="text-start text-terciary text-xs mr-2">{`${formatted}`}</p>
                   </div>
               </div>
           </div>

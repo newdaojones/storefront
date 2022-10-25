@@ -43,6 +43,7 @@ export function getCurrencyByToken(token: string): SupportedCurrency {
 }
 
 // FIXME remove 'ETH' & matic constants to the currencyConfig
+// TODO put this into a inheritance and have currency subclasses implement their own way
 export const getFormattedTokenValue = (token: string, value: BigNumber) => {
     if (token === USDC_TOKEN) {
         const paymentValueInTokenString = formatFixed(value, USDC_DECIMALS);
