@@ -250,8 +250,8 @@ export const infuraGetTransactionByHash = async (hash: string, chainId: string):
 export const infuraGetAccountNonce = async (address: string, chainId: string): Promise<number> => {
     const data = {
         "jsonrpc": "2.0",
-        "method": "parity_nextNonce",
-        "params": [address],
+        "method": "eth_getTransactionCount",
+        "params": [address, "latest"],
         "id": 1
     };
     const response = await ethInstance.post(
@@ -259,7 +259,7 @@ export const infuraGetAccountNonce = async (address: string, chainId: string): P
         data
     );
     const {result} = response.data;
-    console.info(`got nonce: ${result}`)
+    console.warn(`got nonce: ${result}`)
     return result;
 };
 
