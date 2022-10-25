@@ -250,6 +250,9 @@ export function getPreferredAccountBalance(accounts: string[], balances: Account
  *
  */
 function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
+    if (!accounts || accounts.length === 0) {
+        throw new Error('no accounts')
+    }
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];
     let accountBalance = BigNumber.from(0);
@@ -258,7 +261,8 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
     accounts.forEach(value => {
         let accountBalances = balances[value];
         if (!accountBalances) {
-            console.info(`getBalanceInUSD: account balances not defined for account: ${value}`)
+            console.warn(`getBalanceInUSD: account balances not defined for account: ${value}`)
+            //FIXME an error here would prevent other accounts from being added
             return;
         }
         let balanceElement = accountBalances[0];
@@ -269,7 +273,7 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
             console.log(`balance parse error ${e}`);
         }
 
-        if (balance.gt(0) && balanceToken == null) {
+        if (balance.gt(0) || balanceToken == null) {
             let formatEther = utils.formatEther(balance);
             console.debug(`getBalanceInUSD account ${value} with balance ${balance}. formatted balance ${formatEther}`)
 
@@ -281,7 +285,9 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
         }
     })
     if (!balanceToken) {
-        throw new Error(`unsupported token`)
+        const accountBalances = balances[firstNonZeroAccount];
+        const balanceString = accountBalances.map(value => `${value.symbol} ${value.balance}`).join(",");
+        throw new Error(`unsupported token accounts: ${accounts[0]} balances: ${balanceString}`);
     }
 
     return {
