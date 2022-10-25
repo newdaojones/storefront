@@ -7,13 +7,14 @@ import {ellipseAddress} from "../../helpers";
 import {userAction} from "../../store/actions";
 import {IMerchant} from "../../models";
 import {toast} from "react-toastify";
+import {PAY_WITH_USDC_ENABLED} from "../../config/currencyConfig";
 
 export const SettingsPage = () => {
   const dispatch = useDispatch();
   const { enableToasts, session, account, disconnect} = useWalletConnectClient();
   let merchantInfo = useSelector(selectMerchantInfo);
   const [enabled, setEnabled] = useState(true);
-  const [polygonEnabled, setPolygonEnabled] = useState(true);
+  const [polygonEnabled, setPolygonEnabled] = useState(false);
 
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
   console.log(`merchant Account ${account} add ${getAddressFromAccount(account!!)||""}`)
@@ -82,10 +83,27 @@ export const SettingsPage = () => {
                 {merchantInfo?.merchantName}
               </div>
           </div>
-          <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-center text-white  mr-8">Accepted Token</p>
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
-              {merchantInfo?.defaultToken}
+
+          <div className="w-full flex justify-between mt-10">
+            <p className="text-center text-white  mr-8">Supported Payment Tokens</p>
+
+            <div className="flex flex-col justify-end bg-white bg-opacity-25 py-1 px-2 rounded">
+
+              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+                <div>{'ETH'}</div>
+                <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4" >
+                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={true}/>
+                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+                <div>{'USDC'}</div>
+                <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative ml-4" >
+                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={PAY_WITH_USDC_ENABLED}/>
+                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
+                </label>
+              </div>
             </div>
           </div>
 

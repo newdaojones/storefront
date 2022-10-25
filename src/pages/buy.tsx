@@ -249,7 +249,6 @@ export const BuyPage = () => {
       paymentValueUSD = convertTokenToUSD(trxValueAsNumber, token, tickers) || 0;
       console.debug(`transac value ${transaction?.value}  ${transaction?.value ? trxValueAsNumber : 'n/a'} ETH  = ${paymentValueUSD} USD`)
     } else if (token === USDC_TOKEN) {
-      console.warn(`calling bignumber.from with ${order.amount.toString()}`)
       paymentValueInTokenBn = toWad(order.amount.toString(), USDC_DECIMALS);
       const currency = getCurrencyByToken(USDC_TOKEN);
       const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, currency?.decimals);
