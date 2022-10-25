@@ -52,11 +52,15 @@ export const ConfirmationPage = () => {
     if (!transactionInfo?.order.trackingId || !transactionInfo.transactionHash) {
         console.error(`can't set order transaction hash since orderTrackingId: ${transactionInfo?.order.trackingId} or transactionHash: ${transactionInfo?.transactionHash} are not valid.`)
     } else {
+        if (!transactionInfo.paymentToken) {
+            console.warn("invalid payment token");
+        }
+
         dispatch(userAction.setOrderTransactionHash({
             orderTrackingId: transactionInfo?.order.trackingId,
             transactionHash: transactionInfo?.transactionHash,
-            nativeAmount: transactionInfo.order.nativeAmount || "0",
-            token: transactionInfo.order.token,
+            nativeAmount: transactionInfo.paymentNativeAmount.toString() || "0",
+            token: transactionInfo.paymentToken,
         }));
     }
 

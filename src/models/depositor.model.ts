@@ -64,6 +64,8 @@ export interface ITransactionInfo {
   paymentValueUsd: number;
   paymentFeeUsd: number;
   paymentTotalUSD: number;
+  paymentNativeAmount: number;
+  paymentToken: string,
   date: string | null;
 }
 

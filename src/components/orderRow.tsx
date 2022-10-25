@@ -202,7 +202,7 @@ const OrderRow = (props: any) => {
             </div>
 
             <div className="w-20 text-sm font-righteous">
-                <p>{order.transactionHash && order.trackingId ? `CONFIRMED` : `PENDING`}</p>
+                <p>{order.transactionHash && order.trackingId ? `CONFIRMED` : `UNPAID`}</p>
             </div>
         </div>
     );
