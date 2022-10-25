@@ -274,7 +274,7 @@ export const HomePage = () => {
                       <p>
                         {
                           balanceN ? numeral(balanceN).format('0.000000')
-                              :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)
+                              :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length)
                         }
                       </p>
                     </div>

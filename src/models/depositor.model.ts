@@ -59,12 +59,12 @@ export interface ITransactionOrder {
 
 export interface ITransactionInfo {
   transaction: ITransaction | null;
-  transactionHash: string;
+  order: IOrder;
+  transactionHash: string | null,
   paymentValueUsd: number;
   paymentFeeUsd: number;
   paymentTotalUSD: number;
   date: string | null;
-  orderTrackingId?: string | null;
 }
 
 export interface IOrder {

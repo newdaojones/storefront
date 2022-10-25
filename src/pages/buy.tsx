@@ -166,16 +166,20 @@ export const BuyPage = () => {
   };
 
   function handleSuccessfulTransaction(res: IFormattedRpcResponse) {
+    if (!transaction?.order) {
+      console.warn('invalid transaction.order');
+      return;
+    }
     console.info(`transaction link: https://explorer.anyblock.tools/ethereum/ethereum/goerli/tx/${res.result}`)
     const transactionInfo: ITransactionInfo = {
       transaction: transaction?.transaction || null,
+      order: transaction?.order,
       transactionHash: res.result,
       paymentValueUsd: paymentValueUsd,
       paymentFeeUsd: paymentFeeUsd,
       paymentTotalUSD: paymentTotalUSD,
       date: null,
-      orderTrackingId: transaction?.order.trackingId || null,
-    }
+    };
 
     dispatch(userAction.setTransactionInfoWallet(transactionInfo));
     setTimeout(() => {
@@ -245,7 +249,6 @@ export const BuyPage = () => {
       } else if (token === USDC_TOKEN) {
         console.warn(`calling bignumber.from with ${order.amount.toString()}`)
         paymentValueInTokenBn = toWad(order.amount.toString(), USDC_DECIMALS);
-        //paymentValueInTokenBn = BigNumber.from(order.nativeAmount);
         const currency = getCurrencyByToken(USDC_TOKEN);
         const paymentValueInTokenString = formatFixed(paymentValueInTokenBn, currency?.decimals);
         paymentValueUSD = Number(paymentValueInTokenString);
