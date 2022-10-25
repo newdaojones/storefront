@@ -103,6 +103,7 @@ export class RpcSourceAdapter implements RpcApi {
 
     getAccountNonce(address: string, chainId: string): Promise<number> {
         return this.ethereumXyzRpcApi.getAccountNonce(address, chainId);
+        // return this.infuraRpcApi.getAccountNonce(address, chainId);
     }
 
     async getGasPrices(chainId: string): Promise<string> {
