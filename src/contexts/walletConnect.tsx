@@ -88,7 +88,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   const [balances, setBalances] = useState<AccountBalances>({});
 
-  const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>({isMerchantUser: false, merchantExists: false});
+  const merchantLoginInitialState = {isMerchantUser: false, merchantExists: false};
+  const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>(merchantLoginInitialState);
+  const [isMerchantAccount, setIsMerchantAccount] = useState<boolean | null>(null);
 
   const [showToasts, setShowToasts] = useState(true);
 
@@ -103,8 +105,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     setAccount(undefined);
     setAccounts([]);
     setChains([]);
+    setMerchantLogin(merchantLoginInitialState);
+    setIsMerchantAccount(null);
 
-    for (var i = 0; i < localStorage.length; i++) {
+    for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.includes(SIGNATURE_PREFIX)) {
         localStorage.removeItem(key);
@@ -238,6 +242,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           await sleep(waitTime * 1000);
         }
 
+        setIsMerchantAccount(false);
         setAccount(account);
         localStorage.setItem(NDJ_ADDRESS, account);
 
@@ -258,13 +263,25 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     [client, session]
   );
 
-  //TODO this should be used when we access the merchant app, as opposed to one step login when using the purchase app with no signature
+  /**
+   * This should be used when we access the merchant app, as opposed to one step login when using the purchase app with no signature
+   */
   const loginWithSignedNonce = useCallback(
       async (account: string) => {
         try {
           setIsLoading(true);
-          const startTime = moment();
 
+
+          if (account && isMerchantAccount === false) {
+            console.warn(`user trying to login account: ${account} as merchant when user is consumer`);
+            toast.info(`You are trying to login as merchant when already logged in as consumer with account: ${account}. Use disconnect if you want to use a new session. `);
+            setTimeout(() => {
+              window.location.assign('/storefront');
+            }, 5000);
+            return;
+          }
+
+          const startTime = moment();
           const [namespace, reference, address] = account.split(':');
 
           try {
@@ -274,7 +291,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
               console.warn("not a member")
               merchantLogin.merchantExists = false
             } else {
-              console.warn("merchant does exist a member")
+              console.warn("merchant does exist as a member");
               merchantLogin.merchantExists = true
             }
             setMerchantLogin(merchantLogin)
@@ -312,6 +329,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             await sleep(waitTime * 1000);
           }
 
+          setIsMerchantAccount(true);
           setAccount(account);
           localStorage.setItem(NDJ_ADDRESS, account);
 
@@ -328,10 +346,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
           disconnect().then(() => console.log(`disconnect done.`));
 
-          //FIXME is this really needed for a disconnect?
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 2000);
         } finally {
           setIsLoading(false);
         }
@@ -444,6 +458,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     async (_account: string) => {
       try {
         console.log('switchAccount', _account);
+        //FIXME this should also use the merchants flag
         setAccount(undefined);
         if (!client) {
           throw new Error('WalletConnect is not initialized');
@@ -452,7 +467,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         if (!session) {
           throw new Error('Session is not connected');
         }
-        login(_account);
+        console.warn(`switchAccount, calling login`);
+        await login(_account);
       } catch (err: any) {
         toast.error(err.message);
       }
