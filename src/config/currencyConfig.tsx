@@ -9,8 +9,8 @@ export const PAY_WITH_USDC_ENABLED = true;
 export const USDC_TOKEN = 'USDC';
 export const USDC_DECIMALS = 6;
 
-export const USDCContractAddressGorli = "0x07865c6e87b9f70255377e024ace6630c1eaa37f"; //on ethereum gorli
-export const USDCContractAddressMainnet = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //on ethereum mainnet
+const USDCContractAddressGorli = "0x07865c6e87b9f70255377e024ace6630c1eaa37f"; //on ethereum gorli
+const USDCContractAddressMainnet = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //on ethereum mainnet
 
 //TODO need to be extended to polygon
 
