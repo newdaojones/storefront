@@ -25,8 +25,7 @@ const TransactionStatus = React.lazy(() =>
     }))
 );
 
-const Main = React.lazy(() =>
-    import("./pages").then((module) => ({
+const Main = React.lazy(() =>    import("./pages").then((module) => ({
         default: module.Main,
     }))
 );
@@ -42,25 +41,24 @@ ReactDOM.render(
     <WalletConnectProvider>
       <JsonRpcContextProvider>
           <Suspense fallback={Landing}>
-
           <Router basename={'/storefront'}>
               <Switch>
-                  <Route path={'/pay'} component={Pay}></Route>
-                  <Route path={'/status'} component={TransactionStatus}></Route>
-                  <Route path={'/error'} component={ErrorPage}></Route>
-                  <Route path={'/merchant'} component={MerchantMain}></Route>
-                  <Route path={'/'} component={Main} ></Route>
+                  <Route path={'/pay'} component={Pay}/>
+                  <Route path={'/status'} component={TransactionStatus}/>
+                  <Route path={'/error'} component={ErrorPage}/>
+                  <Route path={'/merchant'} component={MerchantMain}/>
+                  <Route path={'/'} component={Main} />
               </Switch>
-            <ToastContainer
-              toastClassName="w-full m-w-45 flex bg-black bg-opacity-90 border-2 border-secondary rounded-16xl shadow-md p-4 text-sm"
-              bodyClassName={() => 'text-sm font-white font-med block p-1'}
+          </Router>
+          <ToastContainer
+              toastClassName="w-full flex bg-black bg-opacity-90 shadow-md p-4 text-sm"
+              bodyClassName="w-full text-sm text-white font-med block p-1"
               autoClose={false}
-              icon={true}
+              icon={false}
               position="bottom-center"
               hideProgressBar={true}
               closeOnClick={false}
-            />
-          </Router>
+          />
           </Suspense>
         </JsonRpcContextProvider>
     </WalletConnectProvider>
