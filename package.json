@@ -1,8 +1,8 @@
 {
   "name": "NDJ-Storefront",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
-  "homepage": "/storefront",
+  "homepage": "/",
   "dependencies": {
     "@craco/craco": "^6.1.1",
     "@ensdomains/ensjs": "^2.0.1",
@@ -59,9 +59,9 @@
     "react-qr-reader/**/react": "^17.0.2"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "craco --openssl-legacy-provider start",
     "build": "craco build",
-    "test": "react-scripts test --watchAll=true",
+    "test": "react-scripts --openssl-legacy-provider test --watchAll=true",
     "eject": "react-scripts eject",
     "code-clean": "prettier --write \".\""
   },

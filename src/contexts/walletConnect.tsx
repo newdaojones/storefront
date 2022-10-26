@@ -328,10 +328,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
           disconnect().then(() => console.log(`disconnect done.`));
 
-          //FIXME is this really needed for a disconnect?
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 2000);
         } finally {
           setIsLoading(false);
         }
