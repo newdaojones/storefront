@@ -60,7 +60,7 @@ export const MenuItem = ({ size, parentItem, onFocused = () => {}, focused, item
                     top,
                 }}
             >
-                {item.icon && <img className="w-10 h-6 pr-2" src={item.icon} alt={item.route} key={index} draggable={false} />}
+                {/*{item.icon && <img className="w-10 h-6 pr-2" src={item.icon} alt={item.route} key={index} draggable={false} />}*/}
                 {item.text && <div className="text-white border-1 whitespace-nowrap text-sm rounded-md bg-primary px-2 py-1">{item.text}</div>}
             </div>
         );
