@@ -7,16 +7,16 @@ import {toast} from "react-toastify";
 import {IOrder} from "../../models";
 import {isTestnetMode} from "../../config/appconfig";
 import {userAction} from "../../store/actions";
-import {isNumeric} from "../../utils";
+import {getAccountChainId, isNumeric} from "../../utils";
+import {useWalletConnectClient} from "../../contexts/walletConnect";
 
 export const CreateOrderPage = () => {
   const dispatch = useDispatch();
   let merchantInfo = useSelector(selectMerchantInfo);
+  const { account } = useWalletConnectClient();
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState('');
   const [orderDescription, setOrderDescription] = useState('');
-
-
   const [orderCreated, setOrderCreated] = useState(false);
   let currentOrder = useSelector(selectCurrentOrder);
 
@@ -35,6 +35,11 @@ export const CreateOrderPage = () => {
       return;
     }
 
+    if (!account) {
+      toast.error("Account address is not valid. Please re-try");
+      return;
+    }
+
     try {
       const amountNumber: number = Number(amount);
 
@@ -46,9 +51,8 @@ export const CreateOrderPage = () => {
         toast.error("Amount must be at least 0.01");
         return;
       }
-
-
       const fixedNumber = amountNumber.toFixed(4) //need to avoid '.01' entry which will be considered 0 in backend
+      const chainId = getAccountChainId(account);
       let orderInstance: IOrder = {
         amount: Number(fixedNumber),
         externalOrderId: orderId,
@@ -58,6 +62,7 @@ export const CreateOrderPage = () => {
         transactionHash: null,
         nativeAmount: null,
         orderDescription: orderDescription,
+        chainId: chainId,
       };
       console.info(`creating order ${orderInstance}`);
       dispatch(userAction.createOrder(orderInstance));
