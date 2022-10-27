@@ -10,9 +10,10 @@ import ConfirmedIcon from '../assets/images/confirmed_white.svg';
 import PendingIcon from '../assets/images/pending_white.svg';
 
 import ConfirmDialog from "./ConfirmDialogStyle";
-import {ellipseAddress} from "../helpers";
+import {ellipseAddress, TxDetails} from "../helpers";
 import {payLink, transactionStatusLink} from "../utils/link_utils";
 import {ETH_TOKEN} from "../config/currencyConfig";
+import {currentRpcApi} from "../helpers/tx";
 
 const SAssetRow = {
     width: '100%',
@@ -72,12 +73,44 @@ const OrderRow = (props: any) => {
         formErrors: '',
     };
     const [inputs, setInputs] = useState(initialState);
+    const [ transactionFound, setTransactionFound ] = useState(false)
+    const [ confirmed, setConfirmed ] = useState(false)
+    const [ blockTransactionData, setBlockTransactionData ] = useState<TxDetails>()
 
     const handleChange = (event: any) => {
         const name = event.target.name;
         const value = event.target.value;
         setInputs(values => ({...values, [name]: value}))
     }
+
+    React.useEffect(() => {
+        if (order && order.transactionHash && !blockTransactionData) {
+            //instead of requiring an account, this should be a public page, and get the chain id from the order.
+            const txDetailsPromise = currentRpcApi.getTransactionByHash(order.transactionHash, order.chainId);
+            txDetailsPromise.then(
+                response => {
+                    if (response) {
+                        setBlockTransactionData(response)
+                    } else {
+                        console.warn(`invalid response from transaction api ${response}`);
+                    }
+                    if (response?.hash) {
+                        console.log(`transaction found. hash: ${response.hash}`);
+                        setTransactionFound(true);
+                    } else {
+                        console.warn(`invalid hash from transaction api ${response} hash: ${response.hash}`);
+                    }
+
+                    if (response?.blockHash) {
+                        console.log(`transaction block hash found. blockHash: ${response.blockHash}`);
+                        setConfirmed(true);
+                    } else {
+                        console.warn(`invalid blockHash from transaction api ${response} blockHash: ${response.blockHash} blockNumber: ${response.blockNumber}`);
+                    }
+                }
+            )
+        }
+    }, [order, blockTransactionData]);
 
     const onEditConfirmed = (): boolean => {
         // if (!(inputs.walletAddress || inputs.ensAddress)) {
@@ -96,7 +129,7 @@ const OrderRow = (props: any) => {
     }
 
     const isTransactionConfirmed = (): boolean => {
-        return !!(order?.transactionHash)
+        return !!(order?.transactionHash && confirmed)
     }
 
     let editDepositorDialog = <ConfirmDialog onConfirm={() => onEditConfirmed()}
@@ -159,7 +192,7 @@ const OrderRow = (props: any) => {
             <img style={Center} className="w-8 h-8 mr-2 filter-white" src={ConfirmedIcon} alt="Status"/>
         </a> :
         <a target='_blank'
-           href={order.trackingId ? payLink(order.trackingId) : ''}>
+           href={transactionFound ? transactionStatusLink(order.transactionHash!!, order.trackingId || "") :order.trackingId ? payLink(order.trackingId) : ''}>
             <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt=""/>
         </a>
 
@@ -202,7 +235,7 @@ const OrderRow = (props: any) => {
             </div>
 
             <div className="w-20 text-sm font-righteous">
-                <p>{order.transactionHash && order.trackingId ? `CONFIRMED` : `UNPAID`}</p>
+                <p>{transactionFound ? ( confirmed ? `Confirmed` : 'Pending Approval') : `Unpaid`}</p>
             </div>
         </div>
     );
