@@ -156,7 +156,7 @@ export const TransactionStatus = () => {
                         <p>{`${numeral(currentOrder?.nativeAmount).format('0,0.000000')} ${currentOrder?.token}`}</p>
 
                         { confirmed && blockTransactionData?.blockHash &&
-                            <div>
+                            <div className="pt-2 flex flex-col justify-center items-center">
                                 <p>Block Hash</p>
                                 <a href={blockExplorerLink}>
                                 <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.blockHash)}</p>
