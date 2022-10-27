@@ -76,8 +76,8 @@ async function encodeNativeTransaction(account: string, toAddress: string, sendA
 
     // FIXME this should also be a param
     // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
-    // const _gasLimit = 21112;
-    const _gasLimit = 101112;
+    const _gasLimit = 21000;
+    // const _gasLimit = 101112;
     // const _gasLimit: number = 862032;
 
     const gasLimit = encodeNumberAsHex(_gasLimit)

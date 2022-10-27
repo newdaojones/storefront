@@ -272,6 +272,6 @@ export const infuraGetGasPrices = async (chainId: string): Promise<string> => {
     };
     const response = await ethInstance.post('', data);
     const {result} = response.data;
-    console.debug(`gas price for chainId ${chainId} response ${result}`);
+    console.debug(`infura got gas price for chainId ${chainId} response ${result}`);
     return result;
 };
