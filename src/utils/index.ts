@@ -26,6 +26,14 @@ export const getAccountAddress = (account: string) : string => {
   return address;
 }
 
+export const getAccountChainId = (account: string) : string => {
+  if (!account) {
+    console.warn(`account is not valid`);
+  }
+  const [namespace, reference] = account.split(":");
+  const chainId = `${namespace}:${reference}`;
+  return chainId;
+}
 
 export const getDisplayName = (account: string, ensName: string | null) : string => {
   let name = '';
