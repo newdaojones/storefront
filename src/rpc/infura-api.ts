@@ -1,10 +1,11 @@
 import axios, {AxiosInstance} from "axios";
-import {AssetData, TxDetails} from "../helpers/types";
+import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
 import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
 import {web3} from "../utils/walletConnect";
 import {AbiInput, AbiOutput, AbiType, StateMutabilityType} from "web3-utils";
 import {getCurrency, PAY_WITH_USDC_ENABLED, USDC_TOKEN} from "../config/currencyConfig";
 import {toWad} from "../helpers";
+import {RpcApi} from "./rpc-api";
 
 
 const ethInstance: AxiosInstance = axios.create({
@@ -25,7 +26,7 @@ const polygonInstance: AxiosInstance = axios.create({
     },
 });
 
-export async function infuraGetAccountBalances(address: string, chainId: string): Promise<AssetData[]> {
+async function infuraGetAccountBalances(address: string, chainId: string): Promise<AssetData[]> {
     const ethBalance = await infuraGetAccountBalance(address, chainId);
 
     if (PAY_WITH_USDC_ENABLED) {
@@ -37,7 +38,7 @@ export async function infuraGetAccountBalances(address: string, chainId: string)
 
 }
 
-export async function infuraGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
+async function infuraGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
     const data = {
         "jsonrpc": "2.0",
         "method": "eth_getBalance",
@@ -263,7 +264,7 @@ export const infuraGetAccountNonce = async (address: string, chainId: string): P
     return result;
 };
 
-export const infuraGetGasPrices = async (chainId: string): Promise<string> => {
+const infuraGetGasPrices = async (chainId: string): Promise<string> => {
     const data = {
         "jsonrpc": "2.0",
         "method": "eth_gasPrice",
@@ -275,3 +276,36 @@ export const infuraGetGasPrices = async (chainId: string): Promise<string> => {
     console.debug(`infura got gas price for chainId ${chainId} response ${result}`);
     return result;
 };
+
+export class InfuraApi implements RpcApi {
+    // getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    //     return infuraGetAccountBalance(address, chainId);
+    // }
+
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
+        return infuraGetAccountBalances(address, chainId);
+    }
+
+    getAccountNonce(address: string, chainId: string): Promise<number> {
+        return infuraGetAccountNonce(address, chainId);
+    }
+
+    //https://eth.wiki/json-rpc/API
+    //curl 'https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09' -X POST -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Origin: http://localhost:3000' -H 'Connection: keep-alive' -H 'Referer: http://localhost:3000/' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-GPC: 1' -H 'TE: trailers' --data-raw '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x778dAac766b448cf0Ea7D9ac9422fC7c0D2e12f2","latest"],"id":1 }'
+    getGasPrices(chainId: string): Promise<string> {
+        return infuraGetGasPrices(chainId);
+    }
+
+    getTransactionByHash(hash: string, chainId: string): Promise<TxDetails> {
+        return infuraGetTransactionByHash(hash, chainId);
+    }
+
+    getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
+        return Promise.resolve([]);
+    }
+
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return getPendingTransactions(address, chainId);
+    }
+
+}

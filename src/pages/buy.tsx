@@ -236,7 +236,8 @@ export const BuyPage = () => {
     const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
     console.info(`gasPrice hex: ${transaction?.gasPrice} = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
 
-    const gasLimitNumber = getHexValueAsString(transaction?.gasLimit);
+    const gasLimitString = getHexValueAsString(transaction?.gasLimit);
+    const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
     const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
     console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
 
@@ -262,8 +263,8 @@ export const BuyPage = () => {
     }
 
     if (paymentValueUSD && gasPriceUsd) {
-      paymentFeeUsd = gasPriceUsd;
-      paymentTotalUSD = paymentValueUSD + gasPriceUsd;
+      paymentFeeUsd = gasPriceUsd * gasLimitNumber.toNumber();
+      paymentTotalUSD = paymentValueUSD + paymentFeeUsd;
     } else {
       console.warn(`unable to calculate total trx price in USD. paymentValueUSD: ${paymentValueUSD} gasPrice: ${gasPriceUsd}`);
     }

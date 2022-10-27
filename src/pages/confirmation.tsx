@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {BigNumber, utils} from "ethers";
+import {BigNumber} from "ethers";
 import {useDispatch, useSelector} from "react-redux";
 import {selectBuyTransaction} from "../store/selector";
 import {useHistory} from "react-router-dom";
@@ -10,7 +10,6 @@ import logoIcon from "../assets/images/logo.svg";
 import QRCodeStyling from "qr-code-styling";
 import {transactionStatusLink} from "../utils/link_utils";
 import {ETH_TOKEN, getFormattedTokenValue, USDC_DECIMALS, USDC_TOKEN} from "../config/currencyConfig";
-import {toast} from "react-toastify";
 
 export const ConfirmationPage = () => {
   const history = useHistory();
