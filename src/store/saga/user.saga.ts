@@ -9,7 +9,7 @@ import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
 import {encodeTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
 import {createBrowserHistory} from "history";
-import {getCurrencyByToken} from "../../config/currencyConfig";
+import {getAccountChainId} from "../../utils";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -119,6 +119,7 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
     const res: ITransaction = yield call(() => encodeTransaction(action.payload.account, action.payload.toAddress, action.payload.amount,
         action.payload.token, action.payload.orderTrackingId));
 
+    const chainId = getAccountChainId(action.payload.account);
     const order : IOrder = {
       externalOrderId: "",
       amount: action.payload.amount,
@@ -129,8 +130,8 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       toAddress: action.payload.toAddress,
       token: action.payload.token,
       trackingId: action.payload.orderTrackingId,
-      transactionHash: null
-
+      transactionHash: null,
+      chainId: chainId,
     }
     const transactionOrder: ITransactionOrder = {
       transaction: res,
