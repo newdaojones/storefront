@@ -13,7 +13,7 @@ import {
 } from "../store/selector";
 import {userAction} from "../store/actions";
 import {useWalletConnectClient} from "../contexts/walletConnect";
-import {ellipseAddress, isMobile, toWad} from "../helpers";
+import {ellipseAddress, fromWad, isMobile, toWad} from "../helpers";
 import {IFormattedRpcResponse, useJsonRpc} from "../contexts/JsonRpcContext";
 import {toast} from "react-toastify";
 import {
@@ -95,7 +95,7 @@ export const BuyPage = () => {
 
   useEffect(() => {
     if (!transaction || !transaction.order.trackingId || transaction.order.amount === 0) {
-      console.warn(`detected invalid order: ${transaction} without tracking id or valued 0. Going back to home.`);
+      console.debug(`detected invalid order: ${transaction} without tracking id or valued 0. Going back to home.`);
       onBackPressed();
       return;
     }
@@ -105,7 +105,7 @@ export const BuyPage = () => {
         toast.error("Invalid or empty token found. Cannot initialize payment data");
         return;
       }
-      console.warn(`calculating prices for trx order token:${transaction.order.token} amount:${transaction.order.amount} txValue:${transaction.transaction.value} `)
+      console.debug(`calculating prices for trx order token:${transaction.order.token} amount:${transaction.order.amount} txValue:${transaction.transaction.value} `)
       try {
         const paymentInfo = initializePaymentData(accountBalance, transaction.order, transaction.transaction);
         setPaymentFeeUsd(paymentInfo.paymentFeeUsd);
@@ -145,13 +145,9 @@ export const BuyPage = () => {
       toast.error(`Invalid order data ${transaction?.order}`);
       return;
     }
-
-    console.warn(`updating transaction ${transaction.transaction}`);
     const token = transaction?.order.token;
     const updatedTransaction = await encodeTransaction(accountBalance.account, transaction?.order.toAddress, transaction?.order.amount,
         token, transaction?.order.trackingId)
-
-    console.warn(`updated- transaction ${transaction.transaction}`);
 
     //FIXME maybe need to wait for this dispatch to be done before doing onSendTransaction, although it uses a local variable.
     dispatch(userAction.setCreateTransaction({
@@ -232,15 +228,20 @@ export const BuyPage = () => {
       history.replace("/home");
       throw new Error(`transaction value not available. maybe should go back?. redirecting to /home page`);
     }
-    const gasPriceNumber = getHexValueAsString(transaction?.gasPrice);
-    const gasPriceUsd = convertTokenToUSD(Number(gasPriceNumber), token, tickers);
-    console.info(`gasPrice hex: ${transaction?.gasPrice} = ${gasPriceNumber} ETH = ${gasPriceUsd} USD`)
+    const gasPriceString = getHexValueAsString(transaction?.gasPrice);
+    const gasPriceNumber = getHexValueAsBigNumber(transaction?.gasPrice);
+    console.debug(`gasPrice hex: ${transaction?.gasPrice} string: ${gasPriceString} number: ${gasPriceNumber} WEI`);
 
     const gasLimitString = getHexValueAsString(transaction?.gasLimit);
     const gasLimitNumber = getHexValueAsBigNumber(transaction?.gasLimit);
-    const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
-    console.info(`gasLimit hex: ${transaction?.gasLimit}  ${gasLimitNumber} ETH = ${gasLimitUsd} USD`)
+    //const gasLimitUsd = convertTokenToUSD(Number(gasLimitNumber), token, tickers);
+    console.debug(`gasLimit hex: ${transaction?.gasLimit} string:${gasLimitString}  ${gasLimitNumber} units`)
 
+    const paymentFeesWei: BigNumber = gasPriceNumber.mul(gasLimitNumber);
+    const paymentFeesETH = fromWad(paymentFeesWei);
+
+    paymentFeeUsd = convertTokenToUSD(Number(paymentFeesETH), ETH_TOKEN, tickers) || 0;
+    console.debug(`totalFees ${paymentFeesETH} ETH  --- ${paymentFeeUsd} USD`)
 
     let paymentValueInTokenBn;
     if (token === ETH_TOKEN) {
@@ -262,20 +263,19 @@ export const BuyPage = () => {
       throw new Error(message);
     }
 
-    if (paymentValueUSD && gasPriceUsd) {
-      paymentFeeUsd = gasPriceUsd * gasLimitNumber.toNumber();
+    if (paymentValueUSD && paymentFeeUsd) {
       paymentTotalUSD = paymentValueUSD + paymentFeeUsd;
     } else {
-      console.warn(`unable to calculate total trx price in USD. paymentValueUSD: ${paymentValueUSD} gasPrice: ${gasPriceUsd}`);
+      console.warn(`unable to calculate total trx price in USD. paymentValueUSD: ${paymentValueUSD} paymentFeeUsd: ${paymentFeeUsd}`);
     }
 
-    console.debug(`payment value ${paymentTotalUSD} USD  = trx ${paymentValueUSD} USD + fee ${gasPriceUsd} USD`)
+    console.debug(`payment total ${paymentTotalUSD} USD  = trx ${paymentValueUSD} USD + fee ${paymentFeeUsd} USD`)
+
     return {
       paymentFeeUsd: paymentFeeUsd, paymentValueUsd: paymentValueUSD,
       paymentTotalUSD: paymentTotalUSD, paymentValueToken: paymentValueInTokenBn
     };
   }
-
 
   let animatedBuyButton = <button onClick={onBuyClick} style={{
     backgroundColor: '#615793',
