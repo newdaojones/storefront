@@ -132,12 +132,10 @@ export const CreateOrderPage = () => {
           </div>
 
           <div className="mt-10">
-            <a onClick={handleCreateOrder}>
-            <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+            <button onClick={handleCreateOrder} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
               <img className="w-8 h-8 mr-4" src={logoIcon} alt="" />
               <p className="font-righteous">Create Order</p>
             </button>
-          </a>
           </div>
         </div>
       </div>

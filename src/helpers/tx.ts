@@ -13,7 +13,7 @@ import {
 } from "../config/currencyConfig";
 import {getERC20TransferData} from "../rpc/infura-api";
 
-
+export const DEFAULT_GAS_LIMIT = 21000;
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
 export async function getGasPrice(chainId: string): Promise<string> {
@@ -75,11 +75,7 @@ async function encodeNativeTransaction(account: string, toAddress: string, sendA
 
 
     // FIXME this should also be a param
-    // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
-    const _gasLimit = 21000;
-    // const _gasLimit = 101112;
-    // const _gasLimit: number = 862032;
-
+    const _gasLimit = DEFAULT_GAS_LIMIT;
     const gasLimit = encodeNumberAsHex(_gasLimit)
     console.info(`gasLimit-> number: ${_gasLimit} encodedGasLimit: ${gasLimit}`);
 
@@ -139,14 +135,18 @@ async function encodeERC20Transaction(account: string, toAddress: string, sendAm
     if (!currency?.contractAddress) {
         throw new Error("contract address not defined");
     }
+
+    const contractTransactionGasLimit = DEFAULT_GAS_LIMIT * 1.5;
+    const gasLimit = encodeNumberAsHex(contractTransactionGasLimit)
+    console.info(`gasLimit-> number: ${contractTransactionGasLimit} encodedGasLimit: ${gasLimit}`);
     return {
         from: tx.from,
         to: currency?.contractAddress,
         data: data,
         nonce: tx.nonce,
         gasPrice: tx.gasPrice,
-        gasLimit: tx.gasLimit,
-        value: '0x00' //FIXME value zero?
+        gasLimit: gasLimit,
+        value: '0x00'
     };
 
 }
