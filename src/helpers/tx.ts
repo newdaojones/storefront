@@ -6,7 +6,9 @@ import {AccountBalances} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 import {
-    ETH_DECIMALS, getCurrency, isUSDStableToken,
+    ETH_DECIMALS,
+    getCurrency,
+    isUSDStableToken,
     PAY_WITH_USDC_ENABLED,
     USDC_DECIMALS,
     USDC_TOKEN
@@ -121,7 +123,7 @@ async function encodeNativeTransaction(account: string, toAddress: string, sendA
 async function encodeERC20Transaction(account: string, toAddress: string, sendAmount: number,
                                              token: string, orderTrackingId: string): Promise<ITransaction> {
     console.warn(`encoding ERC20 trx for ${sendAmount} ${token}`);
-    const [namespace, reference, address] = account.split(":");
+    const [namespace, reference] = account.split(":");
     const chainId = `${namespace}:${reference}`;
     const currency = getCurrency(chainId, token);
 

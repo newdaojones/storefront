@@ -63,7 +63,7 @@ const SLimitValues = {
 
 
 const OrderRow = (props: any) => {
-    const {asset, onEdit} = props;
+    const {asset} = props;
     const order: IOrder = asset
     let initialState = {
         name: '',
@@ -187,11 +187,11 @@ const OrderRow = (props: any) => {
     </ConfirmDialog>;
 
     const icon = isTransactionConfirmed() ?
-        <a target='_blank'
+        <a target='_blank' rel="noreferrer"
            href={transactionStatusLink(order.transactionHash!!, order.trackingId || "")}>
             <img style={Center} className="w-8 h-8 mr-2 filter-white" src={ConfirmedIcon} alt="Status"/>
         </a> :
-        <a target='_blank'
+        <a target='_blank' rel="noreferrer"
            href={transactionFound ? transactionStatusLink(order.transactionHash!!, order.trackingId || "") :order.trackingId ? payLink(order.trackingId) : ''}>
             <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt=""/>
         </a>
@@ -205,7 +205,7 @@ const OrderRow = (props: any) => {
                     <div style={SAssetName}>{`orderId: ${order.externalOrderId}`}</div>
                     <div className="flex text-xs text-white overflow-hidden">
                         {order.transactionHash && order.trackingId ?
-                            <a target='_blank'
+                            <a target='_blank' rel="noreferrer"
                                href={transactionStatusLink(order.transactionHash, order.trackingId)}>{`${ellipseAddress(order.transactionHash)}`}</a> : 'Transaction Pending'}
                     </div>
                 </div>

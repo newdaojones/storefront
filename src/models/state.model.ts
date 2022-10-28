@@ -1,5 +1,4 @@
 import {IMerchant, IOrder, ITicker, ITransactionInfo, ITransactionOrder, IUserInfo} from '.';
-import {ITransaction} from "../helpers/tx";
 
 export interface IRootState {
   userState: IUserState;

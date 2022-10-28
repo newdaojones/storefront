@@ -11,7 +11,6 @@ import {extractTransactionIdFromUrl, ITransactionStatus} from "../../utils/path_
 import {useHistory} from "react-router-dom";
 import {currentRpcApi} from "../../helpers/tx";
 import {ellipseAddress, TxDetails} from "../../helpers";
-import {useWalletConnectClient} from "../../contexts/walletConnect";
 import {toast} from "react-toastify";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder} from "../../store/selector";
@@ -29,7 +28,6 @@ import {transactionBlockExplorerLink} from "../../utils/link_utils";
 export const TransactionStatus = () => {
     let query = useLocation().search;
     const dispatch = useDispatch();
-    //const { account } = useWalletConnectClient();
     const history = useHistory();
     const [ transactionFound, setTransactionFound ] = useState(false)
     const [ confirmed, setConfirmed ] = useState(false)
@@ -133,17 +131,15 @@ export const TransactionStatus = () => {
 
 
                 {transactionId && (
-                    // <a href='#'>
-                        <div className="h-40 flex items-center justify-center">
-                            <div className="w-3/4 flex justify-center items-center pb-4">
-                                <div className="flex flex-col justify-center items-center pb-4">
-                                    <p className="text-sm">Status</p>
-                                    <p className="font-bold text-xl pl-4">{transactionFound ? (confirmed? `Confirmed`:`Pending Approval`) : `Transaction not found`}</p>
-                                </div>
-                                <img className="w-20 h-20 ml-4" style = {{animation: confirmed ? '': `spin 3s linear infinite` }} src={confirmed? confirmedIcon: pendingIcon} alt="" />
+                    <div className="h-40 flex items-center justify-center">
+                        <div className="w-3/4 flex justify-center items-center pb-4">
+                            <div className="flex flex-col justify-center items-center pb-4">
+                                <p className="text-sm">Status</p>
+                                <p className="font-bold text-xl pl-4">{transactionFound ? (confirmed? `Confirmed`:`Pending Approval`) : `Transaction not found`}</p>
                             </div>
+                            <img className="w-20 h-20 ml-4" style = {{animation: confirmed ? '': `spin 3s linear infinite` }} src={confirmed? confirmedIcon: pendingIcon} alt="" />
                         </div>
-                    // </a>
+                    </div>
                 )}
 
                 <div className="text-xs mt-1 ">{transactionFound?

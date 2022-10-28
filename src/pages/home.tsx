@@ -247,7 +247,7 @@ export const HomePage = () => {
                                src={QRLine} alt="" />
                         </div>
               }
-              <a className="text-white text-center text-sm cursor-pointer" onClick={pastePaymentLink}>Paste Link</a>
+              <button className="text-white text-center bg-transparent text-sm cursor-pointer" onClick={pastePaymentLink}>Paste Link</button>
 
 
               <div className="mt-4">

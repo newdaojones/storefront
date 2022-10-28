@@ -1,13 +1,13 @@
-import React, {lazy, Suspense} from 'react';
+import React, {Suspense} from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+import {Provider} from 'react-redux';
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './assets/styles/index.scss';
 
 import reportWebVitals from './reportWebVitals';
-import { store } from './store';
+import {store} from './store';
 import {JsonRpcContextProvider} from "./contexts/JsonRpcContext";
 import {WalletConnectProvider} from "./contexts/walletConnect";
 import {ErrorPage} from "./pages/storefrontpay/error";

@@ -91,7 +91,6 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       } finally {
         setPending(false);
       }
-      return null
     };
 
   const _verifyEip155MessageSignature = (message: string, signature: string, address: string) =>
