@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import numeral from 'numeral';
 
-import BTCIcon from '../../assets/images/ethIcon.svg';
+import ETHIcon from '../../assets/images/ethIcon.svg';
 import DollarIcon from '../../assets/images/dollarIcon.svg';
+import USDCIcon from '../../assets/images/usdc.svg';
 import RefreshIcon from '../../assets/images/reload.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
 import {useDispatch, useSelector} from "react-redux";
@@ -11,6 +12,7 @@ import OrderRow from "../../components/orderRow";
 import useInterval from "@use-it/interval";
 import {userAction} from "../../store/actions";
 import {IMerchant} from "../../models";
+import {ETH_TOKEN, USDC_TOKEN} from "../../config/currencyConfig";
 
 export const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -18,6 +20,9 @@ export const ProfilePage = () => {
 
   const [count, setCount] = useState(0);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const [totalUsdc, setTotalUsdc] = useState(0);
+  const [totalEth, setTotalEth] = useState(0);
+  const [totalUSD, setTotalUSD] = useState(0);
 
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName} totalUsd: ${merchantInfo?.totalInUsd}`);
 
@@ -32,6 +37,28 @@ export const ProfilePage = () => {
     }, 2000);
   }
 
+  React.useEffect(() => {
+    if (merchantInfo) {
+      const paidOrders = merchantInfo.orders.filter(value => value.transactionHash !== null && value.nativeAmount);
+      let ethAmount = 0;
+      let usdcAmount = 0;
+      let totalUsd = 0;
+      for (const paidOrder of paidOrders) {
+        if (paidOrder.token === ETH_TOKEN) {
+          ethAmount = ethAmount + Number(paidOrder.nativeAmount);
+          totalUsd+= paidOrder.amount;
+        } else if (paidOrder.token === USDC_TOKEN) {
+          usdcAmount = usdcAmount + paidOrder.amount;
+          totalUsd+= paidOrder.amount;
+        } else {
+          console.warn(`token not handled for paid order: ${paidOrder.token}`)
+        }
+      }
+      setTotalEth(ethAmount);
+      setTotalUsdc(usdcAmount);
+      setTotalUSD(totalUsd);
+    }
+  }, [merchantInfo]);
   function refreshOrdersForMerchant(merchantInfo: IMerchant) {
     console.log(`refreshing merchantInfo`)
     dispatch(userAction.merchantLoginSuccess({address: merchantInfo.memberAddress}))
@@ -54,16 +81,20 @@ export const ProfilePage = () => {
     <div className="w-full h-full flex items-center justify-center">
       <div className="flex flex-col w-3/4 h-3/4 bg-black bg-opacity-10 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-hidden">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Dashboard</p>
-        <div className="mt-8">
-          <p className="text-center text-white">Total payments</p>
+        <p className="text-white px-10 mt-8 pt-2 font-bold font-montserrat">Payments</p>
+        <div className="flex flex-col items-center justify-center">
+          <div className="w-1/4 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-6">
+            <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
+            {`${numeral(totalUSD || 0).format(',0.00')}`}
+          </div>
           <div className="flex items-center justify-center mt-2">
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
-              <img className="w-8 h-8 mr-2" src={BTCIcon} alt="" />
-              {`${numeral(merchantInfo?.totalInEth || 0).format('0,0.000000')}`}
+            <div className="w-30 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
+              <img className="w-8 h-8 mr-2" src={ETHIcon} alt="" />
+              {`${numeral(totalEth || 0).format('0,0.000000')}`}
             </div>
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-6">
-              <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
-              {`${numeral(merchantInfo?.totalInUsd || 0).format(',0.00')}`}
+            <div className="w-30 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-6">
+              <img className="w-8 h-8 mr-2" src={USDCIcon} alt="" />
+              {`${numeral(totalUsdc || 0).format(',0.00')}`}
             </div>
           </div>
         </div>
