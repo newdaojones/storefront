@@ -17,6 +17,8 @@ import {selectCurrentOrder} from "../../store/selector";
 import {userAction} from "../../store/actions";
 import numeral from "numeral";
 import {transactionBlockExplorerLink} from "../../utils/link_utils";
+import useInterval from "@use-it/interval";
+import {IOrder} from "../../models";
 
 /**
  * Example URL
@@ -37,6 +39,31 @@ export const TransactionStatus = () => {
 
     const currentOrder = useSelector(selectCurrentOrder)
 
+    const getTransactionDetails = (transaction: ITransactionStatus, order: IOrder) => {
+        const txDetailsPromise = currentRpcApi.getTransactionByHash(transaction.transactionId, order.chainId);
+        txDetailsPromise.then(
+            response => {
+                if (!response) {
+                    console.warn(`invalid response from transaction api ${response}`);
+                    return;
+                }
+                setBlockTransactionData(response);
+                if (response?.hash) {
+                    setTransactionFound(true);
+                } else {
+                    console.warn(`invalid hash from transaction api ${response} hash: ${response.hash}`);
+                }
+
+                if (response?.blockHash) {
+                    console.debug(`transaction block hash found. blockHash: ${response.blockHash}`);
+                    setConfirmed(true);
+                } else {
+                    console.debug(`blockHash from transaction api missing. not yet confirmed blockHash: ${response.blockHash} blockNumber: ${response.blockNumber}`);
+                }
+            }
+        )
+    }
+
     React.useEffect(() => {
         if (!query) {
             console.log(`Invalid query data, redirecting`);
@@ -45,7 +72,7 @@ export const TransactionStatus = () => {
             try {
                 const transactionData = extractTransactionIdFromUrl(query);
 
-                if (transactionData.orderTrackingId) {
+                if (transactionData.orderTrackingId && !currentOrder?.transactionHash) {
                     setTransactionId(transactionData);
                     console.info(`dispatch get order for trackingId ${transactionData.orderTrackingId}`)
                     dispatch(userAction.getOrder({orderTrackingId: transactionData.orderTrackingId}));
@@ -59,34 +86,22 @@ export const TransactionStatus = () => {
     }, [query, dispatch, history, transactionId?.externalOrderId, transactionId?.transactionId, transactionId?.orderTrackingId]);
 
 
+    useInterval(() => {
+        if (currentOrder && currentOrder.transactionHash && !confirmed) {
+            console.log(`refreshing order transaction details...`)
+            if (transactionId) {
+                getTransactionDetails(transactionId, currentOrder)
+
+            } else {
+                console.error("invalid order trackingId. cannot refresh. ");
+            }
+        }
+    }, 60000);
+
     React.useEffect(() => {
         if (transactionId && currentOrder && !blockTransactionData) {
-            console.warn(`fetching transaction by hash`)
-
-            //instead of requiring an account, this should be a public page, and get the chain id from the order.
-            const txDetailsPromise = currentRpcApi.getTransactionByHash(transactionId.transactionId, currentOrder.chainId);
-            txDetailsPromise.then(
-                response => {
-                    if (response) {
-                        setBlockTransactionData(response)
-                    } else {
-                        console.warn(`invalid response from transaction api ${response}`);
-                    }
-                    if (response?.hash) {
-                        console.log(`transaction found. hash: ${response.hash}`);
-                        setTransactionFound(true);
-                    } else {
-                        console.warn(`invalid hash from transaction api ${response} hash: ${response.hash}`);
-                    }
-
-                    if (response?.blockHash) {
-                        console.log(`transaction block hash found. blockHash: ${response.blockHash}`);
-                        setConfirmed(true);
-                    } else {
-                        console.warn(`invalid blockHash from transaction api ${response} blockHash: ${response.blockHash} blockNumber: ${response.blockNumber}`);
-                    }
-                }
-            )
+            console.info(`fetching transaction by hash...`)
+            getTransactionDetails(transactionId, currentOrder);
         }
     }, [transactionId, currentOrder, blockTransactionData]);
 
