@@ -19,7 +19,7 @@ export const ProfilePage = () => {
   let merchantInfo = useSelector(selectMerchantInfo);
 
   const [count, setCount] = useState(0);
-  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [totalUsdc, setTotalUsdc] = useState(0);
   const [totalEth, setTotalEth] = useState(0);
   const [totalUSD, setTotalUSD] = useState(0);
@@ -81,18 +81,18 @@ export const ProfilePage = () => {
     <div className="w-full h-full flex items-center justify-center">
       <div className="flex flex-col w-3/4 h-3/4 bg-black bg-opacity-10 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-hidden">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Dashboard</p>
-        <p className="text-white px-10 mt-8 pt-2 font-bold font-montserrat">Payments</p>
         <div className="flex flex-col items-center justify-center">
-          <div className="w-1/4 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-6">
+          <p className="text-white px-10 mt-8 pt-2 font-bold font-montserrat">Payments</p>
+          <div className="w-60 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
             <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
             {`${numeral(totalUSD || 0).format(',0.00')}`}
           </div>
-          <div className="flex items-center justify-center mt-2">
-            <div className="w-30 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
+          <div className="w-60 flex items-center justify-around mt-2">
+            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
               <img className="w-8 h-8 mr-2" src={ETHIcon} alt="" />
-              {`${numeral(totalEth || 0).format('0,0.000000')}`}
+              {`${numeral(totalEth || 0).format('0,0.0000')}`}
             </div>
-            <div className="w-30 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-6">
+            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-6">
               <img className="w-8 h-8 mr-2" src={USDCIcon} alt="" />
               {`${numeral(totalUsdc || 0).format(',0.00')}`}
             </div>
@@ -111,9 +111,9 @@ export const ProfilePage = () => {
             <div className="grid h-full min-w-max w-full overflow-auto" style={{maxHeight: '25rem'}}>
               {
                 merchantInfo?.orders && merchantInfo?.orders.length > 0 ?
-                    merchantInfo?.orders.map(token => (
+                    merchantInfo?.orders.map(orderItem => (
                         <div className="pt-1">
-                          <OrderRow key={token.transactionHash} asset={token} onEdit={onEdit}/>
+                          <OrderRow key={orderItem.transactionHash} asset={orderItem} onEdit={onEdit}/>
                         </div>)
                     )
                     :
