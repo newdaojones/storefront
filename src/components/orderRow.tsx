@@ -89,16 +89,16 @@ const OrderRow = (props: any) => {
             const txDetailsPromise = currentRpcApi.getTransactionByHash(order.transactionHash, order.chainId);
             txDetailsPromise.then(
                 response => {
-                    if (response) {
-                        setBlockTransactionData(response)
-                    } else {
+                    if (!response) {
                         console.warn(`invalid response from transaction api ${response}`);
+                        return;
                     }
+                    setBlockTransactionData(response)
                     if (response?.hash) {
-                        console.log(`transaction found. hash: ${response.hash}`);
+                        console.log(`transaction found. hash: ${response?.hash}`);
                         setTransactionFound(true);
                     } else {
-                        console.warn(`invalid hash from transaction api ${response} hash: ${response.hash}`);
+                        console.warn(`invalid hash from transaction api ${response} hash: ${response?.hash}`);
                     }
 
                     if (response?.blockHash) {
