@@ -138,7 +138,7 @@ async function encodeERC20Transaction(account: string, toAddress: string, sendAm
         throw new Error("contract address not defined");
     }
 
-    const contractTransactionGasLimit = DEFAULT_GAS_LIMIT * 1.5;
+    const contractTransactionGasLimit = DEFAULT_GAS_LIMIT * 2.5;
     const gasLimit = encodeNumberAsHex(contractTransactionGasLimit)
     console.info(`gasLimit-> number: ${contractTransactionGasLimit} encodedGasLimit: ${gasLimit}`);
     return {
