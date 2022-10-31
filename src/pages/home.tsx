@@ -122,9 +122,10 @@ export const HomePage = () => {
   }
 
   const pastePaymentLink = async () => {
-    console.debug(`paste link`)
+
     try {
       const text = await navigator.clipboard.readText();
+      console.debug(`paste link ${text}`)
       processScanResult(text);
     } catch (e) {
       console.warn(`error ${e}`);
@@ -142,7 +143,6 @@ export const HomePage = () => {
     const currencySymbol = accountBalance.token;
 
     let nativeTotal: number;
-    //FIXME we can just use usdc price here, instead of assuming 1=1 relation
     if (!isUSDStableToken(currencySymbol)) {
       console.log(`using non stable coin ${currencySymbol}`);
       nativeTotal = convertUSDtoToken(paymentSubtotalUsd, currencySymbol, tickers) || 0;
@@ -151,6 +151,7 @@ export const HomePage = () => {
         return;
       }
     } else {
+      //FIXME we can just use usdc price here, instead of assuming 1=1 relation
       nativeTotal = order.amount;
     }
     setLoading(true);
@@ -183,7 +184,6 @@ export const HomePage = () => {
     await refreshBalances(accounts);
   }
 
-  //FIXME get the usdc balance and fallback to eth
   const balanceN = Number(accountBalance.balanceString);
   const currencySymbol = accountBalance.token;
   const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);
