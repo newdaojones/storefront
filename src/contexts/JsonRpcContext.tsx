@@ -80,7 +80,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         setResult(result);
         return result;
       } catch (err: any) {
-        console.error("RPC request failed: ", err);
+        console.error(`RPC request failed. err: ${err} message: ${err?.message} result: ${err?.result}`);
         let errorResult = {
           address,
           valid: false,

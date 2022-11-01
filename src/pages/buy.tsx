@@ -205,7 +205,13 @@ export const BuyPage = () => {
           if (res?.valid) {
             handleSuccessfulTransaction(res);
           } else {
-            toast.error(`Error sending transaction: ${res?.result}`|| "Something went wrong, please try again. ");
+            if (res?.result && !res?.result.includes("undefined")) {
+              //good error, else don't show it
+              toast.error(`Invalid transaction: ${res?.result}`|| "Something went wrong, please try again. ");
+            } else {
+              toast.error(`Something went wrong while sending the transaction.`);
+            }
+
             console.debug(`valid = false. transaction result ${res?.result}`)
             dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
           }
