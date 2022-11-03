@@ -74,7 +74,6 @@ function setMerchantInfo(state: IUserState, { payload }: IAction<IMerchant>) {
 
 function setTransactionData(state: IUserState, { payload }: IAction<ITransactionOrder | null>) {
   return produce(state, draft => {
-    console.warn(`updating transactionOrder to ${payload}`)
     draft.transactionData = payload;
   });
 }
@@ -86,7 +85,6 @@ function setTransactionData(state: IUserState, { payload }: IAction<ITransaction
  */
 function setOrderData(state: IUserState, { payload }: IAction<IOrder | null>) {
   return produce(state, draft => {
-    console.warn(`setting order data to ${payload}`);
     draft.order = payload;
   });
 }
