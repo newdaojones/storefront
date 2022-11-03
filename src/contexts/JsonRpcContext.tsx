@@ -2,7 +2,7 @@ import { BigNumber, utils } from "ethers";
 import { createContext, ReactNode, useContext, useState } from "react";
 import * as encoding from "@walletconnect/encoding";
 import { Transaction as EthTransaction } from "@ethereumjs/tx";
-import {getLocalStorageTestnetFlag} from "../helpers";
+import {getLocalStorageTestnetFlag, isExceptionUnrecoverable} from "../helpers";
 import { useWalletConnectClient } from "./walletConnect";
 import {
   chainData,
@@ -61,7 +61,7 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
   const [result, setResult] = useState<IFormattedRpcResponse | null>();
   const [isTestnet, setIsTestnet] = useState(getLocalStorageTestnetFlag());
 
-  const { client, session, accounts, balances, solanaPublicKeys } = useWalletConnectClient();
+  const { client, session, accounts, balances, solanaPublicKeys, disconnect, enableToasts } = useWalletConnectClient();
 
   // const { chainData } = useChainData();
 
@@ -80,13 +80,20 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
         setResult(result);
         return result;
       } catch (err: any) {
-        console.error(`RPC request failed. err: ${err} message: ${err?.message} result: ${err?.result}`);
+        console.error(`JsonRpcContext request failed. err: ${err} message: ${err?.message} result: ${err?.result}`);
         let errorResult = {
           address,
           valid: false,
           result: err?.message ?? err,
         };
         setResult(errorResult);
+
+        if (isExceptionUnrecoverable(err)) {
+          // ex topic is not valid anymore, doing a disconnect
+          console.warn(`JsonRpcContext:_createJsonRpcRequestHandler unrecoverable exception. Disconnecting. `);
+          await disconnect(true);
+        }
+
         return errorResult
       } finally {
         setPending(false);
@@ -138,12 +145,15 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
       const caipAccountAddress = `${chainId}:${address}`;
       const account = accounts.find((account: string) => account === caipAccountAddress);
       if (account === undefined) throw new Error(`Account for ${caipAccountAddress} not found`);
-      const balance = BigNumber.from(balances[account][0].balance || "0");
-
-      let gasPriceBigN = BigNumber.from(trx.gasPrice);
+      const accountBalance = balances[account];
+      //TODO improve this to get eth ethBalance instead of assuming it comes in the first spot
+      const ethBalance = BigNumber.from(accountBalance[0].balance || "0");
+      const gasPriceBigN = BigNumber.from(trx.gasPrice);
       const gasLimitBigN = BigNumber.from(trx.gasLimit);
-      let totalGasFees = gasPriceBigN.mul(gasLimitBigN);
-      if (balance.lt(totalGasFees)) {
+      const totalGasFees = gasPriceBigN.mul(gasLimitBigN);
+
+      console.info(`current balance is ${ethBalance} ETH. gasPrice: ${gasPriceBigN} ETH gasLimit: ${gasLimitBigN}. transaction cost: ${totalGasFees} ETH`)
+      if (ethBalance.lt(totalGasFees)) {
         console.warn(`Insufficient funds for intrinsic transaction cost`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
@@ -154,10 +164,18 @@ export function JsonRpcContextProvider({ children }: { children: ReactNode | Rea
           value: trx.value,
         };
       }
-      const transactionCost = BigNumber.from(trx.value);
-      let transactionCostBigN = transactionCost.add(totalGasFees);
-      console.info(`current balance is ${balance}. gasPrice: ${gasPriceBigN} gasLimit: ${gasLimitBigN}. transaction cost: ${transactionCostBigN}`)
-      if (balance.lt(transactionCostBigN)) {
+
+      let isEthTransaction = true;
+      if (BigNumber.from(trx.value).eq(0)) {
+        isEthTransaction = false;
+      }
+
+      let transactionValue = BigNumber.from(trx.value);
+      const transactionCostBigN = isEthTransaction ? transactionValue.add(totalGasFees) : totalGasFees;
+
+      console.info(`current balance is ${ethBalance} ETH. gasPrice: ${gasPriceBigN} ETH gasLimit: ${gasLimitBigN}. transaction cost: ${totalGasFees} ETH`)
+      //FIXME this only works for eth, so we aren't catching the insufficient funds error for usdc here, but they are checked in the client app.
+      if (ethBalance.lt(transactionCostBigN)) {
         console.warn(`Insufficient funds for transaction`);
         return {
           method: DEFAULT_EIP155_METHODS.ETH_SEND_TRANSACTION,
