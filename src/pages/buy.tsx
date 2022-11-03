@@ -75,17 +75,17 @@ export const BuyPage = () => {
   const [ paymentTotalUSD, setPaymentTotalUSD ] = useState(0);
 
   function onBackPressed() {
-    console.warn(`onBackPressed event, clearing trx. `)
     dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
     dispatch(userAction.unsetTransaction());
   }
 
-  const onBackButtonEvent = (e: Event) => {
-    e.preventDefault();
-    onBackPressed();
-  }
-
   useEffect(() => {
+    const onBackButtonEvent = (e: Event) => {
+      console.warn(`onBackButtonEvent preventing default. `)
+      e.preventDefault();
+      onBackPressed();
+    }
+
     window.history.pushState(null, '', window.location.pathname);
     window.addEventListener('popstate', onBackButtonEvent);
     return () => {
@@ -140,11 +140,17 @@ export const BuyPage = () => {
       return;
     }
 
-    dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     if (!transaction?.order.trackingId || !transaction?.order.toAddress || !transaction?.order.amount) {
       toast.error(`Invalid order data ${transaction?.order}`);
       return;
     }
+
+    if (accountBalance.balanceUsd < transaction?.order.amount) {
+      toast.error(`Insufficient balance`);
+      return;
+    }
+
+    dispatch(userAction.setTransactionInProgress(TransactionState.IN_PROGRESS));
     const token = transaction?.order.token;
     const updatedTransaction = await encodeTransaction(accountBalance.account, transaction?.order.toAddress, transaction?.order.amount,
         token, transaction?.order.trackingId)
