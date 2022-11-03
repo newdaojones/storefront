@@ -68,17 +68,19 @@ export const Pay = () => {
 
     const qrCodeUri = currentOrder?.trackingId ? orderPaymentLink(currentOrder.trackingId) : '';
 
+    //automatic update
     useInterval(() => {
         if (currentOrder) {
             if (currentOrder.transactionHash) {
+                console.debug(`found transaction hash, moving to status page.`);
                 const relativePath = `status?transactionId=${currentOrder.transactionHash}&orderTrackingId=${currentOrder.trackingId}`
-                console.log(`found transaction hash, moving to status page. `);
                 history.replace(relativePath);
-                return
+                window.location.reload();
+                return;
             }
 
             console.log(`refreshing order data... ${count}`)
-            setCount((currentCount) => currentCount + 1);
+            setCount(count + 1);
             if (currentOrder.trackingId) {
                 dispatch(userAction.getOrder({orderTrackingId: currentOrder.trackingId}))
             } else {
@@ -125,10 +127,6 @@ export const Pay = () => {
             }
         }
     }, [currentOrder, showBlackWhite, qrCodeUri, size]);
-
-    // function onTroubleScanningClicked() {
-    //     setShowBlackWhite(!showBlackWhite);
-    // }
 
     function onCopyLinkClicked() {
         navigator.clipboard.writeText(qrCodeUri).then(r => {
