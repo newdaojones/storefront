@@ -26,8 +26,8 @@ export const Menu = ({
       }
       const onHomeClicked = () => {
           console.info(`home clicked`);
-          dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
-          dispatch(userAction.unsetTransaction());
+          //dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
+          //dispatch(userAction.unsetTransaction());
       }
 
       return (
