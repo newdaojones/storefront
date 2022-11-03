@@ -145,7 +145,9 @@ export const BuyPage = () => {
       return;
     }
 
-    if (accountBalance.balanceUsd < transaction?.order.amount) {
+    let currentBalance = Number(accountBalance.balanceString);
+    console.debug(`checking balance balanceUSD: ${accountBalance.balanceUsd} balanceString: ${accountBalance.balanceString} balanceNumber: ${currentBalance} < order amount: ${transaction.order.amount} `)
+    if (currentBalance < transaction.order.amount) {
       toast.error(`Insufficient balance`);
       return;
     }
