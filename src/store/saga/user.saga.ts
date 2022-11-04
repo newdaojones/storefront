@@ -6,10 +6,11 @@ import {userAction} from '../actions';
 import {toast} from 'react-toastify';
 import {ens} from '../../utils/walletConnect';
 import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
-import {encodeTransaction, ITransaction} from "../../helpers/tx";
+import {currentRpcApi, encodeTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
 import {createBrowserHistory} from "history";
 import {getAccountChainId} from "../../utils";
+import {ParsedTx} from "../../helpers";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -36,6 +37,8 @@ export default function* root() {
     takeLatest(EUserActionTypes.UPDATE_MERCHANT_SETTINGS as any, watchUpdateMerchant),
 
     takeLatest(EUserActionTypes.UNSET_CURRENT_ORDER as any, watchUnsetOrder),
+
+    takeLatest(EUserActionTypes.GET_PENDING_TRANSACTIONS as any, watchGetPendingTransactions),
 
     // maybe not needed
     //takeLatest(EUserActionTypes.UPDATE_MERCHANT_SUCCESS as any, watchGetMerchantInfo)
@@ -197,6 +200,16 @@ function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: {mercha
   } catch (err: any) {
     console.error(`error while creating merchant ${err}`)
     toast.error(err.data.message ? `${err.data.message}` : `Error ${err.status}`);
+  }
+}
+
+function* watchGetPendingTransactions(action: { type: EUserActionTypes; payload: { address: string, chainId: string}}) {
+  try {
+    console.log(`watchGetPendingTransactions address: ${action.payload.address} chainId: ${action.payload.chainId}`)
+    const res: AxiosResponse<ParsedTx[]> = yield call(() => currentRpcApi.getAccountTransactions(action.payload.address, action.payload.chainId));
+    yield put(userAction.getPendingTransactionsSuccess(res.data));
+  } catch (err: any) {
+    toast.error(err.message);
   }
 }
 

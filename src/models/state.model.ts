@@ -1,4 +1,5 @@
 import {IMerchant, IOrder, ITicker, ITransactionInfo, ITransactionOrder, IUserInfo} from '.';
+import {ParsedTx} from "../helpers";
 
 export interface IRootState {
   userState: IUserState;
@@ -30,6 +31,7 @@ export interface IUserState {
   transactionInfo: ITransactionInfo | null;
   order: IOrder | null;
   transactionInProgress: TransactionState;
+  accountTransactions: ParsedTx[] | null;
 }
 
 

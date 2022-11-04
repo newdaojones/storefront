@@ -38,7 +38,7 @@ export const selectTickers = createSelector([selectUserState], userState => {
   return userState.tickers;
 });
 
-export const selectCreateTransaction = createSelector([selectUserState], userState => {
+export const selectTransactionOrder = createSelector([selectUserState], userState => {
   return userState.transactionData;
 });
 
@@ -56,4 +56,8 @@ export const selectCurrentOrder = createSelector([selectUserState], userState =>
 
 export const selectMerchantInfo = createSelector([selectUserState], userState => {
   return userState.merchantInfo;
+});
+
+export const selectAccountTransactions = createSelector([selectUserState], userState => {
+  return userState.accountTransactions;
 });

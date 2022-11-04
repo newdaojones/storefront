@@ -11,6 +11,7 @@ import {
 } from '../../models';
 import * as H from "history";
 import {toast} from "react-toastify";
+import {ParsedTx} from "../../helpers";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -170,9 +171,17 @@ const getOrder = (payload: { orderTrackingId: String }) => {
 };
 
 
-const getPendingTransactions = (payload: { address: String }) => {
+const getPendingTransactions = (payload: { address: string, chainId: string }) => {
   return {
-    type: EUserActionTypes.GET_ORDER,
+    type: EUserActionTypes.GET_PENDING_TRANSACTIONS,
+    payload
+  };
+};
+
+const getPendingTransactionsSuccess = (payload: ParsedTx[]) => {
+  console.info(`getAccountTransactionsSuccess `)
+  return {
+    type: EUserActionTypes.GET_PENDING_TRANSACTIONS_SUCCESS,
     payload
   };
 };
@@ -199,5 +208,6 @@ export const userAction = {
   updateMerchant,
   updateMerchantSuccess,
   unsetCurrentOrder,
-  getPendingTransactions
+  getPendingTransactions,
+  getPendingTransactionsSuccess,
 };

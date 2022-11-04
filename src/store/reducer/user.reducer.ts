@@ -13,6 +13,7 @@ import {
   TransactionState
 } from '../../models';
 import { userState } from '../states/user.state';
+import {ParsedTx} from "../../helpers";
 
 export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.LOGIN_SUCCESS]: setLoginSuccessStatus,
@@ -26,6 +27,7 @@ export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.CREATE_ORDER_SUCCESS]: setOrderData,
   [userActionTypes.GET_ORDER_SUCCESS]: setOrderData,
   [userActionTypes.CREATE_MERCHANT_SUCCESS]: setMerchantInfo,
+  [userActionTypes.GET_PENDING_TRANSACTIONS_SUCCESS]: setPendingTransactionsData,
 });
 
 function setLoginSuccessStatus(state: IUserState, { payload }: IAction<IAccountInfo>) {
@@ -71,6 +73,13 @@ function setMerchantInfo(state: IUserState, { payload }: IAction<IMerchant>) {
     draft.merchantInfo = payload;
   });
 }
+
+function setPendingTransactionsData(state: IUserState, { payload }: IAction<ParsedTx[]>) {
+  return produce(state, draft => {
+    draft.accountTransactions = payload;
+  });
+}
+
 
 function setTransactionData(state: IUserState, { payload }: IAction<ITransactionOrder | null>) {
   return produce(state, draft => {
