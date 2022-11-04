@@ -6,7 +6,7 @@ import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getPreferredAccountBalance} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
-import {selectCreateTransaction, selectCurrentOrder, selectTickers} from "../store/selector";
+import {selectTransactionOrder, selectCurrentOrder, selectTickers} from "../store/selector";
 import numeral from "numeral";
 import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
@@ -40,7 +40,7 @@ export const HomePage = () => {
 
   const tickers = useSelector(selectTickers);
   const currentOrder = useSelector(selectCurrentOrder);
-  const transaction = useSelector(selectCreateTransaction)
+  const transaction = useSelector(selectTransactionOrder)
 
   const clearUrlParams = () => {
     const queryParams = ""
