@@ -1,5 +1,6 @@
 import {chainData} from "../consts";
-import {ellipseAddress} from "../helpers";
+import {ellipseAddress, ParsedTx} from "../helpers";
+import {debugAccountTransaction, debugTransaction, ITransaction} from "../helpers/tx";
 
 export const sleep = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -22,8 +23,15 @@ const getConnectionNetwork = (account: string) : string => {
   return ""
 }
 export const getAccountAddress = (account: string) : string => {
-  const [address] = account.split(":");
+  const [namespace, reference, address] = account.split(":");
   return address;
+}
+
+export const isSameTransaction = (trx1: ParsedTx, trx2: ITransaction): boolean => {
+  console.info(`trx1 ${debugAccountTransaction(trx1)}`);
+  console.info(`trx2 ${debugTransaction(trx2)}`);
+
+  return trx1.nonce === trx2.nonce;
 }
 
 export const getAccountChainId = (account: string) : string => {
