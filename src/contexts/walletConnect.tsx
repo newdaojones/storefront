@@ -18,7 +18,7 @@ import {useDispatch} from 'react-redux';
 import {userAction} from '../store/actions';
 import {sleep} from '../utils';
 import {toast} from 'react-toastify';
-import {AccountBalances} from "../helpers";
+import {AccountBalances, isExceptionUnrecoverable} from "../helpers";
 import {getRequiredNamespaces} from "../helpers/namespaces";
 import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
@@ -353,6 +353,18 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       [client, session, merchantLogin]
   );
 
+  function disconnectAndReload() {
+    disconnect().then(() => {
+      console.log(`disconnect done.`)
+      // FIXME review the reload needed or not.
+      // it's needed to show the new qr after disconnecting. it could be done here, or in disconnect
+      // this is a bad place cause the hook can be called multiple times, maybe move it to client code, but that means that automatic disconnects (connect errors) won't refresh the qr
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
+  }
+
   const connect = useCallback(
     async pairing => {
       try {
@@ -387,15 +399,14 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         }
 
         if (!showToasts) {
-          disconnect().then(() => {
-            console.log(`disconnect done.`)
-            //FIXME review the reload needed or not.
-            // it's needed to show the new qr after disconnecting. it could be done here, or in disconnect
-            // this is a bad place cause the hook can be called multiple times, maybe move it to client code, but that means that automatic disconnects (connect errors) won't refresh the qr
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          });
+          disconnectAndReload();
+          return;
+        }
+        //FIXME not sure if this is caught here or in other methods like rpc.sendTransaction
+        if (isExceptionUnrecoverable(e)) {
+          // topic is not valid anymore, doing a disconnect
+          console.warn(`unrecoverable exception. Disconnecting. `);
+          disconnectAndReload();
         }
 
       } finally {
@@ -574,7 +585,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   useEffect(() => {
     if (!client) {
       try {
-        //TODO change the client data according to whether is merchant or consumer
         createClient().then(value => {
           console.debug(`client created ok: ${value}`)
         }).catch(reason => {

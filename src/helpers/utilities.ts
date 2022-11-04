@@ -48,6 +48,14 @@ export function getDataString(func: string, arrVals: any[]): string {
   return data;
 }
 
+export const isExceptionUnrecoverable = (e: any) : boolean => {
+  if (e?.message && e?.message.includes('No matching key')) {
+    console.warn(`No Matching key: Unrecoverable exception: ${e}`);
+    return true;
+  }
+  return false;
+}
+
 export function isMobile(): boolean {
   let mobile = false;
 
