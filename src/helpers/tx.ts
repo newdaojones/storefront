@@ -2,7 +2,7 @@ import * as encoding from "@walletconnect/encoding";
 import {BigNumber, utils} from "ethers";
 
 import {fromWad, toWad} from "./utilities";
-import {AccountBalances} from "./types";
+import {AccountBalances, ParsedTx} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
 import {
@@ -25,7 +25,9 @@ export async function getGasPrice(chainId: string): Promise<string> {
 export function debugTransaction(trx: ITransaction) {
     return `transaction from: ${trx.from} to: ${trx.to} value: ${trx.value} nonce: ${trx.nonce} data: ${trx.data}  gasLimit: ${trx.gasLimit} `;
 }
-
+export function debugAccountTransaction(trx: ParsedTx) {
+    return `transaction from: ${trx.from} to: ${trx.to} value: ${trx.value} nonce: ${trx.nonce} fee: ${trx.fee}  gasUsed: ${trx.gasUsed} `;
+}
 
 function debugTransactionEncodingDecoding(_value: any, value: string) {
     //TODO this is only debug code
