@@ -14,6 +14,7 @@ import {
 } from '../../models';
 import { userState } from '../states/user.state';
 import {ParsedTx} from "../../helpers";
+import {EtherscanTx} from "../../rpc/etherscan-api";
 
 export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.LOGIN_SUCCESS]: setLoginSuccessStatus,
@@ -74,7 +75,8 @@ function setMerchantInfo(state: IUserState, { payload }: IAction<IMerchant>) {
   });
 }
 
-function setPendingTransactionsData(state: IUserState, { payload }: IAction<ParsedTx[]>) {
+function setPendingTransactionsData(state: IUserState, { payload }: IAction<EtherscanTx[]>) {
+  console.warn(`setPendingTransactionsData payload: ${payload} lenght: ${payload?.length}`)
   return produce(state, draft => {
     draft.accountTransactions = payload;
   });

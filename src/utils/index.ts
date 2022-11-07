@@ -1,6 +1,8 @@
 import {chainData} from "../consts";
 import {ellipseAddress, ParsedTx} from "../helpers";
-import {debugAccountTransaction, debugTransaction, ITransaction} from "../helpers/tx";
+import {debugAccountTransaction, debugEtherscanAccountTransaction, debugTransaction, ITransaction} from "../helpers/tx";
+import {EtherscanTx} from "../rpc/etherscan-api";
+import {hexToNumber} from "@walletconnect/encoding";
 
 export const sleep = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -27,11 +29,11 @@ export const getAccountAddress = (account: string) : string => {
   return address;
 }
 
-export const isSameTransaction = (trx1: ParsedTx, trx2: ITransaction): boolean => {
-  console.info(`trx1 ${debugAccountTransaction(trx1)}`);
+export const isSameTransaction = (trx1: EtherscanTx, trx2: ITransaction): boolean => {
+  console.info(`trx1 ${debugEtherscanAccountTransaction(trx1)}`);
   console.info(`trx2 ${debugTransaction(trx2)}`);
-
-  return trx1.nonce === trx2.nonce;
+  const decodedNonce = hexToNumber(trx2.nonce);
+  return Number(trx1.nonce) === decodedNonce;
 }
 
 export const getAccountChainId = (account: string) : string => {

@@ -61,3 +61,7 @@ export const selectMerchantInfo = createSelector([selectUserState], userState =>
 export const selectAccountTransactions = createSelector([selectUserState], userState => {
   return userState.accountTransactions;
 });
+
+export const selectNonce = createSelector([selectUserState], userState => {
+  return userState.nonce;
+});

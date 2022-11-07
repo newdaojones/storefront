@@ -11,6 +11,7 @@ import * as H from "history";
 import {createBrowserHistory} from "history";
 import {getAccountChainId} from "../../utils";
 import {ParsedTx} from "../../helpers";
+import {etherscanGetAccountTransactions, EtherscanTx} from "../../rpc/etherscan-api";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -206,8 +207,12 @@ function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: {mercha
 function* watchGetPendingTransactions(action: { type: EUserActionTypes; payload: { address: string, chainId: string}}) {
   try {
     console.log(`watchGetPendingTransactions address: ${action.payload.address} chainId: ${action.payload.chainId}`)
-    const res: AxiosResponse<ParsedTx[]> = yield call(() => currentRpcApi.getAccountTransactions(action.payload.address, action.payload.chainId));
-    yield put(userAction.getPendingTransactionsSuccess(res.data));
+
+    // const res: AxiosResponse<EtherscanTx[]> = yield call(() => etherscanGetAccountTransactions(action.payload.address, action.payload.chainId));
+    const res: EtherscanTx[] = yield call(() => etherscanGetAccountTransactions(action.payload.address, action.payload.chainId));
+    // const res: AxiosResponse<ParsedTx[]> = yield call(() => currentRpcApi.getAccountTransactions(action.payload.address, action.payload.chainId));
+    console.warn(`watchGetPendingTransactions results: ${res} itesm: ${res.length}`)
+    yield put(userAction.getPendingTransactionsSuccess(res));
   } catch (err: any) {
     toast.error(err.message);
   }
