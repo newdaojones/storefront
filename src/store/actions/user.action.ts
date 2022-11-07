@@ -11,7 +11,7 @@ import {
 } from '../../models';
 import * as H from "history";
 import {toast} from "react-toastify";
-import {ParsedTx} from "../../helpers";
+import {EtherscanTx} from "../../rpc/etherscan-api";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -178,8 +178,8 @@ const getPendingTransactions = (payload: { address: string, chainId: string }) =
   };
 };
 
-const getPendingTransactionsSuccess = (payload: ParsedTx[]) => {
-  console.info(`getAccountTransactionsSuccess `)
+const getPendingTransactionsSuccess = (payload: EtherscanTx[]) => {
+  console.info(`getPendingTransactionsSuccess `)
   return {
     type: EUserActionTypes.GET_PENDING_TRANSACTIONS_SUCCESS,
     payload
