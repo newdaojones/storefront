@@ -14,6 +14,7 @@ import {
     USDC_TOKEN
 } from "../config/currencyConfig";
 import {getERC20TransferData} from "../rpc/infura-api";
+import {EtherscanTx} from "../rpc/etherscan-api";
 
 export const DEFAULT_GAS_LIMIT = 21000;
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
@@ -28,7 +29,9 @@ export function debugTransaction(trx: ITransaction) {
 export function debugAccountTransaction(trx: ParsedTx) {
     return `transaction from: ${trx.from} to: ${trx.to} value: ${trx.value} nonce: ${trx.nonce} fee: ${trx.fee}  gasUsed: ${trx.gasUsed} `;
 }
-
+export function debugEtherscanAccountTransaction(trx: EtherscanTx) {
+    return `transaction from: ${trx.from} to: ${trx.to} value: ${trx.value} nonce: ${trx.nonce} gasPrice: ${trx.gasPrice}  gasUsed: ${trx.gasUsed} `;
+}
 function debugTransactionEncodingDecoding(_value: any, value: string) {
     //TODO this is only debug code
     const bigN = BigNumber.from(_value.toString())
