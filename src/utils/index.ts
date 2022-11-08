@@ -33,7 +33,7 @@ export const isSameTransaction = (trx1: EtherscanTx, trx2: ITransaction): boolea
   console.info(`trx1 ${debugEtherscanAccountTransaction(trx1)}`);
   console.info(`trx2 ${debugTransaction(trx2)}`);
   const decodedNonce = hexToNumber(trx2.nonce);
-  return Number(trx1.nonce) === decodedNonce;
+  return Number(trx1.nonce) === decodedNonce && trx1.from.toLowerCase() === trx2.from.toLowerCase();
 }
 
 export const getAccountChainId = (account: string) : string => {

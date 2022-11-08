@@ -85,7 +85,7 @@ export const SettingsPage = () => {
             <p className="text-center text-white mr-8">Wallet Address</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
               {`0x${ellipseAddress(merchantInfo?.memberAddress)}`}
-              <img className="ml-4 w-4 h-4" src={CopyIcon} onClick={copyAddressToClipboard}/>
+              <img className="ml-4 w-4 h-4 cursor-pointer" src={CopyIcon} onClick={copyAddressToClipboard}/>
             </div>
           </div>
           <div className="w-full flex items-center justify-between mt-10">

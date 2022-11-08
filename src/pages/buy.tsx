@@ -85,6 +85,20 @@ export const BuyPage = () => {
         dispatch(userAction.unsetTransaction());
     }
 
+    function reloadPendingTransactions() {
+        if (transactionInProgress === TransactionState.IN_PROGRESS) {
+            console.warn("scheduling account transactions get in 30s");
+            setTimeout(() => {
+                let accountChainId = getAccountChainId(accountBalance.account);
+                let accountAddress = getAccountAddress(accountBalance.account);
+                console.warn(`getting account transactions for  address: ${accountChainId} chainId: ${accountAddress}...`)
+                dispatch(userAction.getPendingTransactions({address: accountAddress, chainId: accountChainId}));
+            }, 30000);
+        } else {
+            console.info(`not reloading since not in progress`);
+        }
+    }
+
     useEffect(() => {
         const onBackButtonEvent = (e: Event) => {
             console.warn(`onBackButtonEvent preventing default. `)
@@ -125,6 +139,7 @@ export const BuyPage = () => {
         }
     }, [transactionOrder])
 
+    // get account transactions hook (in case the result isn't returned)
     useEffect(() => {
         if (transactionInProgress === TransactionState.IN_PROGRESS) {
             // check for transaction in the network
@@ -136,21 +151,6 @@ export const BuyPage = () => {
         }
 
     }, [transactionInProgress]);
-
-    function reloadPendingTransactions() {
-        if (transactionInProgress === TransactionState.IN_PROGRESS) {
-            console.warn("scheduling account transactions get in 30s");
-            setTimeout(() => {
-                let accountChainId = getAccountChainId(accountBalance.account);
-                let accountAddress = getAccountAddress(accountBalance.account);
-                console.warn(`getting account transactions for  address: ${accountChainId} chainId: ${accountAddress}...`)
-                //FIXME enable pending transaction checks to avoid double spends
-                dispatch(userAction.getPendingTransactions({address: accountAddress, chainId: accountChainId}));
-            }, 30000);
-        } else {
-            console.info(`not reloading since not in progress`);
-        }
-    }
 
     useEffect(() => {
         console.warn(`account transactions hook ${accountTransactions} transactionOrder: ${transactionOrder}`);
