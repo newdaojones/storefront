@@ -1,10 +1,10 @@
 import React from 'react';
 
 import menuIcon from '../../assets/images/menu_icon.svg';
-import {IMenuItem, TransactionState} from '../../models';
+import menuBackground from '../../assets/images/background/menu_background.svg'
+import {IMenuItem} from '../../models';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
-import {userAction} from "../../store/actions";
 import {useDispatch} from "react-redux";
 
 export const Menu = ({
@@ -18,7 +18,7 @@ export const Menu = ({
                        account = '',
                      }: Props) => {
 
-      const dispatch = useDispatch();
+      // const dispatch = useDispatch();
       const name = getDisplayName(account, ensName)
 
       const onPaymentsClick = () => {
@@ -38,6 +38,9 @@ export const Menu = ({
                   width: '100%',
                   minWidth: size,
                   position: 'relative',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: 'cover',
+                  backgroundImage: `url(${menuBackground})`,
                 }}
             >
             <div className="flex items-center justify-between mh-4 mt-2">

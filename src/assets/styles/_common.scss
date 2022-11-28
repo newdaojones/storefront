@@ -5,9 +5,11 @@ body {
   font-family: Montserrat, 'Roboto', 'Ubuntu';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  //background-image: url(../images/background.avif); //not supported in safari < 16 or opera
-  background-color: #13053d;
-  //background-color: #30314c;
+  background-image: url(../images/background/bp_background.png);
+  background-size: auto;
+  background-repeat: repeat-x;
+  background-color: #1F1F1F;
+  background-position: center;
 }
 
 creditcard {

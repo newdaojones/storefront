@@ -390,6 +390,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         console.info("Established session:", session);
         setIsLoading(true);
         await onSessionConnected(session);
+        // Update known pairings after session is connected.
+        setPairings(client.pairing.getAll({ active: true }));
 
       } catch (e: any) {
         const message = `connect error: ${e?.message || ""}. Disconnecting...`;
@@ -413,7 +415,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         setIsLoading(false);
       }
     },
-    [chains, client, onSessionConnected, showToasts]
+    [chains, client, onSessionConnected]
   );
 
   const disconnect = useCallback(async (userRequested: boolean = false) => {
@@ -500,8 +502,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       if (typeof _client === 'undefined') {
         return toast.error('WalletConnect is not initialized');
       }
+
+      console.warn('WalletConnect initialized, subscribing to events..');
       _client.on("session_ping", args => {
-        console.log("EVENT", "session_ping", args);
+        console.warn("EVENT", "session_ping", args);
       });
 
       // _client.on("pairing_ping", async (proposal) => {
@@ -509,17 +513,17 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       //   //setQRCodeUri(uri);
       // });
 
-      _client.on("pairing_ping", args => {
-        console.debug(`pairing event. args: ${args}`);
-        setPairings(_client.pairing.values);
+      _client.on("session_ping", args => {
+        console.warn(`**** session_ping event. args: ${args}`);
       });
 
       _client.on("session_event", args => {
-        console.debug("EVENT", "session_event", args);
+        //TODO are these being called?
+        console.warn("EVENT", "session_event", args);
       });
 
       _client.on("session_update", ({ topic, params }) => {
-        console.debug("EVENT", "session_update", { topic, params });
+        console.warn("EVENT", "session_update", { topic, params });
         const { namespaces } = params;
         const _session = _client.session.get(topic);
         const updatedSession = { ..._session, namespaces };

@@ -79,7 +79,7 @@ export const ProfilePage = () => {
   };
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="flex flex-col w-3/4 h-3/4 bg-black bg-opacity-10 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-hidden">
+      <div className="flex flex-col w-3/4 h-3/4 bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-hidden">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Dashboard</p>
         <div className="flex flex-col items-center justify-center">
           <p className="text-white px-10 mt-4 font-bold font-montserrat">Payments</p>
