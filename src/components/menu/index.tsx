@@ -5,7 +5,6 @@ import menuBackground from '../../assets/images/background/menu_background.svg'
 import {IMenuItem} from '../../models';
 import {Dropdown} from "./dropdown";
 import {getDisplayName} from "../../utils";
-import {useDispatch} from "react-redux";
 
 export const Menu = ({
                        size,
@@ -16,9 +15,9 @@ export const Menu = ({
                        status,
                        ensName = null,
                        account = '',
+                       merchantLogin = false,
                      }: Props) => {
 
-      // const dispatch = useDispatch();
       const name = getDisplayName(account, ensName)
 
       const onPaymentsClick = () => {
@@ -43,13 +42,15 @@ export const Menu = ({
                   backgroundImage: `url(${menuBackground})`,
                 }}
             >
+            {/*left*/}
             <div className="flex items-center justify-between mh-4 mt-2">
-              <img className="h-12 w-12 ml-4" src={menuIcon} alt="" draggable={false} onClick={onHomeClicked} />
-              <div className="flex flex-col justify-between ml-2">
-                {/*<p className="text-white text-xs">Ruth’s Alternative Caring</p>*/}
-                <p className="font-righteous text-white text-xl">Storefront</p>
-              </div>
+              {!merchantLogin && <img className="h-12 w-12 ml-4" src={menuIcon} alt="" draggable={false} onClick={onHomeClicked} />}
+                {!merchantLogin && <div className="flex flex-col justify-between ml-2">
+                    <p className="font-righteous text-white text-xl">Storefront</p>
+                </div>
+                }
             </div>
+
               {/*right*/}
               <div className="flex items-center">
                 <div className="flex flex-col items-end justify-end">
@@ -86,4 +87,5 @@ interface Props {
   status: string;
   ensName: string | null;
   account?: string;
+  merchantLogin: boolean;
 }
