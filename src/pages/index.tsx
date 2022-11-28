@@ -75,6 +75,7 @@ export const Main = () => {
         items={menuItems}
         size={200}
         key={'topMenu'}
+        merchantLogin={false}
       />}
       {isLoading || isInitializing ? <Landing /> : account ? <Dashboard /> : <Login />}
       <AccountModal
