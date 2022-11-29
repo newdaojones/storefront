@@ -1,6 +1,6 @@
 {
-  "name": "NDJ-Storefront",
-  "version": "0.5.3",
+  "name": "Storefront",
+  "version": "0.5.4",
   "private": true,
   "homepage": "/storefront",
   "dependencies": {
