@@ -24,6 +24,7 @@ import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
+import {merchantUrl} from "../StorefrontPaySdk";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -165,7 +166,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     if (!pathname) {
       return;
     }
-    if (pathname.startsWith('/storefront/merchant')) {
+    console.info(`checking pathname for merchant login ${pathname}`);
+
+    if (pathname.startsWith('/storefront/merchant') || pathname.includes(merchantUrl)) {
       merchantLogin.isMerchantUser = true
     } else {
       merchantLogin.isMerchantUser = false
@@ -276,6 +279,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             console.warn(`user trying to login account: ${account} as merchant when user is consumer`);
             toast.info(`You are trying to login as merchant when already logged in as consumer with account: ${account}. Use disconnect if you want to use a new session. `);
             setTimeout(() => {
+              //FIXME url
               window.location.assign('/storefront');
             }, 5000);
             return;

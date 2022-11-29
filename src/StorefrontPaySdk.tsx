@@ -3,8 +3,15 @@ import logoIcon from "./assets/images/logo.svg";
 import {isDevMode, isTestnetMode} from "./config/appconfig";
 
 const devUrl = 'http://localhost:3000/storefront';
+
+//FIXME this should be test.storefrontpay.app
 const testUrl = 'https://test.jxndao.com/storefront';
+
+//FIXME this is not longer valid and the consumer url should be used
 const prodUrl = 'https://jxndao.com/storefront';
+
+export const merchantUrl = 'merchant.storefrontpay.app';
+const consumerUrl = 'api.storefrontpay.app';
 
 export const storefrontPayBaseUrl = isDevMode() ? devUrl : isTestnetMode() ? testUrl : prodUrl;
 
