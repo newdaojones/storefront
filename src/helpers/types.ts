@@ -1,7 +1,7 @@
 export interface AssetData {
   symbol: string;
   name: string;
-  decimals: string;
+  decimals: number;
   contractAddress: string;
   balance?: string;
 }

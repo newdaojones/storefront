@@ -2,22 +2,36 @@ import * as encoding from "@walletconnect/encoding";
 import {BigNumber, utils} from "ethers";
 
 import {fromWad, toWad} from "./utilities";
-import {AccountBalances} from "./types";
+import {AccountBalances, ParsedTx} from "./types";
 import {web3} from "../utils/walletConnect";
 import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
+import {
+    ETH_DECIMALS,
+    getCurrency,
+    isUSDStableToken,
+    PAY_WITH_USDC_ENABLED,
+    USDC_DECIMALS,
+    USDC_TOKEN
+} from "../config/currencyConfig";
+import {getERC20TransferData} from "../rpc/infura-api";
+import {EtherscanTx} from "../rpc/etherscan-api";
 
-//FIXME move to a constants file
-export const PAY_WITH_USDC_ENABLED = false;
-const USDC_TOKEN = 'USDC';
-export const USDC_DECIMALS = 6;
-
+export const DEFAULT_GAS_LIMIT = 21000;
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
 
 export async function getGasPrice(chainId: string): Promise<string> {
     return await currentRpcApi.getGasPrices(chainId)
 }
 
-
+export function debugTransaction(trx: ITransaction) {
+    return `transaction from: ${trx.from} to: ${trx.to} value: ${trx.value} nonce: ${trx.nonce} data: ${trx.data}  gasLimit: ${trx.gasLimit} `;
+}
+export function debugAccountTransaction(trx: ParsedTx) {
+    return `transaction from: ${trx.from} to: ${trx.to} value: ${trx.value} nonce: ${trx.nonce} fee: ${trx.fee}  gasUsed: ${trx.gasUsed} `;
+}
+export function debugEtherscanAccountTransaction(trx: EtherscanTx) {
+    return `transaction from: ${trx.from} to: ${trx.to} value: ${trx.value} nonce: ${trx.nonce} gasPrice: ${trx.gasPrice}  gasUsed: ${trx.gasUsed} `;
+}
 function debugTransactionEncodingDecoding(_value: any, value: string) {
     //TODO this is only debug code
     const bigN = BigNumber.from(_value.toString())
@@ -47,7 +61,7 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
  * @param sendAmount
  * @param orderTrackingId
  */
-export async function generateTransaction(account: string, toAddress: string, sendAmount: number, orderTrackingId: string, decimals: number = 18): Promise<ITransaction> {
+async function encodeNativeTransaction(account: string, toAddress: string, sendAmount: number, orderTrackingId: string, decimals: number = 18): Promise<ITransaction> {
     const [namespace, reference, address] = account.split(":");
     const chainId = `${namespace}:${reference}`;
 
@@ -68,11 +82,7 @@ export async function generateTransaction(account: string, toAddress: string, se
 
 
     // FIXME this should also be a param
-    // Transaction gas is too low. There is not enough gas to cover minimal cost of the transaction (minimal: 21112, got: 21000). Try increasing supplied gas.
-    // const _gasLimit = 21112;
-    const _gasLimit = 101112;
-    // const _gasLimit: number = 862032;
-
+    const _gasLimit = DEFAULT_GAS_LIMIT;
     const gasLimit = encodeNumberAsHex(_gasLimit)
     console.info(`gasLimit-> number: ${_gasLimit} encodedGasLimit: ${gasLimit}`);
 
@@ -101,6 +111,76 @@ export async function generateTransaction(account: string, toAddress: string, se
         gasLimit: gasLimit,
         value: value
     };
+}
+
+
+/**
+ * Encode an ERC20 transaction
+ *
+ * example amount in ETH
+ *
+ * @param account
+ * @param toAddress
+ * @param sendAmount
+ * @param token
+ * @param orderTrackingId
+ */
+async function encodeERC20Transaction(account: string, toAddress: string, sendAmount: number,
+                                             token: string, orderTrackingId: string): Promise<ITransaction> {
+    console.warn(`encoding ERC20 trx for ${sendAmount} ${token}`);
+    const [namespace, reference] = account.split(":");
+    const chainId = `${namespace}:${reference}`;
+    const currency = getCurrency(chainId, token);
+
+    const tx = await encodeNativeTransaction(account, toAddress, sendAmount, orderTrackingId, currency?.decimals);
+    console.warn(`got native trx result: ${debugTransaction(tx)}}`);
+
+    console.info(`toAddress: ${toAddress} to: ${tx.to}}`);
+    const data = await getERC20TransferData(tx.from, tx.to, sendAmount, token, chainId)
+    console.warn(`got erc20 trx data: ${data}`);
+
+    if (!currency?.contractAddress) {
+        throw new Error("contract address not defined");
+    }
+
+    const contractTransactionGasLimit = DEFAULT_GAS_LIMIT * 3.5;
+    const gasLimit = encodeNumberAsHex(contractTransactionGasLimit)
+    console.info(`gasLimit-> number: ${contractTransactionGasLimit} encodedGasLimit: ${gasLimit}`);
+    return {
+        from: tx.from,
+        to: currency?.contractAddress,
+        data: data,
+        nonce: tx.nonce,
+        gasPrice: tx.gasPrice,
+        gasLimit: gasLimit,
+        value: '0x00'
+    };
+
+}
+
+/**
+ * Encode an ETHEREUM / MATIC native or ERC20 transaction
+ *
+ * example amount in ETH
+ *
+ * @param account
+ * @param toAddress
+ * @param sendAmount
+ * @param token
+ * @param orderTrackingId
+ */
+export async function encodeTransaction(account: string, toAddress: string, sendAmount: number,
+                                        token: string, orderTrackingId: string): Promise<ITransaction> {
+    try {
+        if (isUSDStableToken(token)) {
+            return encodeERC20Transaction(account, toAddress, sendAmount, token, orderTrackingId);
+        } else {
+            return encodeNativeTransaction(account, toAddress, sendAmount, orderTrackingId);
+        }
+    } catch (e: any) {
+        console.warn(`encodeTrx: ${e?.message}`);
+        throw e;
+    }
 }
 
 
@@ -141,11 +221,11 @@ export interface ITransaction {
 export interface AccountBalance {
     account: string;
     balance: BigNumber;
-    balanceUsd: BigNumber;
+    decimals: number;
+    balanceUsd: number;
     balanceString: string;
     token: string;
 }
-
 
 
 /**
@@ -177,6 +257,9 @@ export function getPreferredAccountBalance(accounts: string[], balances: Account
  *
  */
 function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances): AccountBalance {
+    if (!accounts || accounts.length === 0) {
+        throw new Error('no accounts')
+    }
     let balanceString = "0.00";
     let firstNonZeroAccount = accounts[0];
     let accountBalance = BigNumber.from(0);
@@ -185,19 +268,19 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
     accounts.forEach(value => {
         let accountBalances = balances[value];
         if (!accountBalances) {
-            console.info(`getBalanceInUSD: account balances not defined for account: ${value}`)
+            console.warn(`getBalanceInUSD: account balances not defined for account: ${value}`)
+            //FIXME an error here would prevent other accounts from being added
             return;
         }
         let balanceElement = accountBalances[0];
         let balance = BigNumber.from(0);
         try {
             balance = BigNumber.from(balanceElement.balance || "0");
-        }
-        catch (e) {
+        } catch (e) {
             console.log(`balance parse error ${e}`);
         }
 
-        if (balance.gt(0) && balanceToken == null) {
+        if (balance.gt(0) || balanceToken == null) {
             let formatEther = utils.formatEther(balance);
             console.debug(`getBalanceInUSD account ${value} with balance ${balance}. formatted balance ${formatEther}`)
 
@@ -208,35 +291,40 @@ function getNonZeroAccountBalance(accounts: string[], balances: AccountBalances)
             balanceToken = balanceElement.symbol;
         }
     })
+    if (!balanceToken) {
+        const accountBalances = balances[firstNonZeroAccount];
+        const balanceString = accountBalances.map(value => `${value.symbol} ${value.balance}`).join(",");
+        throw new Error(`unsupported token accounts: ${accounts[0]} balances: ${balanceString}`);
+    }
+
     return {
-        token: balanceToken || 'ETH', //FIXME remove eth default?
+        token: balanceToken,
         account: firstNonZeroAccount,
         balance: accountBalance,
-        balanceUsd: accountBalanceUSD,
+        decimals: ETH_DECIMALS,//FIXME what if it is matic?
+        balanceUsd: 0,
         balanceString: balanceString,
     }
 }
 
 
-
-
 function getAccountWithNonZeroUSDCBalance(accounts: string[], balances: AccountBalances): AccountBalance | null {
-    // const usdcAccount = accounts.find(value => {
-    //     let accountBalances = balances[value];
-    //     return !!(accountBalances.find(value1 => value1.symbol === USDC_TOKEN))
-    // })
-
     for (const account of accounts) {
         let accountBalances = balances[account];
         const usdcTokenAsset = accountBalances.find(value => value.symbol === USDC_TOKEN && Number(value.balance) > 0);
         if (usdcTokenAsset && usdcTokenAsset.balance) {
-            console.info(`found USDC account ${account} with tokens ${accountBalances.map(value => `${value.symbol} ${value.balance}`).join(",")}`);
+
             const numValue = fromWad(usdcTokenAsset.balance, USDC_DECIMALS);
+            console.info(`found USDC account ${account} balanceUSDC = ${numValue}
+                    with tokens ${accountBalances.map(value => `${value.symbol} ${value.balance}`).join(",")}`);
+
             return {
                 token: USDC_TOKEN,
                 account: account,
-                balance: BigNumber.from(numValue || 0),
-                balanceUsd: BigNumber.from(numValue),
+                balance: BigNumber.from(usdcTokenAsset.balance),
+                decimals: USDC_DECIMALS,
+                //Error: invalid BigNumber string (argument="value", value="7.011643", code=INVALID_ARGUMENT, version=bignumber/5.5.0)
+                balanceUsd: Number(numValue),
                 balanceString: numValue.toString(),
             }
         }

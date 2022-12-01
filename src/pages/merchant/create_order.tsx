@@ -7,16 +7,16 @@ import {toast} from "react-toastify";
 import {IOrder} from "../../models";
 import {isTestnetMode} from "../../config/appconfig";
 import {userAction} from "../../store/actions";
-import {isNumeric} from "../../utils";
+import {getAccountChainId, isNumeric} from "../../utils";
+import {useWalletConnectClient} from "../../contexts/walletConnect";
 
 export const CreateOrderPage = () => {
   const dispatch = useDispatch();
   let merchantInfo = useSelector(selectMerchantInfo);
+  const { account } = useWalletConnectClient();
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState('');
   const [orderDescription, setOrderDescription] = useState('');
-
-
   const [orderCreated, setOrderCreated] = useState(false);
   let currentOrder = useSelector(selectCurrentOrder);
 
@@ -35,6 +35,11 @@ export const CreateOrderPage = () => {
       return;
     }
 
+    if (!account) {
+      toast.error("Account address is not valid. Please re-try");
+      return;
+    }
+
     try {
       const amountNumber: number = Number(amount);
 
@@ -46,9 +51,8 @@ export const CreateOrderPage = () => {
         toast.error("Amount must be at least 0.01");
         return;
       }
-
-
       const fixedNumber = amountNumber.toFixed(4) //need to avoid '.01' entry which will be considered 0 in backend
+      const chainId = getAccountChainId(account);
       let orderInstance: IOrder = {
         amount: Number(fixedNumber),
         externalOrderId: orderId,
@@ -58,6 +62,7 @@ export const CreateOrderPage = () => {
         transactionHash: null,
         nativeAmount: null,
         orderDescription: orderDescription,
+        chainId: chainId,
       };
       console.info(`creating order ${orderInstance}`);
       dispatch(userAction.createOrder(orderInstance));
@@ -107,7 +112,7 @@ export const CreateOrderPage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 h-3/4 flex justify-center bg-black bg-opacity-10 border-2 border-secondary rounded-16xl shadow-md p-20">
+      <div className="w-3/4 h-3/4 flex justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
         <div className="flex flex-col items-center justify-center mt-10">
           <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
           <div className="w-full flex items-center justify-between mt-10">
@@ -127,12 +132,10 @@ export const CreateOrderPage = () => {
           </div>
 
           <div className="mt-10">
-            <a onClick={handleCreateOrder}>
-            <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+            <button onClick={handleCreateOrder} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
               <img className="w-8 h-8 mr-4" src={logoIcon} alt="" />
               <p className="font-righteous">Create Order</p>
             </button>
-          </a>
           </div>
         </div>
       </div>

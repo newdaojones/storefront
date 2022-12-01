@@ -55,7 +55,7 @@ export const Login = () => {
     }
 
     const wcV2Deeplink = qrCodeUri ? qrCodeUri : '';
-    const backpackDeeplink = qrCodeUri ? `ndj-backpack://wc?uri=${qrCodeUri}` : '';
+    //const backpackDeeplink = qrCodeUri ? `ndj-backpack://wc?uri=${qrCodeUri}` : '';
     const backpackUniversalLink = qrCodeUri ? `https://jxndao.com/wc?uri=${qrCodeUri}` : '';
     //const androidIntentLink = "intent://wc/#Intent;scheme=wc;package=com.ndj.wallet;end";
 

@@ -48,19 +48,21 @@ export const MenuItem = ({ size, parentItem, onFocused = () => {}, focused, item
 
         return (
             <div
-                className="items-center justify-center text-center absolute select-none whitespace-pre-wrap cursor-pointer"
+                className="items-center justify-center text-center absolute select-none whitespace-pre-wrap"
                 onClick={() => moveToIndex(index)}
                 style={{
+                    cursor: index === current ? 'default': 'pointer',
                     width: itemWidth,
                     height: itemSize,
-                    filter: index === current ? 'drop-shadow(0px 1px 5px #ffffff)' : 'none',
+                    filter: index === current ? 'drop-shadow(5px 5px 5px #ffffff)' : 'none',
                     display: isVisible ? 'flex' : 'none',
                     zIndex: index + 1,
+                    fontWeight: index === current ? '700' : '400',
                     left,
                     top,
                 }}
             >
-                {item.icon && <img className="w-10 h-6 pr-2" src={item.icon} alt={item.route} key={index} draggable={false} />}
+                {/*{item.icon && <img className="w-10 h-6 pr-2" src={item.icon} alt={item.route} key={index} draggable={false} />}*/}
                 {item.text && <div className="text-white border-1 whitespace-nowrap text-sm rounded-md bg-primary px-2 py-1">{item.text}</div>}
             </div>
         );
@@ -233,6 +235,7 @@ export const MenuItem = ({ size, parentItem, onFocused = () => {}, focused, item
                 <MenuItem
                     focused={focused}
                     onFocused={onFocused}
+                    key={currentItem.route}
                     zIndex={hovered ? 1001 : zIndex + 1}
                     items={currentItem.subItems}
                     parentItem={currentItem}

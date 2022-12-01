@@ -14,4 +14,5 @@ export const userState: IUserState = {
   transactionData: null, //FIXME orderPaymentRequest, a more appropriate name for this is.
   userInfo: undefined,
   order: null,
+  accountTransactions: null,
 };

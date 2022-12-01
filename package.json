@@ -1,6 +1,6 @@
 {
-  "name": "NDJ-Storefront",
-  "version": "0.3.1",
+  "name": "Storefront",
+  "version": "0.5.4",
   "private": true,
   "homepage": "/storefront",
   "dependencies": {
@@ -19,9 +19,9 @@
     "@use-it/interval": "^1.0.0",
     "@walletconnect/encoding": "^1.0.1",
     "@walletconnect/qrcode-modal": "^1.7.8",
-    "@walletconnect/sign-client": "^2.0.0-rc.4",
-    "@walletconnect/types": "^2.0.0-rc.4",
-    "@walletconnect/utils": "^2.0.0-rc.4",
+    "@walletconnect/sign-client": "^2.1.1",
+    "@walletconnect/types": "^2.1.1",
+    "@walletconnect/utils": "^2.1.1",
     "axios": "^0.24.0",
     "chart.js": "^3.6.2",
     "craco-less": "^1.18.0",
@@ -59,9 +59,9 @@
     "react-qr-reader/**/react": "^17.0.2"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "react-scripts test --watchAll=true",
+    "start": "craco --openssl-legacy-provider start",
+    "build": "craco --openssl-legacy-provider build",
+    "test": "react-scripts --openssl-legacy-provider test --watchAll=true",
     "eject": "react-scripts eject",
     "code-clean": "prettier --write \".\""
   },

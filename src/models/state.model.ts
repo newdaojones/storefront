@@ -1,5 +1,6 @@
 import {IMerchant, IOrder, ITicker, ITransactionInfo, ITransactionOrder, IUserInfo} from '.';
-import {ITransaction} from "../helpers/tx";
+import {ParsedTx} from "../helpers";
+import {EtherscanTx} from "../rpc/etherscan-api";
 
 export interface IRootState {
   userState: IUserState;
@@ -31,6 +32,7 @@ export interface IUserState {
   transactionInfo: ITransactionInfo | null;
   order: IOrder | null;
   transactionInProgress: TransactionState;
+  accountTransactions: EtherscanTx[] | null;
 }
 
 

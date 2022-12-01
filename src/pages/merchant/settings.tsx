@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
+import CopyIcon from '../../assets/images/copyIcon.svg';
 import {selectMerchantInfo} from "../../store/selector";
 import {getAddressFromAccount} from "@walletconnect/utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
@@ -7,13 +8,14 @@ import {ellipseAddress} from "../../helpers";
 import {userAction} from "../../store/actions";
 import {IMerchant} from "../../models";
 import {toast} from "react-toastify";
+import {PAY_WITH_USDC_ENABLED} from "../../config/currencyConfig";
 
 export const SettingsPage = () => {
   const dispatch = useDispatch();
   const { enableToasts, session, account, disconnect} = useWalletConnectClient();
   let merchantInfo = useSelector(selectMerchantInfo);
   const [enabled, setEnabled] = useState(true);
-  const [polygonEnabled, setPolygonEnabled] = useState(true);
+  const [polygonEnabled, setPolygonEnabled] = useState(false);
 
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
   console.log(`merchant Account ${account} add ${getAddressFromAccount(account!!)||""}`)
@@ -35,7 +37,7 @@ export const SettingsPage = () => {
     });
   };
 
-  const logoutButton =  <button onClick={onDisconnect} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+  const logoutButton =  <button onClick={onDisconnect} className="flex w-40 bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
     <p className="font-righteous">Logout</p>
   </button>
 
@@ -44,6 +46,15 @@ export const SettingsPage = () => {
       setEnabled(merchantInfo.testnet);
     }
   }, [merchantInfo]);
+
+  const copyAddressToClipboard = () => {
+    console.info(`copying to clipboard`);
+    if (account) {
+      navigator.clipboard.writeText(getAddressFromAccount(account)).then(r => toast.success("Copied!", {autoClose: 1500}));
+    } else {
+      console.warn("no account");
+    }
+  }
 
   const onSaveSettings = () => {
     if (!merchantInfo) {
@@ -66,7 +77,7 @@ export const SettingsPage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 items-center justify-center bg-black bg-opacity-10 border-2 border-secondary rounded-16xl shadow-md p-20">
+      <div className="w-3/4 items-center justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Settings</p>
 
         <div className="flex flex-col items-center justify-between mt-10 px-14">
@@ -74,6 +85,7 @@ export const SettingsPage = () => {
             <p className="text-center text-white mr-8">Wallet Address</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
               {`0x${ellipseAddress(merchantInfo?.memberAddress)}`}
+              <img className="ml-4 w-4 h-4 cursor-pointer" src={CopyIcon} onClick={copyAddressToClipboard}/>
             </div>
           </div>
           <div className="w-full flex items-center justify-between mt-10">
@@ -82,10 +94,27 @@ export const SettingsPage = () => {
                 {merchantInfo?.merchantName}
               </div>
           </div>
-          <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-center text-white  mr-8">Accepted Token</p>
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
-              {merchantInfo?.defaultToken}
+
+          <div className="w-full flex justify-between mt-10">
+            <p className="text-center text-white  mr-8">Supported Payment Tokens</p>
+
+            <div className="flex flex-col justify-end bg-white bg-opacity-25 py-1 px-2 rounded">
+
+              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+                <div>{'ETH'}</div>
+                <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4" >
+                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={true}/>
+                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+                <div>{'USDC'}</div>
+                <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative ml-4" >
+                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={PAY_WITH_USDC_ENABLED}/>
+                  <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
+                </label>
+              </div>
             </div>
           </div>
 
@@ -118,7 +147,7 @@ export const SettingsPage = () => {
               <div className="flex items-center justify-end text-white py-1 px-2 rounded">
                 <div>{'Polygon'}</div>
                 <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative ml-4" >
-                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={polygonEnabled}/>
+                  <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={false}/>
                   <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" onClick={() => {
                     setPolygonEnabled(!polygonEnabled);
                   }}/>
@@ -128,12 +157,15 @@ export const SettingsPage = () => {
           </div>
 
 
-          <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4"
-                  onClick={onSaveSettings}>
-            <p className="font-righteous">Save</p>
-          </button>
+          <div className="flex w-full items-center justify-around py-1 pt-5 rounded">
+            {logoutButton}
+            <button className="flex w-40 bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4"
+                    onClick={onSaveSettings}>
+              <p className="font-righteous">Save</p>
+            </button>
+          </div>
 
-          {logoutButton}
+
           {/*Storefront Pay Button*/}
           {/*<div className="w-full flex flex-col items-center justify-around pt-8">*/}
           {/*  <p className="font-montserrat text-white text-center text-sm mt-2">Add a Pay with Storefront button to your site, or use our sdk.</p>*/}

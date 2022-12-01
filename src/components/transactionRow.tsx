@@ -66,7 +66,7 @@ const SLimitValues = {
 
 const TransactionRow = (props: any) => {
     const {asset, onEdit} = props;
-    const depositorInfo: ITransactionInfo = asset
+    const transactionInfo: ITransactionInfo = asset
     // const selectDepositor = (item: ITransactionInfo): boolean => {
     //     setInputs(values => ({...values, name: item.depositorName, walletAddress: item.memberAddress, ensAddress: item.memberENSAddress}))
     //     return true
@@ -94,7 +94,7 @@ const TransactionRow = (props: any) => {
         // const name = inputs.name
         // const ens = inputs.ensAddress
         // const address = inputs.walletAddress
-        // const id = depositorInfo.transactionHash
+        // const id = transactionInfo.transactionHash
         // const depositorData: ITransactionInfo = {
         // }
         //
@@ -140,7 +140,7 @@ const TransactionRow = (props: any) => {
                                              }
                                              cancelOnClickOutside={true}>
         <button className="bg-white bg-opacity-10" onClick={() => {
-            //selectDepositor(depositorInfo)
+            //selectDepositor(transactionInfo)
         }}>
             <img className="w-6 h-6" src={AccountEditIcon} alt=""/>
         </button>
@@ -151,24 +151,24 @@ const TransactionRow = (props: any) => {
             <div style={SAssetRowLeft}>
                 <img style={Center} className="w-8 h-8 mr-2" src={ProfileIcon} alt="" />
                 <div style={SColumnLeft}>
-                    <div style={SAssetName}>{`from: ${depositorInfo.transaction?.from}`}</div>
+                    <div style={SAssetName}>{`from: ${transactionInfo.transaction?.from}`}</div>
                     <div className="flex text-xs text-white overflow-hidden">
-                        {depositorInfo.transactionHash ? `hash: ${ellipseAddress(depositorInfo.transactionHash)}` : '-'}
+                        {transactionInfo.order.transactionHash ? `hash: ${ellipseAddress(transactionInfo.order.transactionHash)}` : '-'}
                     </div>
                 </div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${depositorInfo.date}`}</div>
+                <div style={SAssetName}>{`${transactionInfo.date}`}</div>
             </div>
             <div style={SPriceLimits}>
                 <div style={SColumn}>
                     <div style={SLimitValues}>
                         <img className="w-6 h-6 mr-2" src={DollarIcon} alt="" />
-                        {numeral(depositorInfo.paymentTotalUSD || 0).format('0,0.00')}
+                        {numeral(transactionInfo.paymentTotalUSD || 0).format('0,0.00')}
                     </div>
                     <div style={SLimitValues}>
                         <img className="w-6 h-6 mr-2" src={BTCIcon} alt="" />
-                        {numeral(depositorInfo.transaction?.value || 0).format('0,0.000000')}
+                        {numeral(transactionInfo.transaction?.value || 0).format('0,0.000000')}
                     </div>
                 </div>
             </div>

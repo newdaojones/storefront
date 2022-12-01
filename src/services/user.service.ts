@@ -38,8 +38,8 @@ export const UserService = (function () {
     return axios.put(`/merchants/${order.id}/settings`, order, {});
   };
 
-  const linkOrderTransaction = async (orderTrackingId: string, transactionHash: string, nativeAmount: number) => {
-    return axios.post(`/merchants/orders/${orderTrackingId}/transaction`, {transactionHash: transactionHash, nativeAmount: nativeAmount});
+  const linkOrderTransaction = async (orderTrackingId: string, transactionHash: string, nativeAmount: number, token: string) => {
+    return axios.post(`/merchants/orders/${orderTrackingId}/transaction`, {transactionHash: transactionHash, nativeAmount: nativeAmount, token: token});
   };
 
   return {

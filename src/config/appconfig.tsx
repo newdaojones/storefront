@@ -13,8 +13,6 @@ export const isDevMode = () => BUILD_CONFIG === DEVELOPMENT;
 
 export const isTestnetMode = () => !MAINNET_MODE;
 
-
-const ethereumKovanTestnetRpcUrl = "https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
 const ethereumGorliTestnetRpcUrl = "https://goerli.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
 const ethereumMainnetRpcUrl = 'https://mainnet.infura.io/v3/cd5b0778994b4e34b166f2569a1166c0';
 

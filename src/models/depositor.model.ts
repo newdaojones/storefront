@@ -59,14 +59,18 @@ export interface ITransactionOrder {
 
 export interface ITransactionInfo {
   transaction: ITransaction | null;
-  transactionHash: string;
+  order: IOrder;
+  transactionHash: string | null,
   paymentValueUsd: number;
   paymentFeeUsd: number;
   paymentTotalUSD: number;
+  paymentNativeAmount: number;
+  paymentToken: string,
   date: string | null;
-  orderTrackingId?: string | null;
 }
 
+//FIXME there's a bunch of payment related attributes (transactionHash, nativeAmount, chainId, etc), that are only there when an order is paid.
+// should be probably moved to their own PaidOrder interface, since they are all optional.
 export interface IOrder {
   externalOrderId: string,
   amount: number,
@@ -82,22 +86,7 @@ export interface IOrder {
   toAddress: string,
   nativeAmount: string | null,
   orderDescription: string | null,
-
-  /**
-   * externalOrderId	"28"
-   toAddress	"eB58Fff80D9a9D8f6898212Cf2301B16DCFF4796"
-   amount	0.15
-   token	"ETH"
-   transactionHash	null
-   testnet	true
-   active	true
-   trackingId	"7595af37-bd36-4182-94b1-aabc916feeea"
-   addedAt	"2022-07-28T15:04:05.044"
-   updatedAt	"2022-07-28T15:04:05.044026"
-   id	371
-   */
-
-
+  chainId: string,
 }
 
 export interface IMerchant {

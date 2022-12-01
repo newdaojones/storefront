@@ -6,7 +6,7 @@ import {useHistory} from "react-router-dom";
 import {useWalletConnectClient} from "../contexts/walletConnect";
 import {getPreferredAccountBalance} from "../helpers/tx";
 import {useDispatch, useSelector} from "react-redux";
-import {selectCreateTransaction, selectCurrentOrder, selectTickers} from "../store/selector";
+import {selectTransactionOrder, selectCurrentOrder, selectTickers} from "../store/selector";
 import numeral from "numeral";
 import {userAction} from "../store/actions";
 import {toast} from "react-toastify";
@@ -15,7 +15,7 @@ import {convertTokenToUSD, convertUSDtoToken} from "../helpers/currency";
 import {extractOrderFromUrl, IOrderParams} from "../utils/path_utils";
 import {useLocation} from "react-use";
 import {IOrder} from "../models";
-import {isUSDStableToken} from "../utils";
+import {isUSDStableToken} from "../config/currencyConfig";
 
 /**
  * https://test.jxndao.com/storefront/home
@@ -40,7 +40,7 @@ export const HomePage = () => {
 
   const tickers = useSelector(selectTickers);
   const currentOrder = useSelector(selectCurrentOrder);
-  const transaction = useSelector(selectCreateTransaction)
+  const transaction = useSelector(selectTransactionOrder)
 
   const clearUrlParams = () => {
     const queryParams = ""
@@ -53,16 +53,9 @@ export const HomePage = () => {
     if (transaction?.transaction && transaction.transaction.value && paymentRequestCreated) {
       if (!redirected) {
         setRedirected(true);
-
-        console.warn(`clearing url params`);
         clearUrlParams();
-
-        console.warn("**** redirecting to buy ****");
         history.push("/buy");
         setLoading(false);
-
-      } else {
-        console.warn("**** already redirected, removing home query ****");
       }
     } else {
       console.debug("no trx request found")
@@ -77,11 +70,11 @@ export const HomePage = () => {
           toast.error(`Invalid orderTrackingId`)
           return;
         }
-        console.warn(`****** detected order in query ${order.orderTrackingId}. Dispatching get order`);
+        console.debug(`detected order in query ${order.orderTrackingId}. Dispatching get order`);
         dispatch(userAction.getOrder({orderTrackingId: order.orderTrackingId}))
 
       } catch (e: any) {
-        console.log(e);
+        console.log(`error extractOrderFromUrl: ${e}`);
         toast.error(`error fetching order data. ${e?.message}`)
       }
     }
@@ -129,9 +122,10 @@ export const HomePage = () => {
   }
 
   const pastePaymentLink = async () => {
-    console.debug(`paste link `)
+
     try {
       const text = await navigator.clipboard.readText();
+      console.debug(`paste link ${text}`)
       processScanResult(text);
     } catch (e) {
       console.warn(`error ${e}`);
@@ -157,6 +151,7 @@ export const HomePage = () => {
         return;
       }
     } else {
+      //FIXME we can just use usdc price here, instead of assuming 1=1 relation
       nativeTotal = order.amount;
     }
     setLoading(true);
@@ -189,7 +184,6 @@ export const HomePage = () => {
     await refreshBalances(accounts);
   }
 
-  //FIXME get the usdc balance and fallback to eth
   const balanceN = Number(accountBalance.balanceString);
   const currencySymbol = accountBalance.token;
   const balanceUSD = convertTokenToUSD(balanceN, currencySymbol, tickers);
@@ -253,7 +247,7 @@ export const HomePage = () => {
                                src={QRLine} alt="" />
                         </div>
               }
-              <a className="text-white text-center text-sm cursor-pointer" onClick={pastePaymentLink}>Paste Link</a>
+              <button className="text-white text-center bg-transparent text-sm cursor-pointer" onClick={pastePaymentLink}>Paste Link</button>
 
 
               <div className="mt-4">
@@ -280,7 +274,7 @@ export const HomePage = () => {
                       <p>
                         {
                           balanceN ? numeral(balanceN).format('0.000000')
-                              :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length - 1)
+                              :accountBalance.balanceString.substring(0, accountBalance.balanceString.length > 6 ? 6 : accountBalance.balanceString.length)
                         }
                       </p>
                     </div>

@@ -11,6 +11,7 @@ import {
 } from '../../models';
 import * as H from "history";
 import {toast} from "react-toastify";
+import {EtherscanTx} from "../../rpc/etherscan-api";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -126,7 +127,7 @@ const getOrderSuccess = (payload: IOrder) => {
   };
 };
 
-const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string, nativeAmount: string }) => {
+const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string, nativeAmount: string, token: string }) => {
   return {
     type: EUserActionTypes.SET_ORDER_TRANSACTION_HASH,
     payload
@@ -170,9 +171,17 @@ const getOrder = (payload: { orderTrackingId: String }) => {
 };
 
 
-const getPendingTransactions = (payload: { address: String }) => {
+const getPendingTransactions = (payload: { address: string, chainId: string }) => {
   return {
-    type: EUserActionTypes.GET_ORDER,
+    type: EUserActionTypes.GET_PENDING_TRANSACTIONS,
+    payload
+  };
+};
+
+const getPendingTransactionsSuccess = (payload: EtherscanTx[]) => {
+  console.info(`getPendingTransactionsSuccess `)
+  return {
+    type: EUserActionTypes.GET_PENDING_TRANSACTIONS_SUCCESS,
     payload
   };
 };
@@ -199,5 +208,6 @@ export const userAction = {
   updateMerchant,
   updateMerchantSuccess,
   unsetCurrentOrder,
-  getPendingTransactions
+  getPendingTransactions,
+  getPendingTransactionsSuccess,
 };

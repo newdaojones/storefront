@@ -6,10 +6,12 @@ import {userAction} from '../actions';
 import {toast} from 'react-toastify';
 import {ens} from '../../utils/walletConnect';
 import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
-import {generateTransaction, ITransaction} from "../../helpers/tx";
+import {currentRpcApi, encodeTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
-import {isUSDStableToken} from "../../utils";
-import { createBrowserHistory } from 'history';
+import {createBrowserHistory} from "history";
+import {getAccountChainId} from "../../utils";
+import {ParsedTx} from "../../helpers";
+import {etherscanGetAccountTransactions, EtherscanTx} from "../../rpc/etherscan-api";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -36,6 +38,8 @@ export default function* root() {
     takeLatest(EUserActionTypes.UPDATE_MERCHANT_SETTINGS as any, watchUpdateMerchant),
 
     takeLatest(EUserActionTypes.UNSET_CURRENT_ORDER as any, watchUnsetOrder),
+
+    takeLatest(EUserActionTypes.GET_PENDING_TRANSACTIONS as any, watchGetPendingTransactions),
 
     // maybe not needed
     //takeLatest(EUserActionTypes.UPDATE_MERCHANT_SUCCESS as any, watchGetMerchantInfo)
@@ -96,9 +100,9 @@ function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}
   }
 }
 
-function* watchLinkOrderTransaction(action: { type: EUserActionTypes; payload: { orderTrackingId: string, transactionHash: string, nativeAmount: number }}) {
+function* watchLinkOrderTransaction(action: { type: EUserActionTypes; payload: { orderTrackingId: string, transactionHash: string, nativeAmount: number, token: string }}) {
   try {
-    yield call(() => UserService.linkOrderTransaction(action.payload.orderTrackingId, action.payload.transactionHash, action.payload.nativeAmount));
+    yield call(() => UserService.linkOrderTransaction(action.payload.orderTrackingId, action.payload.transactionHash, action.payload.nativeAmount, action.payload.token));
     //yield put(userAction.setLinkTransactionSuccess(res));
   } catch (err: any) {
     toast.error(err.message);
@@ -116,22 +120,22 @@ function* watchGetTickers() {
 
 function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; toAddress: string; amount: number, token: string, orderTrackingId: string }}) {
   try {
-    let decimals = 18;
-    if (isUSDStableToken(action.payload.token)) {
-      decimals = 6;
-    }
-    const res: ITransaction = yield call(() => generateTransaction(action.payload.account, action.payload.toAddress, action.payload.amount, action.payload.orderTrackingId, decimals));
+    const res: ITransaction = yield call(() => encodeTransaction(action.payload.account, action.payload.toAddress, action.payload.amount,
+        action.payload.token, action.payload.orderTrackingId));
+
+    const chainId = getAccountChainId(action.payload.account);
     const order : IOrder = {
       externalOrderId: "",
       amount: action.payload.amount,
       nativeAmount: '0',
       orderDescription: null,
+      //FIXME testnet should default to whatever this merchant or the order has set?
       testnet: true,
       toAddress: action.payload.toAddress,
       token: action.payload.token,
       trackingId: action.payload.orderTrackingId,
-      transactionHash: null
-
+      transactionHash: null,
+      chainId: chainId,
     }
     const transactionOrder: ITransactionOrder = {
       transaction: res,
@@ -197,6 +201,20 @@ function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: {mercha
   } catch (err: any) {
     console.error(`error while creating merchant ${err}`)
     toast.error(err.data.message ? `${err.data.message}` : `Error ${err.status}`);
+  }
+}
+
+function* watchGetPendingTransactions(action: { type: EUserActionTypes; payload: { address: string, chainId: string}}) {
+  try {
+    console.log(`watchGetPendingTransactions address: ${action.payload.address} chainId: ${action.payload.chainId}`)
+
+    // const res: AxiosResponse<EtherscanTx[]> = yield call(() => etherscanGetAccountTransactions(action.payload.address, action.payload.chainId));
+    const res: EtherscanTx[] = yield call(() => etherscanGetAccountTransactions(action.payload.address, action.payload.chainId));
+    // const res: AxiosResponse<ParsedTx[]> = yield call(() => currentRpcApi.getAccountTransactions(action.payload.address, action.payload.chainId));
+    console.warn(`watchGetPendingTransactions results: ${res} itesm: ${res.length}`)
+    yield put(userAction.getPendingTransactionsSuccess(res));
+  } catch (err: any) {
+    toast.error(err.message);
   }
 }
 

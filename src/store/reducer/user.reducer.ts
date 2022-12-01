@@ -13,6 +13,8 @@ import {
   TransactionState
 } from '../../models';
 import { userState } from '../states/user.state';
+import {ParsedTx} from "../../helpers";
+import {EtherscanTx} from "../../rpc/etherscan-api";
 
 export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.LOGIN_SUCCESS]: setLoginSuccessStatus,
@@ -26,6 +28,7 @@ export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.CREATE_ORDER_SUCCESS]: setOrderData,
   [userActionTypes.GET_ORDER_SUCCESS]: setOrderData,
   [userActionTypes.CREATE_MERCHANT_SUCCESS]: setMerchantInfo,
+  [userActionTypes.GET_PENDING_TRANSACTIONS_SUCCESS]: setPendingTransactionsData,
 });
 
 function setLoginSuccessStatus(state: IUserState, { payload }: IAction<IAccountInfo>) {
@@ -72,9 +75,16 @@ function setMerchantInfo(state: IUserState, { payload }: IAction<IMerchant>) {
   });
 }
 
+function setPendingTransactionsData(state: IUserState, { payload }: IAction<EtherscanTx[]>) {
+  console.warn(`setPendingTransactionsData payload: ${payload} lenght: ${payload?.length}`)
+  return produce(state, draft => {
+    draft.accountTransactions = payload;
+  });
+}
+
+
 function setTransactionData(state: IUserState, { payload }: IAction<ITransactionOrder | null>) {
   return produce(state, draft => {
-    console.warn(`updating transactionOrder to ${payload}`)
     draft.transactionData = payload;
   });
 }
@@ -86,7 +96,6 @@ function setTransactionData(state: IUserState, { payload }: IAction<ITransaction
  */
 function setOrderData(state: IUserState, { payload }: IAction<IOrder | null>) {
   return produce(state, draft => {
-    console.warn(`setting order data to ${payload}`);
     draft.order = payload;
   });
 }

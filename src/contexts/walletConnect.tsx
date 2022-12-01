@@ -18,12 +18,13 @@ import {useDispatch} from 'react-redux';
 import {userAction} from '../store/actions';
 import {sleep} from '../utils';
 import {toast} from 'react-toastify';
-import {AccountBalances} from "../helpers";
+import {AccountBalances, isExceptionUnrecoverable} from "../helpers";
 import {getRequiredNamespaces} from "../helpers/namespaces";
 import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
+import {merchantUrl} from "../StorefrontPaySdk";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -88,7 +89,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   const [balances, setBalances] = useState<AccountBalances>({});
 
-  const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>({isMerchantUser: false, merchantExists: false});
+  const merchantLoginInitialState = {isMerchantUser: false, merchantExists: false};
+  const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>(merchantLoginInitialState);
+  const [isMerchantAccount, setIsMerchantAccount] = useState<boolean | null>(null);
 
   const [showToasts, setShowToasts] = useState(true);
 
@@ -103,8 +106,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     setAccount(undefined);
     setAccounts([]);
     setChains([]);
+    setMerchantLogin(merchantLoginInitialState);
+    setIsMerchantAccount(null);
 
-    for (var i = 0; i < localStorage.length; i++) {
+    for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.includes(SIGNATURE_PREFIX)) {
         localStorage.removeItem(key);
@@ -161,7 +166,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     if (!pathname) {
       return;
     }
-    if (pathname.startsWith('/storefront/merchant')) {
+    console.info(`checking pathname for merchant login ${pathname}`);
+
+    if (pathname.startsWith('/storefront/merchant') || pathname.includes(merchantUrl)) {
       merchantLogin.isMerchantUser = true
     } else {
       merchantLogin.isMerchantUser = false
@@ -238,6 +245,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           await sleep(waitTime * 1000);
         }
 
+        setIsMerchantAccount(false);
         setAccount(account);
         localStorage.setItem(NDJ_ADDRESS, account);
 
@@ -258,13 +266,26 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     [client, session]
   );
 
-  //TODO this should be used when we access the merchant app, as opposed to one step login when using the purchase app with no signature
+  /**
+   * This should be used when we access the merchant app, as opposed to one step login when using the purchase app with no signature
+   */
   const loginWithSignedNonce = useCallback(
       async (account: string) => {
         try {
           setIsLoading(true);
-          const startTime = moment();
 
+
+          if (account && isMerchantAccount === false) {
+            console.warn(`user trying to login account: ${account} as merchant when user is consumer`);
+            toast.info(`You are trying to login as merchant when already logged in as consumer with account: ${account}. Use disconnect if you want to use a new session. `);
+            setTimeout(() => {
+              //FIXME url
+              window.location.assign('/storefront');
+            }, 5000);
+            return;
+          }
+
+          const startTime = moment();
           const [namespace, reference, address] = account.split(':');
 
           try {
@@ -274,7 +295,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
               console.warn("not a member")
               merchantLogin.merchantExists = false
             } else {
-              console.warn("merchant does exist a member")
+              console.warn("merchant does exist as a member");
               merchantLogin.merchantExists = true
             }
             setMerchantLogin(merchantLogin)
@@ -312,6 +333,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             await sleep(waitTime * 1000);
           }
 
+          setIsMerchantAccount(true);
           setAccount(account);
           localStorage.setItem(NDJ_ADDRESS, account);
 
@@ -328,16 +350,24 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
           disconnect().then(() => console.log(`disconnect done.`));
 
-          //FIXME is this really needed for a disconnect?
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 2000);
         } finally {
           setIsLoading(false);
         }
       },
       [client, session, merchantLogin]
   );
+
+  function disconnectAndReload() {
+    disconnect().then(() => {
+      console.log(`disconnect done.`)
+      // FIXME review the reload needed or not.
+      // it's needed to show the new qr after disconnecting. it could be done here, or in disconnect
+      // this is a bad place cause the hook can be called multiple times, maybe move it to client code, but that means that automatic disconnects (connect errors) won't refresh the qr
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
+  }
 
   const connect = useCallback(
     async pairing => {
@@ -364,6 +394,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         console.info("Established session:", session);
         setIsLoading(true);
         await onSessionConnected(session);
+        // Update known pairings after session is connected.
+        setPairings(client.pairing.getAll({ active: true }));
 
       } catch (e: any) {
         const message = `connect error: ${e?.message || ""}. Disconnecting...`;
@@ -373,22 +405,21 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         }
 
         if (!showToasts) {
-          disconnect().then(() => {
-            console.log(`disconnect done.`)
-            //FIXME review the reload needed or not.
-            // it's needed to show the new qr after disconnecting. it could be done here, or in disconnect
-            // this is a bad place cause the hook can be called multiple times, maybe move it to client code, but that means that automatic disconnects (connect errors) won't refresh the qr
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          });
+          disconnectAndReload();
+          return;
+        }
+        //FIXME not sure if this is caught here or in other methods like rpc.sendTransaction
+        if (isExceptionUnrecoverable(e)) {
+          // topic is not valid anymore, doing a disconnect
+          console.warn(`unrecoverable exception. Disconnecting. `);
+          disconnectAndReload();
         }
 
       } finally {
         setIsLoading(false);
       }
     },
-    [chains, client, onSessionConnected, showToasts]
+    [chains, client, onSessionConnected]
   );
 
   const disconnect = useCallback(async (userRequested: boolean = false) => {
@@ -444,6 +475,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     async (_account: string) => {
       try {
         console.log('switchAccount', _account);
+        //FIXME this should also use the merchants flag
         setAccount(undefined);
         if (!client) {
           throw new Error('WalletConnect is not initialized');
@@ -452,7 +484,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         if (!session) {
           throw new Error('Session is not connected');
         }
-        login(_account);
+        console.warn(`switchAccount, calling login`);
+        await login(_account);
       } catch (err: any) {
         toast.error(err.message);
       }
@@ -473,8 +506,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       if (typeof _client === 'undefined') {
         return toast.error('WalletConnect is not initialized');
       }
+
+      console.warn('WalletConnect initialized, subscribing to events..');
       _client.on("session_ping", args => {
-        console.log("EVENT", "session_ping", args);
+        console.warn("EVENT", "session_ping", args);
       });
 
       // _client.on("pairing_ping", async (proposal) => {
@@ -482,17 +517,17 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
       //   //setQRCodeUri(uri);
       // });
 
-      _client.on("pairing_ping", args => {
-        console.debug(`pairing event. args: ${args}`);
-        setPairings(_client.pairing.values);
+      _client.on("session_ping", args => {
+        console.warn(`**** session_ping event. args: ${args}`);
       });
 
       _client.on("session_event", args => {
-        console.debug("EVENT", "session_event", args);
+        //TODO are these being called?
+        console.warn("EVENT", "session_event", args);
       });
 
       _client.on("session_update", ({ topic, params }) => {
-        console.debug("EVENT", "session_update", { topic, params });
+        console.warn("EVENT", "session_update", { topic, params });
         const { namespaces } = params;
         const _session = _client.session.get(topic);
         const updatedSession = { ..._session, namespaces };
@@ -558,7 +593,6 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   useEffect(() => {
     if (!client) {
       try {
-        //TODO change the client data according to whether is merchant or consumer
         createClient().then(value => {
           console.debug(`client created ok: ${value}`)
         }).catch(reason => {

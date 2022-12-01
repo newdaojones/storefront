@@ -28,15 +28,14 @@ export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, conne
     const closeDropdownPopover = () => {
         setDropdownPopoverShow(false);
     };
-    const name = getDisplayName(account, ensName)
+    const name = getDisplayName(account, ensName);
 
     return (
             <div className="flex flex-col">
                 <div className="w-full sm:w-6/12 md:w-4/12 px-4 min-w-max">
                     <div className="relative flex align-middle w-full">
                         <img
-                            className="text-white w-10 h-10 font-bold uppercase text-sm shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 cursor-pointer"
-
+                            className="text-white w-10 h-10 font-bold uppercase text-sm hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 cursor-pointer"
                             src={menuIcon} alt=""
                             ref={btnDropdownRef}
                             onClick={() => {
@@ -44,9 +43,7 @@ export const Dropdown = ({ onDisconnect = () => {}, onPayments = () => {}, conne
                                     ? closeDropdownPopover()
                                     : openDropdownPopover();
                             }}
-                        >
-
-                        </img>
+                        />
                         <div
                             ref={popoverRef}
                             className={

@@ -3,14 +3,17 @@ import {useState} from "react";
 import {IOrder} from "../models";
 import numeral from "numeral";
 import ETHIcon from '../assets/images/eth.svg';
+import USDCIcon from '../assets/images/usdc.svg';
 import DollarIcon from '../assets/images/dollarIcon.svg';
 import AccountEditIcon from '../assets/images/account-edit.svg';
 import ConfirmedIcon from '../assets/images/confirmed_white.svg';
 import PendingIcon from '../assets/images/pending_white.svg';
 
 import ConfirmDialog from "./ConfirmDialogStyle";
-import {ellipseAddress} from "../helpers";
+import {ellipseAddress, TxDetails} from "../helpers";
 import {payLink, transactionStatusLink} from "../utils/link_utils";
+import {ETH_TOKEN} from "../config/currencyConfig";
+import {currentRpcApi} from "../helpers/tx";
 
 const SAssetRow = {
     width: '100%',
@@ -59,10 +62,9 @@ const SLimitValues = {
 };
 
 
-
 const OrderRow = (props: any) => {
-    const {asset, onEdit} = props;
-    const depositorInfo: IOrder = asset
+    const {asset} = props;
+    const order: IOrder = asset
     let initialState = {
         name: '',
         ensAddress: '',
@@ -71,6 +73,9 @@ const OrderRow = (props: any) => {
         formErrors: '',
     };
     const [inputs, setInputs] = useState(initialState);
+    const [ transactionFound, setTransactionFound ] = useState(false)
+    const [ confirmed, setConfirmed ] = useState(false)
+    const [ blockTransactionData, setBlockTransactionData ] = useState<TxDetails>()
 
     const handleChange = (event: any) => {
         const name = event.target.name;
@@ -78,7 +83,36 @@ const OrderRow = (props: any) => {
         setInputs(values => ({...values, [name]: value}))
     }
 
-    const onEditConfirmed = () : boolean => {
+    React.useEffect(() => {
+        if (order && order.transactionHash && !blockTransactionData) {
+            //instead of requiring an account, this should be a public page, and get the chain id from the order.
+            const txDetailsPromise = currentRpcApi.getTransactionByHash(order.transactionHash, order.chainId);
+            txDetailsPromise.then(
+                response => {
+                    if (!response) {
+                        console.warn(`invalid response from transaction api ${response}`);
+                        return;
+                    }
+                    setBlockTransactionData(response)
+                    if (response?.hash) {
+                        console.log(`transaction found. hash: ${response?.hash}`);
+                        setTransactionFound(true);
+                    } else {
+                        console.warn(`invalid hash from transaction api ${response} hash: ${response?.hash}`);
+                    }
+
+                    if (response?.blockHash) {
+                        console.log(`transaction block hash found. blockHash: ${response.blockHash}`);
+                        setConfirmed(true);
+                    } else {
+                        console.warn(`invalid blockHash from transaction api ${response} blockHash: ${response.blockHash} blockNumber: ${response.blockNumber}`);
+                    }
+                }
+            )
+        }
+    }, [order, blockTransactionData]);
+
+    const onEditConfirmed = (): boolean => {
         // if (!(inputs.walletAddress || inputs.ensAddress)) {
         //     setInputs(values => ({...values, error: true, formErrors: "You need to enter either ENS address or Wallet Receive Address"}))
         //     return false
@@ -86,7 +120,7 @@ const OrderRow = (props: any) => {
         // const name = inputs.name
         // const ens = inputs.ensAddress
         // const address = inputs.walletAddress
-        // const id = depositorInfo.transactionHash
+        // const id = order.transactionHash
         // const depositorData: ITransactionInfo = {
         // }
         //
@@ -95,12 +129,15 @@ const OrderRow = (props: any) => {
     }
 
     const isTransactionConfirmed = (): boolean => {
-        return !!(depositorInfo?.transactionHash)
+        return !!(order?.transactionHash && confirmed)
     }
 
     let editDepositorDialog = <ConfirmDialog onConfirm={() => onEditConfirmed()}
-                                             onCancel={() => {}}
-                                             onShow={() => {console.log(`showing depositor edit dialog`)}}
+                                             onCancel={() => {
+                                             }}
+                                             onShow={() => {
+                                                 console.log(`showing depositor edit dialog`)
+                                             }}
                                              content={() => <div><p>Create</p></div>}
                                              confirmButtonContent={'Edit'}
                                              contentProps={
@@ -113,20 +150,26 @@ const OrderRow = (props: any) => {
                                                                  className="flex items-center justify-between text-white rounded">
                                                                  <label>
                                                                      <p>Name</p>
-                                                                     <input type="text" className="mb-4 text-primary rounded p-2" name="name" readOnly={true}
+                                                                     <input type="text"
+                                                                            className="mb-4 text-primary rounded p-2"
+                                                                            name="name" readOnly={true}
                                                                             value={inputs.name || ""}
                                                                      />
                                                                  </label>
                                                              </div>
                                                              <label>
                                                                  <p>ENS Address</p>
-                                                                 <input type="text"  className="mb-4 text-primary rounded p-2" name="ensAddress"
+                                                                 <input type="text"
+                                                                        className="mb-4 text-primary rounded p-2"
+                                                                        name="ensAddress"
                                                                         value={inputs.ensAddress || ""}
                                                                         onChange={handleChange}/>
                                                              </label>
                                                              <label>
                                                                  <p>Wallet Address</p>
-                                                                 <input type="text"  className="mb-4 text-primary rounded p-2"  name="walletAddress"
+                                                                 <input type="text"
+                                                                        className="mb-4 text-primary rounded p-2"
+                                                                        name="walletAddress"
                                                                         value={inputs.walletAddress || ""}
                                                                         onChange={handleChange}/>
                                                              </label>
@@ -137,20 +180,20 @@ const OrderRow = (props: any) => {
                                              }
                                              cancelOnClickOutside={true}>
         <button className="bg-white bg-opacity-10" onClick={() => {
-            //selectDepositor(depositorInfo)
+            //selectDepositor(order)
         }}>
             <img className="w-6 h-6" src={AccountEditIcon} alt=""/>
         </button>
     </ConfirmDialog>;
 
     const icon = isTransactionConfirmed() ?
-        <a target='_blank'
-           href={transactionStatusLink(depositorInfo.transactionHash!!, depositorInfo.trackingId || "")}>
-            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={ConfirmedIcon} alt="Status" />
+        <a target='_blank' rel="noreferrer"
+           href={transactionStatusLink(order.transactionHash!!, order.trackingId || "")}>
+            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={ConfirmedIcon} alt="Status"/>
         </a> :
-        <a target='_blank'
-           href={depositorInfo.trackingId ? payLink(depositorInfo.trackingId): ''}>
-            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt="" />
+        <a target='_blank' rel="noreferrer"
+           href={transactionFound ? transactionStatusLink(order.transactionHash!!, order.trackingId || "") :order.trackingId ? payLink(order.trackingId) : ''}>
+            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt=""/>
         </a>
 
 
@@ -159,34 +202,40 @@ const OrderRow = (props: any) => {
             <div style={SAssetRowLeft}>
                 {icon}
                 <div style={SColumnLeft}>
-                    <div style={SAssetName}>{`orderId: ${depositorInfo.externalOrderId}`}</div>
+                    <div style={SAssetName}>{`orderId: ${order.externalOrderId}`}</div>
                     <div className="flex text-xs text-white overflow-hidden">
-                        {depositorInfo.transactionHash && depositorInfo.trackingId ?
-                            <a target='_blank'
-                                   href={transactionStatusLink(depositorInfo.transactionHash, depositorInfo.trackingId)}>{`${ellipseAddress(depositorInfo.transactionHash)}`}</a> : 'Transaction Pending'}
+                        {order.transactionHash && order.trackingId ?
+                            <a target='_blank' rel="noreferrer"
+                               href={transactionStatusLink(order.transactionHash, order.trackingId)}>{`${ellipseAddress(order.transactionHash)}`}</a> : 'Transaction Pending'}
                     </div>
                 </div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${depositorInfo.updatedAt?.substring(0, 16).replace('T', " ")}`}</div>
+                <div style={SAssetName}>{`${order.updatedAt?.substring(0, 16).replace('T', " ")}`}</div>
             </div>
             <div style={SPriceLimits}>
                 <div style={SColumn}>
                     <div style={SLimitValues}>
-                        <img className="w-6 h-6 mr-2" src={DollarIcon} alt="" />
-                        {numeral(depositorInfo.amount || 0).format('0,0.00')}
+                        <img className="w-6 h-6 mr-2" src={DollarIcon} alt=""/>
+                        {numeral(order.amount || 0).format('0,0.00')}
                     </div>
-                    {depositorInfo.transactionHash && depositorInfo.trackingId ?
-                        <div style={SLimitValues}>
-                            <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>
-                            {numeral(depositorInfo.nativeAmount || 0).format('0,0.000000')}
-                        </div>
+                    {order.transactionHash && order.trackingId ?
+                        order.token === ETH_TOKEN ?
+                            <div style={SLimitValues}>
+                                <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>
+                                {numeral(order.nativeAmount || 0).format('0,0.000000')}
+                            </div>
+                            :
+                            <div style={SLimitValues}>
+                                <img className="w-6 h-6 mr-2" src={USDCIcon} alt=""/>
+                                {numeral(order.nativeAmount || 0).format('0,0.00')}
+                            </div>
                         : ''}
                 </div>
             </div>
 
             <div className="w-20 text-sm font-righteous">
-                <p>{depositorInfo.transactionHash && depositorInfo.trackingId ? `CONFIRMED` : `PENDING`}</p>
+                <p>{transactionFound ? ( confirmed ? `Confirmed` : 'Pending Approval') : `Unpaid`}</p>
             </div>
         </div>
     );

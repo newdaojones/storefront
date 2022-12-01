@@ -1,13 +1,12 @@
 import axios, {AxiosInstance} from "axios";
-import {AssetData, TxDetails} from "../helpers/types";
+import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
 import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
 import {web3} from "../utils/walletConnect";
 import {AbiInput, AbiOutput, AbiType, StateMutabilityType} from "web3-utils";
-import {PAY_WITH_USDC_ENABLED} from "../helpers/tx";
+import {getCurrency, PAY_WITH_USDC_ENABLED, USDC_TOKEN} from "../config/currencyConfig";
+import {toWad} from "../helpers";
+import {RpcApi} from "./rpc-api";
 
-//TODO this should be merged with the 'USDC' constant in some other files
-//FIXME this should have a corresponding mainnet address
-const USDCContractAddress = "0x07865c6e87b9f70255377e024ace6630c1eaa37f";
 
 const ethInstance: AxiosInstance = axios.create({
     baseURL: ethereumRpcUrl,
@@ -27,12 +26,11 @@ const polygonInstance: AxiosInstance = axios.create({
     },
 });
 
-export async function infuraGetAccountBalances(address: string, chainId: string): Promise<AssetData[]> {
+async function infuraGetAccountBalances(address: string, chainId: string): Promise<AssetData[]> {
     const ethBalance = await infuraGetAccountBalance(address, chainId);
 
-    //TODO this should be extended to mainnet
-    if (PAY_WITH_USDC_ENABLED && chainId.includes("5")) {
-        const usdcEthBalance = await infuraGetCustomTokenAccountBalance(address, USDCContractAddress, chainId);
+    if (PAY_WITH_USDC_ENABLED) {
+        const usdcEthBalance = await infuraGetCustomTokenAccountBalance(address, USDC_TOKEN, chainId);
         return [ethBalance, usdcEthBalance];
     } else {
         return [ethBalance];
@@ -40,13 +38,14 @@ export async function infuraGetAccountBalances(address: string, chainId: string)
 
 }
 
-export async function infuraGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
+async function infuraGetAccountBalance(address: string, chainId: string): Promise<AssetData> {
     const data = {
         "jsonrpc": "2.0",
         "method": "eth_getBalance",
         "params": [address, "latest"],
         "id": 1
     };
+    //FIXME this should be removed when support for polygon mainnet is ready
     if (chainId.includes("80001")) {
         return infuraGetPolygonAccountBalance(data);
     }
@@ -66,43 +65,76 @@ interface AbiItem {
     gas?: number;
 }
 
-export async function infuraGetCustomTokenAccountBalance(address: string, contractAddress: string, chainId: string): Promise<AssetData> {
-    // const data = {
-    //     "jsonrpc": "2.0",
-    //     "method": "eth_getBalance",
-    //     "params": [{"to": contractAddress, "data": address}, "latest"],
-    //     "id": 1
-    // };
-    //see https://chainstack.com/ultimate-guide-erc20-token-balance/
+export const getERC20TransferData = async (fromAddress: string, toAddress: string, sendAmount: number, token: string, chainId: string) => {
+    const currency = getCurrency(chainId, token);
+
+    /**
+     * let contract = new Web3js.eth.Contract(contractABI, tokenAddress, { from: fromAddress })
+
+     let amount = Web3js.utils.toHex(Web3js.utils.toWei("1")); //1 DEMO Token
+
+     let data = contract.methods.transfer(toAddress, amount).encodeABI()
+     */
+
+    let minABI: AbiItem[] = [
+        {
+            "constant": true,
+            "inputs": [{"name": "_owner", "type": "address"}],
+            "name": "balanceOf",
+            "outputs": [{"name": "balance", "type": "uint256"}],
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [{"name": "", "type": "uint8"}],
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}],
+            "name": "transfer",
+            "outputs": [{"name": "", "type": "bool"}],
+            "type": "function"
+        }
+    ];
+    const contract = new web3.eth.Contract(minABI, currency?.contractAddress, {from: fromAddress});
+    console.debug(`got contract instance ${contract}`)
+    const _value = toWad(sendAmount.toString(), currency?.decimals);
+    console.info(`send amount ${sendAmount} toWad -> ${_value} for ${token} with decimals: ${currency?.decimals}`)
+
+    const balanceAbi = await contract.methods.transfer(toAddress, _value).encodeABI();
+    console.warn(`transfer encoded abi call ${balanceAbi}`)
+    return balanceAbi;
+}
+
+export async function infuraGetCustomTokenAccountBalance(address: string, token: string, chainId: string): Promise<AssetData> {
+    const currency = getCurrency(chainId, token);
+
+    if (!currency) {
+        throw new Error(`currency not supported: ${token} on chain: ${chainId}`);
+    }
 
     let minABI: AbiItem[] = [
         {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
         {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"},
         {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function"}
     ];
-    const contract = new web3.eth.Contract(minABI, USDCContractAddress);
+    const contract = new web3.eth.Contract(minABI, currency?.contractAddress);
     const balance = await contract.methods.balanceOf(address).call()
     await balance
-    console.log(`balance for custom token ${balance}`)
+    console.debug(`balance for custom token ${balance}`)
+
     const assetData = {
-        symbol: "USDC",
-        name: "USDC",
-        decimals: "6",
-        contractAddress: USDCContractAddress,
+        symbol: currency?.token,
+        name: currency?.token,
+        decimals: currency?.decimals,
+        contractAddress: currency?.contractAddress,
         balance: balance
     }
+    console.debug(`asset data ${assetData}`)
     return assetData;
-
-    // const data = {
-    //     "jsonrpc": "2.0",
-    //     "method": "eth_getBalance",
-    //     "params": [address, contractAddress, "latest"],
-    //     "id": 1
-    // };
-    // if (chainId.includes("80001")) {
-    //     return infuraGetPolygonAccountBalance(data);
-    // }
-    // return infuraGetEthAccountBalance(data);
 }
 
 async function infuraGetEthAccountBalance(data: any): Promise<AssetData> {
@@ -111,10 +143,11 @@ async function infuraGetEthAccountBalance(data: any): Promise<AssetData> {
         data
     );
     const {result} = response.data;
+    //FIXME this constants should go to the currency stuff
     const assetData = {
         symbol: "ETH",
         name: "Ether",
-        decimals: "18",
+        decimals: 18,
         contractAddress: "",
         balance: result
     }
@@ -127,10 +160,11 @@ async function infuraGetPolygonAccountBalance(data: any): Promise<AssetData> {
         data
     );
     const {result} = response.data;
+    //FIXME this constants should go to the currency stuff
     const assetData = {
         symbol: "MATIC",
         name: "Matic",
-        decimals: "18",
+        decimals: 18,
         contractAddress: "",
         balance: result
     }
@@ -217,8 +251,8 @@ export const infuraGetTransactionByHash = async (hash: string, chainId: string):
 export const infuraGetAccountNonce = async (address: string, chainId: string): Promise<number> => {
     const data = {
         "jsonrpc": "2.0",
-        "method": "parity_nextNonce",
-        "params": [address],
+        "method": "eth_getTransactionCount",
+        "params": [address, "latest"],
         "id": 1
     };
     const response = await ethInstance.post(
@@ -226,11 +260,11 @@ export const infuraGetAccountNonce = async (address: string, chainId: string): P
         data
     );
     const {result} = response.data;
-    console.info(`got nonce: ${result}`)
+    console.warn(`got nonce: ${result}`)
     return result;
 };
 
-export const infuraGetGasPrices = async (chainId: string): Promise<string> => {
+const infuraGetGasPrices = async (chainId: string): Promise<string> => {
     const data = {
         "jsonrpc": "2.0",
         "method": "eth_gasPrice",
@@ -239,6 +273,39 @@ export const infuraGetGasPrices = async (chainId: string): Promise<string> => {
     };
     const response = await ethInstance.post('', data);
     const {result} = response.data;
-    console.debug(`gas price for chainId ${chainId} response ${result}`);
+    console.debug(`infura got gas price for chainId ${chainId} response ${result}`);
     return result;
 };
+
+export class InfuraApi implements RpcApi {
+    // getAccountBalance(address: string, chainId: string): Promise<AssetData> {
+    //     return infuraGetAccountBalance(address, chainId);
+    // }
+
+    getAccountBalance(address: string, chainId: string): Promise<AssetData[]> {
+        return infuraGetAccountBalances(address, chainId);
+    }
+
+    getAccountNonce(address: string, chainId: string): Promise<number> {
+        return infuraGetAccountNonce(address, chainId);
+    }
+
+    //https://eth.wiki/json-rpc/API
+    //curl 'https://kovan.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09' -X POST -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0' -H 'Accept: application/json' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/json' -H 'Origin: http://localhost:3000' -H 'Connection: keep-alive' -H 'Referer: http://localhost:3000/' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-GPC: 1' -H 'TE: trailers' --data-raw '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x778dAac766b448cf0Ea7D9ac9422fC7c0D2e12f2","latest"],"id":1 }'
+    getGasPrices(chainId: string): Promise<string> {
+        return infuraGetGasPrices(chainId);
+    }
+
+    getTransactionByHash(hash: string, chainId: string): Promise<TxDetails> {
+        return infuraGetTransactionByHash(hash, chainId);
+    }
+
+    getAccountTransactions(address: string, chainId: string): Promise<ParsedTx[]> {
+        return Promise.resolve([]);
+    }
+
+    getAccountPendingTransactions(address: string, chainId: string): Promise<TxDetails[]> {
+        return getPendingTransactions(address, chainId);
+    }
+
+}
