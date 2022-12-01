@@ -38,7 +38,7 @@ export const RegisterMerchant = () => {
 
     React.useEffect(() => {
         if (merchantInfo) {
-            console.log(`merchant info available, replacing with profile`)
+            console.debug(`merchant info available, replacing with profile`)
             merchantLogin.merchantExists = true;
             history.replace("/merchant/profile")
         }
@@ -48,7 +48,6 @@ export const RegisterMerchant = () => {
         if (accounts && accounts.length > 0) {
             const first = accounts[0];
             let accountAddress = getAddressFromAccount(first!!)||"";
-            console.log(`merchant Account ${first} add ${accountAddress}`)
             return accountAddress;
         }
         return ''
@@ -56,23 +55,18 @@ export const RegisterMerchant = () => {
 
     const handleChange = (event: any) => {
         if (event.target.name === "policy") {
-            console.info(`setting policy ${event.target.value}`);
             setPolicy(event.target.value)
         } else if (event.target.name === "merchantName") {
-            console.info(`setting name ${event.target.value}`);
             merchant.merchantName = event.target.value;
             setMerchant(merchant);
         } else if (event.target.name === "storeName") {
-            console.info(`setting name ${event.target.value}`);
             merchant.storeName = event.target.value;
             setMerchant(merchant);
         }
     }
 
     const onRegister = () => {
-        console.log(`register info `);
         toast.dismiss();
-
         merchant.memberAddress = getWalletAddress(accounts);
         setMerchant(merchant);
 
@@ -96,7 +90,6 @@ export const RegisterMerchant = () => {
             return
         }
 
-        console.log(`creating merchant ${merchant}`)
         dispatch(userAction.createMerchant(merchant, history));
     }
 
