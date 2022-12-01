@@ -41,7 +41,7 @@ ReactDOM.render(
     <WalletConnectProvider>
       <JsonRpcContextProvider>
           <Suspense fallback={Landing}>
-          <Router basename={'/storefront'}>
+          <Router basename={'/'}>
               <Switch>
                   <Route path={'/pay'} component={Pay}/>
                   <Route path={'/status'} component={TransactionStatus}/>

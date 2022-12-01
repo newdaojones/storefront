@@ -36,3 +36,8 @@ const testConsumerUrl = 'test.storefrontpay.app';
 
 export const APP_URL = isTestnetMode() ? `https://${testConsumerUrl}`: `https://${consumerUrl}`;
 export const MERCHANT_APP_URL = isTestnetMode() ? `https://${testMerchantUrl}`: `https://${merchantUrl}`;
+
+
+export function isMerchantUrl(pathname: string) {
+    return pathname.includes('/merchant') || pathname.includes(MERCHANT_APP_URL) || pathname == MERCHANT_APP_URL;
+}

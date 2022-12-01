@@ -129,7 +129,8 @@ export const RegisterMerchant = () => {
                         </div>
                         <div className="flex items-center justify-center mt-8">
                             <input className="mx-2" name="policy" type="checkbox" readOnly={true} value='true' onChange={handleChange}/>
-                            <p className="font-montserrat text-center text-sm text-black">I agree to the <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront/merchant/privacy'}>privacy policy</a> </p>
+                            <p className="font-montserrat text-center text-sm text-black">I agree to the <a className="font-bold font-righteous"
+                                href={'https://storefrontpay.app/privacy'}>privacy policy</a> </p>
                         </div>
                         <div className="w-full flex flex-col p-4">
                             <button onClick={onRegister} className="w-full flex bg-primary justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden">
@@ -139,7 +140,8 @@ export const RegisterMerchant = () => {
                             <p className="font-montserrat text-center text-white mt-2 mb-10">Or connect directly with your Backpack</p>
                         </div>
                     </div>
-                    <p className="mx-10 text-center text-sm mb-10">Check out our integrations <a className="font-bold font-righteous" href={'https://test.jxndao.com/storefront'}>Docs</a> to learn how to add a Pay button.</p>
+                    <p className="mx-10 text-center text-sm mb-10">Check out our integrations <a className="font-bold font-righteous"
+                         href={'https://storefrontpay.app'}>Docs</a> to learn how to add a Pay button.</p>
                 </div>
             </div>
 
