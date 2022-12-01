@@ -81,22 +81,22 @@ export const SettingsPage = () => {
       <div className="w-3/4 items-center justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Settings</p>
 
-        <div className="flex flex-col items-center justify-between mt-10 px-14">
+        <div className="flex flex-col items-center justify-between mt-4 px-14">
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-center text-white mr-8">Wallet Address</p>
+            <p className="text-white mr-8">Wallet Address</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
               {`0x${ellipseAddress(merchantInfo?.memberAddress)}`}
               <img className="ml-4 w-4 h-4 cursor-pointer" src={CopyIcon} onClick={copyAddressToClipboard}/>
             </div>
           </div>
-          <div className="w-full flex items-center justify-between mt-10">
+          <div className="w-full flex items-center justify-between mt-4">
               <p className="text-center text-white mr-8">Merchant Name</p>
               <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
                 {merchantInfo?.merchantName}
               </div>
           </div>
 
-          <div className="w-full flex justify-between mt-10">
+          <div className="w-full flex justify-between mt-4">
             <p className="text-center text-white  mr-8">Supported Payment Tokens</p>
 
             <div className="flex flex-col justify-end bg-white bg-opacity-25 py-1 px-2 rounded">
@@ -119,7 +119,7 @@ export const SettingsPage = () => {
             </div>
           </div>
 
-          <div className="w-full flex items-center justify-between mt-10">
+          <div className="w-full flex items-center justify-between mt-4">
             <p className="text-center text-white  mr-8">Fake Money</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
               <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative" >
@@ -132,7 +132,7 @@ export const SettingsPage = () => {
             </div>
           </div>
 
-          <div className="w-full flex justify-between mt-10">
+          <div className="w-full flex justify-between mt-4">
             <p className="text-center text-white  mr-8">Supported Chains</p>
 
             <div className="flex flex-col justify-end bg-white bg-opacity-25 py-1 px-2 rounded">
@@ -157,7 +157,7 @@ export const SettingsPage = () => {
             </div>
           </div>
 
-          <div className="w-full flex items-center justify-between mt-10">
+          <div className="w-full flex items-center justify-between mt-4">
             <p className="text-center text-white  mr-8">Dapp Version</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
               <label className="flex items-center cursor-pointer relative" >
