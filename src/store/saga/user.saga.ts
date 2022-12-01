@@ -12,6 +12,7 @@ import {createBrowserHistory} from "history";
 import {getAccountChainId} from "../../utils";
 import {ParsedTx} from "../../helpers";
 import {etherscanGetAccountTransactions, EtherscanTx} from "../../rpc/etherscan-api";
+import {isTestnetMode} from "../../config/appconfig";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -129,8 +130,7 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       amount: action.payload.amount,
       nativeAmount: '0',
       orderDescription: null,
-      //FIXME testnet should default to whatever this merchant or the order has set?
-      testnet: true,
+      testnet: isTestnetMode(),
       toAddress: action.payload.toAddress,
       token: action.payload.token,
       trackingId: action.payload.orderTrackingId,
