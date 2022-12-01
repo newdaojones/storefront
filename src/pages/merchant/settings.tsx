@@ -18,9 +18,6 @@ export const SettingsPage = () => {
   const [enabled, setEnabled] = useState(true);
   const [polygonEnabled, setPolygonEnabled] = useState(false);
 
-  console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName}`);
-  console.log(`merchant Account ${account} add ${getAddressFromAccount(account!!)||""}`)
-
   const onDisconnect = () => {
     console.info(`onDisconnect called`);
     toast.info("Disconnecting...", {autoClose: 1000})
