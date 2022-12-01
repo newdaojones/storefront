@@ -11,8 +11,8 @@ deployTarget=$1
 URL=$TEST_SERVER
 if [ "$deployTarget" == "prod" ]
 then
+  DEPLOY_TARGET=$PROD_UPLOAD
   echo "*************** WARNING: deploying to prod environment ubuntu@${URL}:${DEPLOY_TARGET}************************************"
-  URL=$PROD_SERVER
 fi
 
 rm -rf build

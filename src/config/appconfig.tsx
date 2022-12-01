@@ -2,7 +2,7 @@
 const DEVELOPMENT = 0;
 const TEST = 1;
 
-const MAINNET_MODE = false;
+const MAINNET_MODE = true;
 
 // export const BUILD_CONFIG = DEVELOPMENT;
 const BUILD_CONFIG = TEST;
@@ -39,5 +39,5 @@ export const MERCHANT_APP_URL = isTestnetMode() ? `https://${testMerchantUrl}`: 
 
 
 export function isMerchantUrl(pathname: string) {
-    return pathname.includes('/merchant') || pathname.includes(MERCHANT_APP_URL) || pathname == MERCHANT_APP_URL;
+    return pathname.includes('/merchant') || pathname.includes(merchantUrl) || pathname == merchantUrl;
 }
