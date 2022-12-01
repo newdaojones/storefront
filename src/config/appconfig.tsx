@@ -39,8 +39,8 @@ export const MERCHANT_APP_URL = isTestnetMode() ? `https://${testMerchantUrl}`: 
 
 
 export function isMerchantUrl(hostname: string | undefined, pathname: string) {
-    if (hostname && hostname === merchantUrl) {
+    if (hostname && (hostname === merchantUrl || hostname.includes(merchantUrl))) {
         return true;
     }
-    return pathname.includes('/merchant') || pathname.includes(merchantUrl) || pathname == merchantUrl;
+    return pathname.includes('/merchant') || pathname.includes(merchantUrl) || pathname === merchantUrl;
 }

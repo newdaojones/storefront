@@ -166,16 +166,12 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
 
   useEffect(() => {
-    if (!pathname) {
+    if (!pathname && !hostname) {
       return;
     }
     console.info(`checking pathname ${pathname} hostname: ${hostname}`);
 
-    if (isMerchantUrl(hostname, pathname)) {
-      merchantLogin.isMerchantUser = true
-    } else {
-      merchantLogin.isMerchantUser = false
-    }
+    merchantLogin.isMerchantUser = isMerchantUrl(hostname, pathname ?? '');
     setMerchantLogin(merchantLogin);
 
   }, [pathname]);
