@@ -97,7 +97,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   const [showToasts, setShowToasts] = useState(true);
 
-  let pathname = useLocation().pathname;
+  const pathname = useLocation().pathname;
+  const hostname = useLocation().hostname;
 
   const reset = () => {
     console.info(`reset`);
@@ -168,9 +169,9 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     if (!pathname) {
       return;
     }
-    console.info(`checking pathname for merchant login ${pathname}`);
+    console.info(`checking pathname ${pathname} hostname: ${hostname}`);
 
-    if (isMerchantUrl(pathname)) {
+    if (isMerchantUrl(hostname, pathname)) {
       merchantLogin.isMerchantUser = true
     } else {
       merchantLogin.isMerchantUser = false
