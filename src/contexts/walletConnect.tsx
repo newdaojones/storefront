@@ -24,7 +24,7 @@ import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
-import {merchantUrl} from "../StorefrontPaySdk";
+import {MERCHANT_APP_URL} from "../config/appconfig";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -168,7 +168,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     }
     console.info(`checking pathname for merchant login ${pathname}`);
 
-    if (pathname.startsWith('/storefront/merchant') || pathname.includes(merchantUrl)) {
+    if (pathname.startsWith('/merchant') || pathname.includes(MERCHANT_APP_URL) || pathname == MERCHANT_APP_URL) {
       merchantLogin.isMerchantUser = true
     } else {
       merchantLogin.isMerchantUser = false

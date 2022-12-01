@@ -9,6 +9,7 @@ import {userAction} from "../../store/actions";
 import {IMerchant} from "../../models";
 import {toast} from "react-toastify";
 import {PAY_WITH_USDC_ENABLED} from "../../config/currencyConfig";
+import { version } from '../../../package.json';
 
 export const SettingsPage = () => {
   const dispatch = useDispatch();
@@ -156,9 +157,16 @@ export const SettingsPage = () => {
             </div>
           </div>
 
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="text-center text-white  mr-8">Dapp Version</p>
+            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
+              <label className="flex items-center cursor-pointer relative" >
+                <span className="ml-3 text-sm text-white">{version ? version : 'n/a'}</span>
+              </label>
+            </div>
+          </div>
 
           <div className="flex w-full items-center justify-around py-1 pt-5 rounded">
-            {logoutButton}
             <button className="flex w-40 bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4"
                     onClick={onSaveSettings}>
               <p className="font-righteous">Save</p>

@@ -1,4 +1,4 @@
-import {isTestnetMode} from "../config/appconfig";
+import {APP_URL, isTestnetMode, MERCHANT_APP_URL} from "../config/appconfig";
 
 export const DEFAULT_MAIN_CHAINS = [
   "eip155:1",// ethereum mainnet
@@ -30,10 +30,6 @@ export const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.com';
 
 export const DEFAULT_LOGGER = 'info';
 
-const APP_URL = isTestnetMode() ? 'https://test.jxndao.com/storefront': 'https://jxndao.com/storefront'
-const MERCHANT_APP_URL = isTestnetMode() ? 'https://test.jxndao.com/storefront/merchant': 'https://jxndao.com/storefront/merchant'
-
-// TODO Change app data
 export const DEFAULT_APP_METADATA = {
   name: 'Storefront Pay',
   description: 'StoreFront Pay DApp',
