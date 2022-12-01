@@ -1,4 +1,3 @@
-
 server {
     listen 80;
     server_name test.jxndao.com www.test.jxndao.com;
@@ -33,6 +32,12 @@ server {
         alias /home/ubuntu/storefront/build;
         try_files $uri $uri/ /storefront/index.html;
     }
+
+    location ^~ /mint {
+        alias /home/ubuntu/mint;
+        try_files $uri $uri/ /mint/index.html;
+    }
+
 
     location /          {
         root /home/ubuntu/ndj-depositor-test/build;

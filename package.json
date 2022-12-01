@@ -1,8 +1,8 @@
 {
-  "name": "Storefront",
+  "name": "StorefrontPay",
   "version": "0.5.4",
   "private": true,
-  "homepage": "/storefront",
+  "homepage": "/",
   "dependencies": {
     "@craco/craco": "^6.1.1",
     "@ensdomains/ensjs": "^2.0.1",
