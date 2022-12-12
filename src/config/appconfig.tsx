@@ -29,7 +29,7 @@ export const polygonRpcUrl = MAINNET_MODE && !isDevMode() ?  polygonMainnetRpcUr
  */
 
 const merchantUrl = 'merchant.storefrontpay.app';
-const consumerUrl = 'pay.storefrontpay.app';
+const consumerUrl = 'customer.storefrontpay.app';
 
 const testMerchantUrl = 'test.storefrontpay.app/merchant';
 const testConsumerUrl = 'test.storefrontpay.app';

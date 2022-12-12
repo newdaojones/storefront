@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name merchant.storefrontpay.app pay.storefrontpay.app;
+    server_name merchant.storefrontpay.app customer.storefrontpay.app;
     # certbot endpoint
     location ~ ^/\.well-known/ {
         root /home/ubuntu/storefront-prod/build;
@@ -13,7 +13,7 @@ server {
 }
 server {
     listen 443 ssl http2;
-    server_name merchant.storefrontpay.app pay.storefrontpay.app;
+    server_name merchant.storefrontpay.app customer.storefrontpay.app;
 
     ssl_certificate     /etc/letsencrypt/live/merchant.storefrontpay.app/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/merchant.storefrontpay.app/privkey.pem;
