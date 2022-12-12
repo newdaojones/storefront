@@ -18,6 +18,7 @@ export const CreateOrderPage = () => {
   const [amount, setAmount] = useState('');
   const [orderDescription, setOrderDescription] = useState('');
   const [orderCreated, setOrderCreated] = useState(false);
+  const [customerPhone, setCustomerPhone] = useState<string | null>(null);
   let currentOrder = useSelector(selectCurrentOrder);
 
   function handleCreateOrder() {
@@ -53,6 +54,9 @@ export const CreateOrderPage = () => {
       }
       const fixedNumber = amountNumber.toFixed(4) //need to avoid '.01' entry which will be considered 0 in backend
       const chainId = getAccountChainId(account);
+
+      const customerPhoneNumber = customerPhone && customerPhone.length > 0 ? customerPhone : null;
+
       let orderInstance: IOrder = {
         amount: Number(fixedNumber),
         externalOrderId: orderId,
@@ -63,6 +67,7 @@ export const CreateOrderPage = () => {
         nativeAmount: null,
         orderDescription: orderDescription,
         chainId: chainId,
+        customerPhoneNumber: customerPhoneNumber,
       };
       console.info(`creating order ${orderInstance}`);
       dispatch(userAction.createOrder(orderInstance));
@@ -104,6 +109,8 @@ export const CreateOrderPage = () => {
       setAmount(event.target.value);
     } else if (event.target.name === "orderDescription") {
       setOrderDescription(event.target.value);
+    } else if (event.target.name === "customerPhone") {
+      setCustomerPhone(event.target.value);
     } else {
       console.info(`unhandled event name ${event.toString()}`)
     }
@@ -124,6 +131,11 @@ export const CreateOrderPage = () => {
           <div className="w-full flex items-center justify-between mt-10">
             <p className="text-white">Order Value (USD)</p>
             <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="text-white">Customer Phone</p>
+            <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">

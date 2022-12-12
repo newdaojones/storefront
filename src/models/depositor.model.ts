@@ -87,6 +87,7 @@ export interface IOrder {
   nativeAmount: string | null,
   orderDescription: string | null,
   chainId: string,
+  customerPhoneNumber: string | null,
 }
 
 export interface IMerchant {
