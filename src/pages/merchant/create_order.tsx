@@ -94,6 +94,7 @@ export const CreateOrderPage = () => {
       setOrderId('');
       setAmount('');
       setOrderDescription('');
+      setCustomerPhone('');
       window.open(linkUrl, "_blank");
     }
   }, [currentOrder, orderCreated, dispatch]);
