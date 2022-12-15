@@ -91,13 +91,15 @@ function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}
   try {
     const res: AxiosResponse<IOrder> = yield call(() => UserService.createNewOrder(action.payload.toAddress, action.payload));
     if (res.status !== 200) {
-      console.error(`error result in create new order`);
+      const errorRes = res.statusText
+      console.error(`error ${res.statusText} in create new order`);
+      //toast.error(res.statusText ? res.statusText : 'invalid order data')
     }
     console.info(`calling create new order got externalOrderId: ${res.data.externalOrderId} amount ${res.data.amount} trackingId: ${res.data.trackingId}`)
     yield put(userAction.setCreateOrderSuccess(res.data));
   } catch (err: any) {
-    console.error(`error while creating order ${err}`)
-    toast.error(`error ${err.message}`);
+    console.error(`error while creating order status: ${err.status} msg: ${err.message}`)
+    //toast.error(`error ${err.message}`);
   }
 }
 

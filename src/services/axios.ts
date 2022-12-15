@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {isDevMode} from "../config/appconfig";
+import {toast} from "react-toastify";
 
 // DEV
 axios.defaults.baseURL = 'http://localhost:5000/';
@@ -22,6 +23,9 @@ axios.interceptors.response.use(
   err => {
     const msg = err?.response?.data?.message || ""
     console.info(`error_code :${err.response.data.code || ''} message: ${msg}`)
+    if (msg) {
+      toast.error(msg)
+    }
     const error = err.response;
     throw error || err;
   }
