@@ -72,6 +72,7 @@ export const CreateOrderPage = () => {
       console.info(`creating order ${orderInstance}`);
       dispatch(userAction.createOrder(orderInstance));
       setOrderCreated(true);
+      toast.info("Creating order...", {autoClose: 1500})
 
     } catch (e) {
       console.warn(`error parsing amount: ${amount} -> ${e}`)
@@ -123,20 +124,26 @@ export const CreateOrderPage = () => {
       <div className="w-3/4 h-3/4 flex justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
         <div className="flex flex-col items-center justify-center mt-10">
           <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
+          <p className="text-white text-sm">{isTestnetMode() ? 'Test Money' : 'Real Money'}</p>
+
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-white">Order ID</p>
+            <p className="w-full text-white">Order ID</p>
             <input id='orderId' name='orderId' placeholder="Your order ID" type="text"
                    value={orderId}
-                   className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
-          </div>
-          <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-white">Order Value (USD)</p>
-            <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-white">Customer Phone</p>
-            <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+            <p className="w-full text-white">Order Value (USD)</p>
+            <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full text-white">Customer Phone</p>
+            <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel"
+                   style={{alignItems: 'end'}} placeholder="+1234567890"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
