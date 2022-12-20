@@ -24,7 +24,7 @@ axios.interceptors.response.use(
     const msg = err?.response?.data?.message || ""
     console.info(`error_code :${err.response.data.code || ''} message: ${msg}`)
     if (msg) {
-      toast.error(msg)
+      // toast.error(msg)
     }
     const error = err.response;
     throw error || err;
