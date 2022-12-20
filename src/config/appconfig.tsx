@@ -4,8 +4,8 @@ const TEST = 1;
 
 const MAINNET_MODE = false;
 
-export const BUILD_CONFIG = DEVELOPMENT;
-// const BUILD_CONFIG = TEST;
+// export const BUILD_CONFIG = DEVELOPMENT;
+const BUILD_CONFIG = TEST;
 
 // @ts-ignore
 // read only
