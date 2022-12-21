@@ -83,7 +83,7 @@ export const CreateOrderPage = () => {
   React.useEffect(() => {
     if (currentOrder && orderCreated) {
       if (!currentOrder?.trackingId) {
-        toast.error("Order trackingId must be valid")
+        console.error("Failed. Order trackingId must be valid")
         return;
       }
       const linkUrl = payLink(currentOrder?.trackingId);
