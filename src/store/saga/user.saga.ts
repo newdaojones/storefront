@@ -145,12 +145,10 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
   }
 }
 
-const browserHistory = createBrowserHistory();
 function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
   try {
     yield put(userAction.setCreateTransactionSuccess(null));
     yield put(userAction.setCreateOrderSuccess(null));
-    browserHistory.back();
   } catch (err: any) {
     toast.error(err.message);
   }
