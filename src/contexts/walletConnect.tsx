@@ -485,7 +485,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         console.warn(`switchAccount, calling login`);
         await login(_account);
       } catch (err: any) {
-        toast.error(err.message);
+        console.error(err);
+        //toast.error(err.message);
       }
     },
     [client, session, login]
