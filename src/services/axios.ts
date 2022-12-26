@@ -9,11 +9,12 @@ axios.defaults.baseURL = 'http://localhost:5000/';
 const devUrl = 'http://localhost:5000/';
 // Test (http/https)
 //const testNoSslUrl = 'http://fundapi-test.us-east-2.elasticbeanstalk.com/';
-const testUrl = 'https://test-api.jxndao.com/';
+// const testUrl = 'https://test-api.jxndao.com/';
 // PROD
+const prodUrl = 'https://api.jxndao.com/';
 // axios.defaults.baseURL = 'https://api.jxndao.com/';
 
-export const apiBaseUrl = isDevMode() ? devUrl : testUrl;
+export const apiBaseUrl = isDevMode() ? devUrl : prodUrl;
 
 axios.defaults.baseURL = apiBaseUrl;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -24,7 +25,7 @@ axios.interceptors.response.use(
     const msg = err?.response?.data?.message || ""
     const code = err.response.data.code;
     console.info(`error_code :${code || ''} message: ${msg}`)
-    if (code !== 200 && msg) {
+    if (code !== 200 && msg && !msg.includes("Bad credentials")  && !msg.includes("Request failed with status code")) {
       toast.error(`${msg}`)
     }
     const error = err.response;
