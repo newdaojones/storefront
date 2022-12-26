@@ -73,7 +73,8 @@ function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {addre
     const res: AxiosResponse<IMerchant> = yield call(() => UserService.getMerchantInfoApi(action.payload.address));
     yield put(userAction.getMerchantInfoSuccess(res.data));
   } catch (err: any) {
-    toast.error(err.message);
+    console.error(`watchGetMerchantInfo ${err.message}`)
+    //toast.error(err.message);
   }
 }
 
@@ -112,7 +113,8 @@ function* watchGetTickers() {
     const res: AxiosResponse<ITicker[]> = yield call(() => UserService.getTickersApi());
     yield put(userAction.getTickersSuccess(res.data));
   } catch (err: any) {
-    toast.error(err.message);
+    console.error(`get tickers failed ${err.message}`)
+    //toast.error(err.message);
   }
 }
 
@@ -134,6 +136,7 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       transactionHash: null,
       chainId: chainId,
       customerPhoneNumber: null,
+      useDebitCard: null,
     }
     const transactionOrder: ITransactionOrder = {
       transaction: res,
