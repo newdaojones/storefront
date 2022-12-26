@@ -84,7 +84,8 @@ function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: {orderTra
     const res: AxiosResponse<IOrder> = yield call(() => UserService.getOrderApi(action.payload.orderTrackingId));
     yield put(userAction.getOrderSuccess(res.data));
   } catch (err: any) {
-    toast.error(`watchGetOrderInfo ${err.message}`);
+    console.warn(`watchGetOrderInfo ${err.message}`)
+    //toast.error(`watchGetOrderInfo ${err.message}`);
   }
 }
 

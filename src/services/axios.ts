@@ -1,20 +1,13 @@
 import axios from 'axios';
-import {isDevMode} from "../config/appconfig";
+import {isDevMode, isTestnetMode} from "../config/appconfig";
 import {toast} from "react-toastify";
 
-// DEV
-axios.defaults.baseURL = 'http://localhost:5000/';
-
-// DEV
+// BACKEND API URLs
 const devUrl = 'http://localhost:5000/';
-// Test (http/https)
-//const testNoSslUrl = 'http://fundapi-test.us-east-2.elasticbeanstalk.com/';
-// const testUrl = 'https://test-api.jxndao.com/';
-// PROD
+const testUrl = 'https://test-api.jxndao.com/';
 const prodUrl = 'https://api.jxndao.com/';
-// axios.defaults.baseURL = 'https://api.jxndao.com/';
 
-export const apiBaseUrl = isDevMode() ? devUrl : prodUrl;
+export const apiBaseUrl = isDevMode() ? devUrl : isTestnetMode() ? testUrl : prodUrl;
 
 axios.defaults.baseURL = apiBaseUrl;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
