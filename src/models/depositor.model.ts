@@ -88,6 +88,7 @@ export interface IOrder {
   orderDescription: string | null,
   chainId: string,
   customerPhoneNumber: string | null,
+  useDebitCard: boolean | null,
 }
 
 export interface IMerchant {
