@@ -1,4 +1,4 @@
-import {APP_URL, isTestnetMode, MERCHANT_APP_URL} from "../config/appconfig";
+import {APP_URL, isBlockchainTestnetMode, MERCHANT_APP_URL} from "../config/appconfig";
 
 export const DEFAULT_MAIN_CHAINS = [
   "eip155:1",// ethereum mainnet
@@ -22,7 +22,7 @@ export const DEFAULT_TEST_CHAINS = [
   // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",
 ];
 
-export const DEFAULT_CHAINS = isTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
+export const DEFAULT_CHAINS = isBlockchainTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
 
 // Wallet connect project ID
 export const DEFAULT_PROJECT_ID = 'f17194a7efd15ee24623a532ccff7c77';

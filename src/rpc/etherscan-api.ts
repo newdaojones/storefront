@@ -1,5 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from "axios";
-import {isTestnetMode} from "../config/appconfig";
+import {isBlockchainTestnetMode} from "../config/appconfig";
 
 export interface EtherscanTx {
     blockNumber: string;
@@ -24,7 +24,7 @@ export interface EtherscanTx {
     functionName:string;
 }
 
-const baseUrl = isTestnetMode() ? 'https://api-goerli.etherscan.io/api?module=account&apikey=X8RUJY6VJ5YKXCQG9PV3ZWQW4KYUYY7BCJ' : 'https://api.etherscan.io/api?module=account&apikey=X8RUJY6VJ5YKXCQG9PV3ZWQW4KYUYY7BCJ';
+const baseUrl = isBlockchainTestnetMode() ? 'https://api-goerli.etherscan.io/api?module=account&apikey=X8RUJY6VJ5YKXCQG9PV3ZWQW4KYUYY7BCJ' : 'https://api.etherscan.io/api?module=account&apikey=X8RUJY6VJ5YKXCQG9PV3ZWQW4KYUYY7BCJ';
 
 const axiosApi: AxiosInstance = axios.create({
     baseURL: baseUrl,

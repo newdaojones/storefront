@@ -1,13 +1,14 @@
 import axios from 'axios';
-import {isDevMode, isTestnetMode} from "../config/appconfig";
+import {isBlockchainTestnetMode} from "../config/appconfig";
 import {toast} from "react-toastify";
+import {isDevMode} from "../config/flavorconfig";
 
 // BACKEND API URLs
 const devUrl = 'http://localhost:5000/';
 const testUrl = 'https://test-api.jxndao.com/';
 const prodUrl = 'https://api.jxndao.com/';
 
-export const apiBaseUrl = isDevMode() ? devUrl : isTestnetMode() ? testUrl : prodUrl;
+export const apiBaseUrl = isDevMode() ? devUrl : isBlockchainTestnetMode() ? testUrl : prodUrl;
 
 axios.defaults.baseURL = apiBaseUrl;
 axios.defaults.headers.common['Content-Type'] = 'application/json';

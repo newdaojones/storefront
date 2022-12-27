@@ -10,7 +10,7 @@ import {IMerchant} from "../../models";
 import {toast} from "react-toastify";
 import {PAY_WITH_USDC_ENABLED} from "../../config/currencyConfig";
 import { version } from '../../../package.json';
-import {isTestnetMode} from "../../config/appconfig";
+import {isBlockchainTestnetMode} from "../../config/appconfig";
 
 export const SettingsPage = () => {
   const dispatch = useDispatch();
@@ -121,11 +121,11 @@ export const SettingsPage = () => {
             <p className="text-center text-white  mr-8">Test Money</p>
             <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
               <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative" >
-                <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={isTestnetMode()}/>
+                <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={isBlockchainTestnetMode()}/>
                 <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"
                      //onClick={() => {setEnabled(!enabled);}}
                 />
-                  <span className="ml-3 text-sm text-white">{isTestnetMode() ?'ON' :'OFF'}</span>
+                  <span className="ml-3 text-sm text-white">{isBlockchainTestnetMode() ?'ON' :'OFF'}</span>
               </label>
             </div>
           </div>

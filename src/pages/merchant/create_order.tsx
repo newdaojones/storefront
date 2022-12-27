@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder, selectMerchantInfo} from "../../store/selector";
 import {toast} from "react-toastify";
 import {IOrder} from "../../models";
-import {isTestnetMode} from "../../config/appconfig";
+import {isBlockchainTestnetMode} from "../../config/appconfig";
 import {userAction} from "../../store/actions";
 import {getAccountChainId, isNumeric} from "../../utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
@@ -65,7 +65,7 @@ export const CreateOrderPage = () => {
       let orderInstance: IOrder = {
         amount: Number(fixedNumber),
         externalOrderId: orderId,
-        testnet: isTestnetMode(),
+        testnet: isBlockchainTestnetMode(),
         token: "USD",
         toAddress: merchantInfo?.memberAddress,
         transactionHash: null,
@@ -132,7 +132,7 @@ export const CreateOrderPage = () => {
       <div className="w-3/4 h-3/4 flex justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
         <div className="flex flex-col items-center justify-center mt-10">
           <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
-          <p className="text-white text-sm">{isTestnetMode() ? 'Test Money' : 'Real Money'}</p>
+          <p className="text-white text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full text-white">Order ID</p>

@@ -12,7 +12,7 @@ import {createBrowserHistory} from "history";
 import {getAccountChainId} from "../../utils";
 import {ParsedTx} from "../../helpers";
 import {etherscanGetAccountTransactions, EtherscanTx} from "../../rpc/etherscan-api";
-import {isTestnetMode} from "../../config/appconfig";
+import {isBlockchainTestnetMode} from "../../config/appconfig";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -130,7 +130,7 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       amount: action.payload.amount,
       nativeAmount: '0',
       orderDescription: null,
-      testnet: isTestnetMode(),
+      testnet: isBlockchainTestnetMode(),
       toAddress: action.payload.toAddress,
       token: action.payload.token,
       trackingId: action.payload.orderTrackingId,
