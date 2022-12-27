@@ -1,16 +1,8 @@
-//TODO inherit this from the environment / build system like in gradle
-const DEVELOPMENT = 0;
-const TEST = 1;
-
-const MAINNET_MODE = true;
-
-// export const BACKEND_API_CONFIG = DEVELOPMENT;
-const BACKEND_API_CONFIG = TEST;
-
-// @ts-ignore
 // read only
-export const isDevMode = () => BACKEND_API_CONFIG === DEVELOPMENT;
-export const isTestnetMode = () => !MAINNET_MODE;
+import {isDevMode, MAINNET_MODE} from "./flavorconfig";
+
+
+export const isBlockchainTestnetMode = () => !MAINNET_MODE;
 
 const ethereumGorliTestnetRpcUrl = "https://goerli.infura.io/v3/f785cca3f0854d5a9b04078a6e380b09";
 const ethereumMainnetRpcUrl = 'https://mainnet.infura.io/v3/cd5b0778994b4e34b166f2569a1166c0';
@@ -33,8 +25,8 @@ const consumerUrl = 'customer.storefrontpay.app';
 const testMerchantUrl = 'test.storefrontpay.app/merchant';
 const testConsumerUrl = 'test.storefrontpay.app';
 
-export const APP_URL = isTestnetMode() ? `https://${testConsumerUrl}`: `https://${consumerUrl}`;
-export const MERCHANT_APP_URL = isTestnetMode() ? `https://${testMerchantUrl}`: `https://${merchantUrl}`;
+export const APP_URL = isBlockchainTestnetMode() ? `https://${testConsumerUrl}`: `https://${consumerUrl}`;
+export const MERCHANT_APP_URL = isBlockchainTestnetMode() ? `https://${testMerchantUrl}`: `https://${merchantUrl}`;
 
 
 export function isMerchantUrl(hostname: string | undefined, pathname: string) {

@@ -1,0 +1,5 @@
+// Blockchain mainnet/testnet flag
+export const MAINNET_MODE = true;
+
+// Api backend configuration flavor
+export const isDevMode = () => false;
