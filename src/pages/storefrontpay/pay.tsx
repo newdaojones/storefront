@@ -205,7 +205,7 @@ export const Pay = () => {
                    className="text-xs mt-1 cursor-pointer">Copy Link</p>
 
                 {!currentOrder?.transactionHash ?
-                    <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous font-bold" href={'https://test.jxndao.com/storefront'}>Storefront App</a> to pay</p>
+                    <p className="mt-4 mb-40">Scan with the <a className="font-bold font-righteous font-bold" href={qrCodeUri}>Storefront App</a> to pay</p>
                     : <p className="font-righteous mt-4 mb-40 text-secondary">This order has already been paid</p>}
 
             </div>
