@@ -2,7 +2,7 @@
 const DEVELOPMENT = 0;
 const TEST = 1;
 
-const MAINNET_MODE = false;
+const MAINNET_MODE = true;
 
 // export const BUILD_CONFIG = DEVELOPMENT;
 const BUILD_CONFIG = TEST;
@@ -20,7 +20,27 @@ const ethereumMainnetRpcUrl = 'https://mainnet.infura.io/v3/cd5b0778994b4e34b166
 const polygonTestnetRpcUrl = "https://matic-testnet-archive-rpc.bwarelabs.com/";
 const polygonMainnetRpcUrl = "https://rpc-mainnet.matic.network";
 
-
-
 export const ethereumRpcUrl = MAINNET_MODE && !isDevMode() ? ethereumMainnetRpcUrl : ethereumGorliTestnetRpcUrl;
 export const polygonRpcUrl = MAINNET_MODE && !isDevMode() ?  polygonMainnetRpcUrl : polygonTestnetRpcUrl;
+
+
+/**
+ * App url configs
+ */
+
+const merchantUrl = 'merchant.storefrontpay.app';
+const consumerUrl = 'pay.storefrontpay.app';
+
+const testMerchantUrl = 'test.storefrontpay.app/merchant';
+const testConsumerUrl = 'test.storefrontpay.app';
+
+export const APP_URL = isTestnetMode() ? `https://${testConsumerUrl}`: `https://${consumerUrl}`;
+export const MERCHANT_APP_URL = isTestnetMode() ? `https://${testMerchantUrl}`: `https://${merchantUrl}`;
+
+
+export function isMerchantUrl(hostname: string | undefined, pathname: string) {
+    if (hostname && hostname === merchantUrl) {
+        return true;
+    }
+    return pathname.includes('/merchant') || pathname.includes(merchantUrl) || pathname == merchantUrl;
+}

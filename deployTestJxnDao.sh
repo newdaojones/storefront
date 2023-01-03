@@ -1,8 +1,8 @@
 # Deploy
-TEST_SERVER="test.jxndao.com"
+TEST_SERVER="depositor.jxndao.com"
+PROD_SERVER="jxndao.com"
 
-TEST_UPLOAD="~/storefront-test/"
-PROD_UPLOAD="~/storefront-prod/"
+TEST_UPLOAD="~/storefront/"
 # check axios.ts to enable the right API endpoint
 DEPLOY_TARGET=$TEST_UPLOAD
 
@@ -11,8 +11,8 @@ deployTarget=$1
 URL=$TEST_SERVER
 if [ "$deployTarget" == "prod" ]
 then
-  DEPLOY_TARGET=$PROD_UPLOAD
-  echo "*************** WARNING: deploying to prod environment ubuntu@${URL}:${DEPLOY_TARGET}************************************"
+  echo '*************** WARNING: deploying to prod environment ********************************************'
+  URL=$PROD_SERVER
 fi
 
 rm -rf build

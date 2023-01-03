@@ -1,19 +1,10 @@
 import React from "react";
 import logoIcon from "./assets/images/logo.svg";
-import {isDevMode, isTestnetMode} from "./config/appconfig";
+import {APP_URL, isDevMode} from "./config/appconfig";
 
-const devUrl = 'http://localhost:3000/storefront';
+const devUrl = 'http://localhost:3000';
 
-//FIXME this should be test.storefrontpay.app
-const testUrl = 'https://test.jxndao.com/storefront';
-
-//FIXME this is not longer valid and the consumer url should be used
-const prodUrl = 'https://jxndao.com/storefront';
-
-export const merchantUrl = 'merchant.storefrontpay.app';
-const consumerUrl = 'api.storefrontpay.app';
-
-export const storefrontPayBaseUrl = isDevMode() ? devUrl : isTestnetMode() ? testUrl : prodUrl;
+export const storefrontPayBaseUrl = isDevMode() ? devUrl : APP_URL;
 
 export const storefrontPayButton = (merchantAddress: string, orderId: String, amount: Number) => {
     const url = `${storefrontPayBaseUrl}/pay?merchantAddress=${merchantAddress}&orderId=${orderId}&amount=${amount}`
