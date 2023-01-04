@@ -4,7 +4,7 @@ import {payLink} from "../../utils/link_utils";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder, selectMerchantInfo} from "../../store/selector";
 import {toast} from "react-toastify";
-import {IOrder} from "../../models";
+import {IOrder, OrderPaymentMethod} from "../../models";
 import {isBlockchainTestnetMode} from "../../config/appconfig";
 import {userAction} from "../../store/actions";
 import {getAccountChainId, isNumeric} from "../../utils";
@@ -19,8 +19,8 @@ export const CreateOrderPage = () => {
   const [orderDescription, setOrderDescription] = useState('');
   const [orderCreated, setOrderCreated] = useState(false);
   const [customerPhone, setCustomerPhone] = useState<string | null>(null);
-  const debitCard = "Debit Card";
-  const [paymentMethod, setPaymentMethod] = useState<string>(debitCard);
+  const defaultPaymentMethod = OrderPaymentMethod.TRANSAK;
+  const [paymentMethod, setPaymentMethod] = useState<OrderPaymentMethod>(defaultPaymentMethod);
   let currentOrder = useSelector(selectCurrentOrder);
 
   function handleCreateOrder() {
@@ -59,8 +59,7 @@ export const CreateOrderPage = () => {
 
       const customerPhoneNumber = customerPhone && customerPhone.length > 0 ? customerPhone : null;
 
-      //FIXME
-      const useDebitCard = paymentMethod === debitCard
+      const paymentProvider = paymentMethod
 
       let orderInstance: IOrder = {
         amount: Number(fixedNumber),
@@ -73,7 +72,7 @@ export const CreateOrderPage = () => {
         orderDescription: orderDescription,
         chainId: chainId,
         customerPhoneNumber: customerPhoneNumber,
-        useDebitCard: useDebitCard,
+        paymentProvider: paymentProvider,
       };
       console.info(`creating order ${orderInstance}`);
       dispatch(userAction.createOrder(orderInstance));
@@ -155,11 +154,12 @@ export const CreateOrderPage = () => {
           </div>
 
           {customerPhone && customerPhone.length > 0 && <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full text-white">Payment Method</p>
+            <p className="w-full text-white">Fiat Provider</p>
             <select  id='paymentMethod' name='paymentMethod' style={{alignItems: 'end'}}
                      className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded " onChange={handleChange}>
-              <option>Debit Card</option>
-              <option>Apple Pay</option>
+              <option>{OrderPaymentMethod.TRANSAK}</option>
+              <option>{OrderPaymentMethod.ONRAMPER}</option>
+              <option>{OrderPaymentMethod.WYRE}</option>
             </select>
           </div>}
 

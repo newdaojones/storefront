@@ -2,4 +2,4 @@
 export const MAINNET_MODE = false;
 
 // Api backend configuration flavor
-export const isDevMode = () => true;
+export const isDevMode = () => false;
