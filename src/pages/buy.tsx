@@ -7,7 +7,7 @@ import ProgressFull from '../assets/images/progress_color.svg';
 import {useDispatch, useSelector} from "react-redux";
 import {
     selectAccountInfo,
-    selectAccountTransactions,
+    selectAccountTransactions, selectCurrentOrder,
     selectTickers,
     selectTransactionInProgress,
     selectTransactionOrder
@@ -61,6 +61,7 @@ export const BuyPage = () => {
 
     const accountBalance = getPreferredAccountBalance(accounts, balances);
     const transactionOrder = useSelector(selectTransactionOrder);
+    const currentOrder = useSelector(selectCurrentOrder);
 
     const accountTransactions = useSelector(selectAccountTransactions);
 
@@ -81,6 +82,7 @@ export const BuyPage = () => {
     const [transactionSubmitted, setTransactionSubmitted] = useState(false);
 
     function onBackPressed() {
+        console.info("on back pressed")
         dispatch(userAction.setTransactionInProgress(TransactionState.INITIAL));
         dispatch(userAction.unsetTransaction());
     }
@@ -102,8 +104,8 @@ export const BuyPage = () => {
     useEffect(() => {
         const onBackButtonEvent = (e: Event) => {
             console.warn(`onBackButtonEvent preventing default. `)
-            e.preventDefault();
             onBackPressed();
+            e.preventDefault();
         }
 
         window.history.pushState(null, '', window.location.pathname);
@@ -116,7 +118,7 @@ export const BuyPage = () => {
     useEffect(() => {
         if (!transactionOrder || !transactionOrder.order.trackingId || transactionOrder.order.amount === 0) {
             console.debug(`detected invalid order: ${transactionOrder} without tracking id or valued 0. Going back to home.`);
-            onBackPressed();
+            //onBackPressed();
             return;
         }
 
@@ -138,6 +140,15 @@ export const BuyPage = () => {
             }
         }
     }, [transactionOrder])
+
+    // go back when the order is cleared to null
+    useEffect(() => {
+        if (currentOrder == null && history) {
+            console.warn("null order, going back now");
+            history.replace('/home')
+        }
+
+    }, [currentOrder, history]);
 
     // get account transactions hook (in case the result isn't returned)
     useEffect(() => {

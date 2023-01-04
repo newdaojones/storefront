@@ -69,6 +69,12 @@ export interface ITransactionInfo {
   date: string | null;
 }
 
+export enum OrderPaymentMethod {
+  WYRE="WYRE",
+  TRANSAK="TRANSAK",
+  ONRAMPER="ONRAMPER"
+}
+
 //FIXME there's a bunch of payment related attributes (transactionHash, nativeAmount, chainId, etc), that are only there when an order is paid.
 // should be probably moved to their own PaidOrder interface, since they are all optional.
 export interface IOrder {
@@ -87,6 +93,8 @@ export interface IOrder {
   nativeAmount: string | null,
   orderDescription: string | null,
   chainId: string,
+  customerPhoneNumber: string | null,
+  paymentProvider: OrderPaymentMethod | null,
 }
 
 export interface IMerchant {

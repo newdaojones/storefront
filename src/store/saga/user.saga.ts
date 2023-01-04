@@ -12,6 +12,7 @@ import {createBrowserHistory} from "history";
 import {getAccountChainId} from "../../utils";
 import {ParsedTx} from "../../helpers";
 import {etherscanGetAccountTransactions, EtherscanTx} from "../../rpc/etherscan-api";
+import {isBlockchainTestnetMode} from "../../config/appconfig";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -72,7 +73,8 @@ function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {addre
     const res: AxiosResponse<IMerchant> = yield call(() => UserService.getMerchantInfoApi(action.payload.address));
     yield put(userAction.getMerchantInfoSuccess(res.data));
   } catch (err: any) {
-    toast.error(err.message);
+    console.error(`watchGetMerchantInfo ${err.message}`)
+    //toast.error(err.message);
   }
 }
 
@@ -82,21 +84,19 @@ function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: {orderTra
     const res: AxiosResponse<IOrder> = yield call(() => UserService.getOrderApi(action.payload.orderTrackingId));
     yield put(userAction.getOrderSuccess(res.data));
   } catch (err: any) {
-    toast.error(err.message);
+    console.warn(`watchGetOrderInfo ${err.message}`)
+    //toast.error(`watchGetOrderInfo ${err.message}`);
   }
 }
 
 function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}) {
   try {
     const res: AxiosResponse<IOrder> = yield call(() => UserService.createNewOrder(action.payload.toAddress, action.payload));
-    if (res.status !== 200) {
-      console.error(`error result in create new order`);
-    }
     console.info(`calling create new order got externalOrderId: ${res.data.externalOrderId} amount ${res.data.amount} trackingId: ${res.data.trackingId}`)
     yield put(userAction.setCreateOrderSuccess(res.data));
   } catch (err: any) {
-    console.error(`error while creating order ${err}`)
-    toast.error(`error ${err.message}`);
+    console.error(`watchCreateNewOrder ${err.status} msg: ${err.message} ${err.error} ${err.data}`)
+    //toast.error(`watchCreateNewOrder error ${err.message}`);
   }
 }
 
@@ -114,7 +114,8 @@ function* watchGetTickers() {
     const res: AxiosResponse<ITicker[]> = yield call(() => UserService.getTickersApi());
     yield put(userAction.getTickersSuccess(res.data));
   } catch (err: any) {
-    toast.error(err.message);
+    console.error(`get tickers failed ${err.message}`)
+    //toast.error(err.message);
   }
 }
 
@@ -129,13 +130,14 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       amount: action.payload.amount,
       nativeAmount: '0',
       orderDescription: null,
-      //FIXME testnet should default to whatever this merchant or the order has set?
-      testnet: true,
+      testnet: isBlockchainTestnetMode(),
       toAddress: action.payload.toAddress,
       token: action.payload.token,
       trackingId: action.payload.orderTrackingId,
       transactionHash: null,
       chainId: chainId,
+      customerPhoneNumber: null,
+      paymentProvider: null,
     }
     const transactionOrder: ITransactionOrder = {
       transaction: res,
@@ -147,12 +149,10 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
   }
 }
 
-const browserHistory = createBrowserHistory();
 function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
   try {
     yield put(userAction.setCreateTransactionSuccess(null));
     yield put(userAction.setCreateOrderSuccess(null));
-    browserHistory.back();
   } catch (err: any) {
     toast.error(err.message);
   }

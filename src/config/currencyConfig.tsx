@@ -10,6 +10,8 @@ export const USDC_TOKEN = 'USDC';
 export const USDC_DECIMALS = 6;
 
 const USDCContractAddressGorli = "0x07865c6e87b9f70255377e024ace6630c1eaa37f"; //on ethereum gorli
+// const USDCContractAddressGorli = "0x179c54e1fea2cd75de3dc5fa61869b93d8c5b317"; //wyre USDC on ethereum gorli
+
 const USDCContractAddressMainnet = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //on ethereum mainnet also on goerli, but using the wyre one here.
 
 //TODO need to be extended to polygon

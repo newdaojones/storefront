@@ -1,18 +1,14 @@
 import axios from 'axios';
-import {isDevMode} from "../config/appconfig";
+import {isBlockchainTestnetMode} from "../config/appconfig";
+import {toast} from "react-toastify";
+import {isDevMode} from "../config/flavorconfig";
 
-// DEV
-axios.defaults.baseURL = 'http://localhost:5000/';
-
-// DEV
+// BACKEND API URLs
 const devUrl = 'http://localhost:5000/';
-// Test (http/https)
-//const testNoSslUrl = 'http://fundapi-test.us-east-2.elasticbeanstalk.com/';
 const testUrl = 'https://test-api.jxndao.com/';
-// PROD
-// axios.defaults.baseURL = 'https://api.jxndao.com/';
+const prodUrl = 'https://api.jxndao.com/';
 
-export const apiBaseUrl = isDevMode() ? devUrl : testUrl;
+export const apiBaseUrl = isDevMode() ? devUrl : isBlockchainTestnetMode() ? testUrl : prodUrl;
 
 axios.defaults.baseURL = apiBaseUrl;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -21,9 +17,13 @@ axios.interceptors.response.use(
   response => response,
   err => {
     const msg = err?.response?.data?.message || ""
-    console.info(`error_code :${err.response.data.code || ''} message: ${msg}`)
+    const code = err.response.data.code;
+    console.info(`error_code :${code || ''} message: ${msg}`)
+    if (code !== 200 && msg && !msg.includes("Bad credentials")  && !msg.includes("Request failed with status code")) {
+      toast.error(`${msg}`)
+    }
     const error = err.response;
-    throw error || err;
+    throw err || error;
   }
 );
 

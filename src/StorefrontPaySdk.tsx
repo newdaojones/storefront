@@ -1,6 +1,7 @@
 import React from "react";
 import logoIcon from "./assets/images/logo.svg";
-import {APP_URL, isDevMode} from "./config/appconfig";
+import {APP_URL} from "./config/appconfig";
+import {isDevMode} from "./config/flavorconfig";
 
 const devUrl = 'http://localhost:3000';
 

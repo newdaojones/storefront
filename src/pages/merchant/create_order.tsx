@@ -4,8 +4,8 @@ import {payLink} from "../../utils/link_utils";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder, selectMerchantInfo} from "../../store/selector";
 import {toast} from "react-toastify";
-import {IOrder} from "../../models";
-import {isTestnetMode} from "../../config/appconfig";
+import {IOrder, OrderPaymentMethod} from "../../models";
+import {isBlockchainTestnetMode} from "../../config/appconfig";
 import {userAction} from "../../store/actions";
 import {getAccountChainId, isNumeric} from "../../utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
@@ -18,6 +18,9 @@ export const CreateOrderPage = () => {
   const [amount, setAmount] = useState('');
   const [orderDescription, setOrderDescription] = useState('');
   const [orderCreated, setOrderCreated] = useState(false);
+  const [customerPhone, setCustomerPhone] = useState<string | null>(null);
+  const defaultPaymentMethod = OrderPaymentMethod.TRANSAK;
+  const [paymentMethod, setPaymentMethod] = useState<OrderPaymentMethod>(defaultPaymentMethod);
   let currentOrder = useSelector(selectCurrentOrder);
 
   function handleCreateOrder() {
@@ -53,20 +56,28 @@ export const CreateOrderPage = () => {
       }
       const fixedNumber = amountNumber.toFixed(4) //need to avoid '.01' entry which will be considered 0 in backend
       const chainId = getAccountChainId(account);
+
+      const customerPhoneNumber = customerPhone && customerPhone.length > 0 ? customerPhone : null;
+
+      const paymentProvider = paymentMethod
+
       let orderInstance: IOrder = {
         amount: Number(fixedNumber),
         externalOrderId: orderId,
-        testnet: isTestnetMode(),
+        testnet: isBlockchainTestnetMode(),
         token: "USD",
         toAddress: merchantInfo?.memberAddress,
         transactionHash: null,
         nativeAmount: null,
         orderDescription: orderDescription,
         chainId: chainId,
+        customerPhoneNumber: customerPhoneNumber,
+        paymentProvider: paymentProvider,
       };
       console.info(`creating order ${orderInstance}`);
       dispatch(userAction.createOrder(orderInstance));
       setOrderCreated(true);
+      toast.info("Creating order...", {autoClose: 1500})
 
     } catch (e) {
       console.warn(`error parsing amount: ${amount} -> ${e}`)
@@ -77,7 +88,7 @@ export const CreateOrderPage = () => {
   React.useEffect(() => {
     if (currentOrder && orderCreated) {
       if (!currentOrder?.trackingId) {
-        toast.error("Order trackingId must be valid")
+        console.error("Failed. Order trackingId must be valid")
         return;
       }
       const linkUrl = payLink(currentOrder?.trackingId);
@@ -89,6 +100,7 @@ export const CreateOrderPage = () => {
       setOrderId('');
       setAmount('');
       setOrderDescription('');
+      setCustomerPhone('');
       window.open(linkUrl, "_blank");
     }
   }, [currentOrder, orderCreated, dispatch]);
@@ -104,6 +116,10 @@ export const CreateOrderPage = () => {
       setAmount(event.target.value);
     } else if (event.target.name === "orderDescription") {
       setOrderDescription(event.target.value);
+    } else if (event.target.name === "customerPhone") {
+      setCustomerPhone(event.target.value);
+    } else if (event.target.name === "paymentMethod") {
+      setPaymentMethod(event.target.value);
     } else {
       console.info(`unhandled event name ${event.toString()}`)
     }
@@ -115,16 +131,37 @@ export const CreateOrderPage = () => {
       <div className="w-3/4 h-3/4 flex justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
         <div className="flex flex-col items-center justify-center mt-10">
           <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
+          <p className="text-white text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
+
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-white">Order ID</p>
+            <p className="w-full text-white">Order ID</p>
             <input id='orderId' name='orderId' placeholder="Your order ID" type="text"
                    value={orderId}
-                   className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
+
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-white">Order Value (USD)</p>
-            <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number" className="w-2/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+            <p className="w-full text-white">Order Value (USD)</p>
+            <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full text-white">Customer Phone</p>
+            <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel"
+                   style={{alignItems: 'end'}} placeholder="+1234567890"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
+          </div>
+
+          {customerPhone && customerPhone.length > 0 && <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full text-white">Fiat Provider</p>
+            <select  id='paymentMethod' name='paymentMethod' style={{alignItems: 'end'}}
+                     className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded " onChange={handleChange}>
+              <option>{OrderPaymentMethod.TRANSAK}</option>
+              <option>{OrderPaymentMethod.ONRAMPER}</option>
+              <option>{OrderPaymentMethod.WYRE}</option>
+            </select>
+          </div>}
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="text-center text-white mr-8">Description</p>
