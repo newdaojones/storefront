@@ -28,7 +28,7 @@ export const CreateOrderPage = () => {
       toast.error("Order Id must be valid");
       return;
     }
-    if (!isNumeric(amount )) {
+    if (!isNumeric(amount)) {
       toast.error("Amount must be a decimal greater than zero");
       return;
     }
@@ -61,7 +61,12 @@ export const CreateOrderPage = () => {
 
       const paymentProvider = paymentMethod
 
-      let orderInstance: IOrder = {
+      if (customerPhoneNumber && (paymentProvider === OrderPaymentMethod.ONRAMPER || paymentProvider === OrderPaymentMethod.TRANSAK) && amountNumber < 30) {
+        toast.error("Amount must be at least $30 to use the selected FIAT provider");
+        return;
+      }
+
+      const orderInstance: IOrder = {
         amount: Number(fixedNumber),
         externalOrderId: orderId,
         testnet: isBlockchainTestnetMode(),
