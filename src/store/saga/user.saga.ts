@@ -128,6 +128,9 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
     const order : IOrder = {
       externalOrderId: "",
       amount: action.payload.amount,
+      tip: 0, //FIXME add correct numbers
+      fees: 0,
+      totalAmount: 0,
       nativeAmount: '0',
       orderDescription: null,
       testnet: isBlockchainTestnetMode(),

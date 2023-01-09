@@ -80,6 +80,9 @@ export enum OrderPaymentMethod {
 export interface IOrder {
   externalOrderId: string,
   amount: number,
+  tip: number,
+  fees: number,
+  totalAmount: number,
   token: string,
   testnet: boolean,
   transactionHash: string | null,

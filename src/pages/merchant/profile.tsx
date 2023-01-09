@@ -79,7 +79,7 @@ export const ProfilePage = () => {
   };
   return (
     <div className="w-full h-screen flex items-center justify-center">
-      <div className="flex flex-col h-3/4 w-3/4 bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-auto mr-8">
+      <div className="flex flex-col h-3/4 w-3/4 bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-auto scrollMargin">
         <p className="text-white text-xl font-bold font-righteous text-center">Merchant Dashboard</p>
         <div className="flex flex-col items-center justify-center">
           <p className="text-white px-10 mt-4 font-bold font-montserrat">Payments</p>
@@ -108,7 +108,7 @@ export const ProfilePage = () => {
           </div>
 
           <div className="flex items-center justify-around px-2">
-            <div className="grid min-w-max w-full overflow-auto" style={{}}>
+            <div className="grid min-w-max w-full overflow-auto scrollMargin" style={{}}>
               {
                 merchantInfo?.orders && merchantInfo?.orders.length > 0 ?
                     merchantInfo?.orders.map(orderItem => (

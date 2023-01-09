@@ -10,12 +10,19 @@ import {userAction} from "../../store/actions";
 import {getAccountChainId, isNumeric} from "../../utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 
+const feesPercentage = 0.0499;
+
 export const CreateOrderPage = () => {
   const dispatch = useDispatch();
   let merchantInfo = useSelector(selectMerchantInfo);
   const { account } = useWalletConnectClient();
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState('');
+  const [tip, setTip] = useState(0);
+  const [fees, setFees] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+
   const [orderDescription, setOrderDescription] = useState('');
   const [orderCreated, setOrderCreated] = useState(false);
   const [customerPhone, setCustomerPhone] = useState<string | null>(null);
@@ -68,6 +75,9 @@ export const CreateOrderPage = () => {
 
       const orderInstance: IOrder = {
         amount: Number(fixedNumber),
+        tip: tip,
+        fees: fees,
+        totalAmount: totalAmount,
         externalOrderId: orderId,
         testnet: isBlockchainTestnetMode(),
         token: "USD",
@@ -104,6 +114,8 @@ export const CreateOrderPage = () => {
       //clear the form fields after success
       setOrderId('');
       setAmount('');
+      setTip(0);
+      setTotalAmount(0);
       setOrderDescription('');
       setCustomerPhone('');
       window.open(linkUrl, "_blank");
@@ -111,6 +123,18 @@ export const CreateOrderPage = () => {
   }, [currentOrder, orderCreated, dispatch]);
 
 
+  const updateCalculatedFields = () => {
+    const amountNumber: number = Number(amount);
+    const calcAmount = amountNumber
+
+    const calcFees = feesPercentage * (calcAmount + tip);
+    console.info(`setting fees = ${calcFees}`);
+    setFees(calcFees);
+
+    const totalAmount = amountNumber + calcFees + tip;
+    console.info(`setting totalAmount = ${totalAmount}. amountNumber: ${amountNumber}  amount: ${amount}`);
+    setTotalAmount(totalAmount);
+  }
 
   const handleChange = (event: any) => {
     if (event.target.name === "orderId") {
@@ -119,6 +143,9 @@ export const CreateOrderPage = () => {
     } else if (event.target.name === "amount") {
       console.info(`setting amount ${event.target.value}`);
       setAmount(event.target.value);
+    } else if (event.target.name === "tip") {
+      console.info(`setting tip ${event.target.value}`);
+      setTip(event.target.value);
     } else if (event.target.name === "orderDescription") {
       setOrderDescription(event.target.value);
     } else if (event.target.name === "customerPhone") {
@@ -128,6 +155,7 @@ export const CreateOrderPage = () => {
     } else {
       console.info(`unhandled event name ${event.toString()}`)
     }
+    updateCalculatedFields();
 
   }
 
@@ -138,17 +166,35 @@ export const CreateOrderPage = () => {
           <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
           <p className="text-white text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
 
+          {/*<div className="w-full flex items-center justify-between mt-10">*/}
+          {/*  <p className="w-full text-white">Order ID</p>*/}
+          {/*  <input id='orderId' name='orderId' placeholder="Your order ID" type="text"*/}
+          {/*         value={orderId}*/}
+          {/*         className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>*/}
+          {/*</div>*/}
+
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full text-white">Order ID</p>
-            <input id='orderId' name='orderId' placeholder="Your order ID" type="text"
-                   value={orderId}
-                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+            <p className="w-full text-white">Subtotal (USD)</p>
+            <input id='amount' name='amount' value={amount} min="0.01" max="399.99" type="number"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full text-white">Order Value (USD)</p>
-            <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
+            <p className="w-full text-white">Tip</p>
+            <input id='tip' name='tip' value={tip} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
                    className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full text-white">Fees</p>
+            <input id='fees' name='fees' value={fees ? fees.toFixed(4) : '0'} type="number"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" readOnly={true}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full text-white">Total (USD)</p>
+            <input id='totalAmount' name='totalAmount' value={totalAmount.toFixed(4)} type="number"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" step=".01" autoComplete="off" readOnly={true}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
@@ -168,10 +214,10 @@ export const CreateOrderPage = () => {
             </select>
           </div>}
 
-          <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-center text-white mr-8">Description</p>
-            <textarea id='orderDescription' name='orderDescription' value={orderDescription} placeholder="Order description" className="w-4/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
-          </div>
+          {/*<div className="w-full flex items-center justify-between mt-10">*/}
+          {/*  <p className="text-center text-white mr-8">Description</p>*/}
+          {/*  <textarea id='orderDescription' name='orderDescription' value={orderDescription} placeholder="Order description" className="w-4/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>*/}
+          {/*</div>*/}
 
           <div className="mt-10">
             <button onClick={handleCreateOrder} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
