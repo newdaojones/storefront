@@ -18,9 +18,10 @@ export const CreateOrderPage = () => {
   const { account } = useWalletConnectClient();
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState('');
+  const [amountValue, setAmountValue] = useState(0);
   const [tip, setTip] = useState(0);
   const [fees, setFees] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
 
   const [orderDescription, setOrderDescription] = useState('');
@@ -114,6 +115,7 @@ export const CreateOrderPage = () => {
       //clear the form fields after success
       setOrderId('');
       setAmount('');
+      setAmountValue(0);
       setTip(0);
       setTotalAmount(0);
       setOrderDescription('');
@@ -123,29 +125,47 @@ export const CreateOrderPage = () => {
   }, [currentOrder, orderCreated, dispatch]);
 
 
-  const updateCalculatedFields = () => {
-    const amountNumber: number = Number(amount);
-    const calcAmount = amountNumber
-
-    const calcFees = feesPercentage * (calcAmount + tip);
+  const updateCalculatedFields = (amountValue: number, tip: number) => {
+    console.info(`updateCalculatedFields amount: ${amount}`);
+    const calcFees = feesPercentage * (amountValue + tip);
     console.info(`setting fees = ${calcFees}`);
     setFees(calcFees);
 
-    const totalAmount = amountNumber + calcFees + tip;
-    console.info(`setting totalAmount = ${totalAmount}. amountNumber: ${amountNumber}  amount: ${amount}`);
-    setTotalAmount(totalAmount);
+    const totalAmount = amountValue + calcFees + tip;
+
+    try {
+      console.info(`setting totalAmount = ${totalAmount}. fixed: ${totalAmount.toFixed(4)} amountValue: ${amountValue}`);
+      setTotalAmount(totalAmount);
+    }  catch (e) {
+      console.warn(`can't parse totalAmount ${totalAmount} for amountValue: ${amountValue}`);
+    }
+
+  }
+
+  const updateAmountValue = () => {
+    try {
+      const amountNumber: number = Number(amount);
+      setAmountValue(amountNumber);
+    } catch (e) {
+      console.warn(`can't parse amount ${amount}`);
+      setAmountValue(0);
+    }
   }
 
   const handleChange = (event: any) => {
+    console.info(`handleChange for ${event.target.name}`)
     if (event.target.name === "orderId") {
       console.info(`setting orderId ${event.target.value}`);
       setOrderId(event.target.value);
     } else if (event.target.name === "amount") {
       console.info(`setting amount ${event.target.value}`);
       setAmount(event.target.value);
+      updateAmountValue();
+      updateCalculatedFields(amountValue, tip);
     } else if (event.target.name === "tip") {
       console.info(`setting tip ${event.target.value}`);
       setTip(event.target.value);
+      //FIXME updateCalculatedFields();
     } else if (event.target.name === "orderDescription") {
       setOrderDescription(event.target.value);
     } else if (event.target.name === "customerPhone") {
@@ -155,7 +175,7 @@ export const CreateOrderPage = () => {
     } else {
       console.info(`unhandled event name ${event.toString()}`)
     }
-    updateCalculatedFields();
+
 
   }
 
@@ -193,8 +213,8 @@ export const CreateOrderPage = () => {
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full text-white">Total (USD)</p>
-            <input id='totalAmount' name='totalAmount' value={totalAmount.toFixed(4)} type="number"
-                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" step=".01" autoComplete="off" readOnly={true}/>
+            <input id='totalAmount' name='totalAmount' value={totalAmount ? totalAmount.toFixed(4): '-'} type="number"
+                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" readOnly={true}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
