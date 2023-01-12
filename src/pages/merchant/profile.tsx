@@ -80,9 +80,9 @@ export const ProfilePage = () => {
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="flex flex-col h-3/4 w-3/4 bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-auto mr-8">
-        <p className="text-white text-xl font-bold font-righteous text-center">Merchant Dashboard</p>
+        <p className="text-white text-xl font-bold font-righteous text-center">Transacton History</p>
         <div className="flex flex-col items-center justify-center">
-          <p className="text-white px-10 mt-4 font-bold font-montserrat">Payments</p>
+          <p className="text-white px-10 mt-4 font-bold font-montserrat">Total Payments</p>
           <div className="w-60 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
             <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
             {`${numeral(totalUSD || 0).format(',0.00')}`}
@@ -109,6 +109,11 @@ export const ProfilePage = () => {
 
           <div className="flex items-center justify-around px-2">
             <div className="grid min-w-max w-full overflow-auto" style={{}}>
+              <div className="">OrderId</div>
+              <div className="">Date</div>
+              <div className="">Time</div>
+              <div className="col-span-2">Amount</div>
+              <div className="col-span-2">Status</div>
               {
                 merchantInfo?.orders && merchantInfo?.orders.length > 0 ?
                     merchantInfo?.orders.map(orderItem => (

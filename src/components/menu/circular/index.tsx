@@ -83,13 +83,13 @@ export const OrbitalMenu = ({
                 }}
             >
                 <img className="h-full w-full" src={meneIcon} alt="" draggable={false} />
-                <div className="absolute z-10">
-                    <p className="text-white mt-12 ml-4">
-                        {status}
-                        {!disabled && name ? ' as' : ''}
-                    </p>
-                    {!disabled && name && <p className="text-white font-bold ml-4 z-10">{name}</p>}
-                </div>
+                {/*<div className="absolute z-10">*/}
+                {/*    <p className="text-white mt-12 ml-4">*/}
+                {/*        {status}*/}
+                {/*        {!disabled && name ? ' as' : ''}*/}
+                {/*    </p>*/}
+                {/*    {!disabled && name && <p className="text-white font-bold ml-4 z-10">{name}</p>}*/}
+                {/*</div>*/}
                 <MenuItem onFocused={() => setFocused(true)} zIndex={0} items={items} size={size + 50} disabled={disabled} focused={focused} />
             </div>
 

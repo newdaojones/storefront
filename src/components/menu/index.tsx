@@ -32,7 +32,7 @@ export const Menu = ({
       return (
           <div>
             <div
-                className="flex items-center justify-between mh-4"
+                className="flex items-center justify-between"
                 style={{
                   width: '100%',
                   minWidth: size,

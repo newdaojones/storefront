@@ -9,11 +9,7 @@ export const MenuLine = ({ size = 493 }: { size?: number }) => (
         />
         <defs>
             <linearGradient id="paint0_linear_2586_15606" x1="458.227" y1="120.865" x2="23.8076" y2="351.116" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#13053D" />
-                <stop offset="0.25049" stopColor="#FF00C7" />
-                <stop offset="0.510417" stopColor="#7E18FF" />
-                <stop offset="0.767495" stopColor="#61FFB3" />
-                <stop offset="1" stopColor="#13053D" />
+                <stop stopColor="#7E18FF" />
             </linearGradient>
         </defs>
     </svg>

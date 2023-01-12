@@ -57,13 +57,16 @@ export const MenuItem = ({ size, parentItem, onFocused = () => {}, focused, item
                     filter: index === current ? 'drop-shadow(5px 5px 5px #ffffff)' : 'none',
                     display: isVisible ? 'flex' : 'none',
                     zIndex: index + 1,
-                    fontWeight: index === current ? '700' : '400',
+                    fontWeight: index === current ? '700' : '600',
                     left,
                     top,
                 }}
             >
                 {/*{item.icon && <img className="w-10 h-6 pr-2" src={item.icon} alt={item.route} key={index} draggable={false} />}*/}
-                {item.text && <div className="text-white border-1 whitespace-nowrap text-sm rounded-md bg-primary px-2 py-1">{item.text}</div>}
+                {item.text &&
+                index === current ? <div className="text-white whitespace-nowrap text-sm rounded-md bg-secondary px-2 py-2">{item.text}</div>
+                    : <div className="text-black whitespace-nowrap text-sm rounded-md bg-gray-200 px-2 py-2">{item.text}</div>
+                }
             </div>
         );
     };
