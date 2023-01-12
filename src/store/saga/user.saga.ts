@@ -126,6 +126,8 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
 
     const chainId = getAccountChainId(action.payload.account);
     const order : IOrder = {
+      fees: 0,
+      tip: 0,
       externalOrderId: "",
       amount: action.payload.amount,
       nativeAmount: '0',
@@ -137,7 +139,7 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       transactionHash: null,
       chainId: chainId,
       customerPhoneNumber: null,
-      paymentProvider: null,
+      paymentProvider: null
     }
     const transactionOrder: ITransactionOrder = {
       transaction: res,

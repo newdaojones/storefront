@@ -10,12 +10,20 @@ import {userAction} from "../../store/actions";
 import {getAccountChainId, isNumeric} from "../../utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
 
+const feesPercentage = 0.0499;
+
 export const CreateOrderPage = () => {
   const dispatch = useDispatch();
   let merchantInfo = useSelector(selectMerchantInfo);
   const { account } = useWalletConnectClient();
   const [orderId, setOrderId] = useState('');
   const [amount, setAmount] = useState('');
+  const [amountValue, setAmountValue] = useState(0);
+  const [tip, setTip] = useState(0);
+  const [fees, setFees] = useState(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
+
   const [orderDescription, setOrderDescription] = useState('');
   const [orderCreated, setOrderCreated] = useState(false);
   const [customerPhone, setCustomerPhone] = useState<string | null>(null);
@@ -68,7 +76,9 @@ export const CreateOrderPage = () => {
 
       const orderInstance: IOrder = {
         amount: Number(fixedNumber),
-        externalOrderId: "0",
+        tip: tip,
+        fees: fees,
+        externalOrderId: orderId,
         testnet: isBlockchainTestnetMode(),
         token: "USD",
         toAddress: merchantInfo?.memberAddress,
@@ -104,6 +114,9 @@ export const CreateOrderPage = () => {
       //clear the form fields after success
       setOrderId('');
       setAmount('');
+      setAmountValue(0);
+      setTip(0);
+      setTotalAmount(0);
       setOrderDescription('');
       setCustomerPhone('');
       window.open(linkUrl, "_blank");
@@ -111,14 +124,47 @@ export const CreateOrderPage = () => {
   }, [currentOrder, orderCreated, dispatch]);
 
 
+  const updateCalculatedFields = (amountValue: number, tip: number) => {
+    console.info(`updateCalculatedFields amount: ${amount}`);
+    const calcFees = feesPercentage * (amountValue + tip);
+    console.info(`setting fees = ${calcFees}`);
+    setFees(calcFees);
+
+    const totalAmount = amountValue + calcFees + tip;
+
+    try {
+      console.info(`setting totalAmount = ${totalAmount}. fixed: ${totalAmount.toFixed(4)} amountValue: ${amountValue}`);
+      setTotalAmount(totalAmount);
+    }  catch (e) {
+      console.warn(`can't parse totalAmount ${totalAmount} for amountValue: ${amountValue}`);
+    }
+
+  }
+
+  const updateAmountValue = () => {
+    try {
+      const amountNumber: number = Number(amount);
+      setAmountValue(amountNumber);
+    } catch (e) {
+      console.warn(`can't parse amount ${amount}`);
+      setAmountValue(0);
+    }
+  }
 
   const handleChange = (event: any) => {
+    console.info(`handleChange for ${event.target.name}`)
     if (event.target.name === "orderId") {
       console.info(`setting orderId ${event.target.value}`);
       setOrderId(event.target.value);
     } else if (event.target.name === "amount") {
       console.info(`setting amount ${event.target.value}`);
       setAmount(event.target.value);
+      updateAmountValue();
+      updateCalculatedFields(amountValue, tip);
+    } else if (event.target.name === "tip") {
+      console.info(`setting tip ${event.target.value}`);
+      setTip(event.target.value);
+      //FIXME updateCalculatedFields();
     } else if (event.target.name === "orderDescription") {
       setOrderDescription(event.target.value);
     } else if (event.target.name === "customerPhone") {
@@ -128,6 +174,7 @@ export const CreateOrderPage = () => {
     } else {
       console.info(`unhandled event name ${event.toString()}`)
     }
+
 
   }
 
@@ -146,9 +193,27 @@ export const CreateOrderPage = () => {
           {/*</div>*/}
 
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full ">Order Value (USD)</p>
-            <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
+            <p className="w-full">Subtotal (USD)</p>
+            <input id='amount' name='amount' value={amount} min="0.01" max="399.99" type="number"
+                   className="w-3/5 bg-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full ">Tip</p>
+            <input id='tip' name='tip' value={tip} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
                    className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full ">Fees</p>
+            <input id='fees' name='fees' value={fees ? fees.toFixed(4) : '0'} type="number"
+                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" readOnly={true}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full ">Total (USD)</p>
+            <input id='totalAmount' name='totalAmount' value={totalAmount ? totalAmount.toFixed(4): '-'} type="number"
+                   className="w-3/5 bg-white bg-opacity-25 py-1 px-2 rounded" readOnly={true}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
@@ -168,10 +233,10 @@ export const CreateOrderPage = () => {
             </select>
           </div>}
 
-          <div className="w-full flex items-center justify-between mt-10 hidden">
-            <p className="text-center  mr-8">Description</p>
-            <textarea id='orderDescription' name='orderDescription' value={orderDescription} placeholder="Order description" className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
-          </div>
+          {/*<div className="w-full flex items-center justify-between mt-10">*/}
+          {/*  <p className="text-center text-white mr-8">Description</p>*/}
+          {/*  <textarea id='orderDescription' name='orderDescription' value={orderDescription} placeholder="Order description" className="w-4/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>*/}
+          {/*</div>*/}
 
           <div className="mt-10">
             <button onClick={handleCreateOrder} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
