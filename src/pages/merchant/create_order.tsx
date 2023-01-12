@@ -180,7 +180,7 @@ export const CreateOrderPage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 h-3/4 flex justify-center bg-blueBackground bg-opacity-25 border-4 border-secondary rounded-10xl shadow-md p-20">
+      <div className="w-3/4 h-3/4 flex justify-center bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-20">
         <div className="flex flex-col items-center justify-center mt-10">
           <p className=" text-center text-xl font-bold font-righteous text-center">Create Order</p>
           <p className=" text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>

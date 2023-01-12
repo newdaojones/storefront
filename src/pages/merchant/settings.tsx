@@ -76,7 +76,7 @@ export const SettingsPage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 items-center justify-center bg-blueBackground bg-opacity-25 border-4 border-secondary rounded-10xl shadow-md p-20 text-balck">
+      <div className="w-3/4 items-center justify-center bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-20 text-balck">
         <p className=" text-xl font-bold font-righteous text-center">Merchant Settings</p>
 
         <div className="flex flex-col items-center justify-between mt-4 px-14">
