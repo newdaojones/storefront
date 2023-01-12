@@ -10,9 +10,8 @@ module.exports = {
         'display': ['Oswald'],
         'body': ['Montserrat']
       },
-      size: {
-        'h30': '20px',
-        'w-30': '30px',
+      spacing: {
+        '4p': '2px',
       },
       borderRadius: {
         '16xl': '64px',
@@ -21,11 +20,13 @@ module.exports = {
       },
       borderWidth: {
         1: '1px',
+        4: '4px',
       },
       colors: {
         primary: '#13053D',
         secondary: '#7E18FF',
         terciary: '#FFB01D',
+        blueBackground: '#97B1FA',
         footer: '#212134',
       },
       boxShadow: {

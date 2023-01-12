@@ -4,7 +4,7 @@ import numeral from 'numeral';
 import ETHIcon from '../../assets/images/ethIcon.svg';
 import DollarIcon from '../../assets/images/dollarIcon.svg';
 import USDCIcon from '../../assets/images/usdc.svg';
-import RefreshIcon from '../../assets/images/reload.svg';
+import RefreshIcon from '../../assets/images/reload_black.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
 import {useDispatch, useSelector} from "react-redux";
 import {selectMerchantInfo} from "../../store/selector";
@@ -79,20 +79,20 @@ export const ProfilePage = () => {
   };
   return (
     <div className="w-full h-screen flex items-center justify-center">
-      <div className="flex flex-col h-3/4 w-3/4 bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-10 overflow-auto mr-8">
-        <p className="text-white text-xl font-bold font-righteous text-center">Transacton History</p>
+      <div className="flex flex-col h-3/4 w-3/4 bg-blueBackground bg-opacity-25 border-4 border-secondary rounded-10xl shadow-md p-10 overflow-auto mr-8 text-black">
+        <p className=" text-xl font-bold font-righteous text-center">Transaction History</p>
         <div className="flex flex-col items-center justify-center">
-          <p className="text-white px-10 mt-4 font-bold font-montserrat">Total Payments</p>
-          <div className="w-60 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded">
+          <p className=" px-10 mt-4 font-bold font-montserrat">Total Payments</p>
+          <div className="w-60 flex items-center justify-center bg-white  bg-opacity-25 py-1 px-2 rounded">
             <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
             {`${numeral(totalUSD || 0).format(',0.00')}`}
           </div>
           <div className="w-60 flex items-center justify-around mt-2">
-            <div className="w-40 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded mr-1">
+            <div className="w-40 flex items-center justify-center bg-white  bg-opacity-25 py-1 px-2 rounded mr-1">
               <img className="w-8 h-8 mr-2" src={ETHIcon} alt="" />
               {`${numeral(totalEth || 0).format('0,0.0000')}`}
             </div>
-            <div className="w-40 flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-2 rounded ml-1">
+            <div className="w-40 flex items-center justify-center bg-white  bg-opacity-25 py-1 px-2 rounded ml-1">
               <img className="w-8 h-8 mr-2" src={USDCIcon} alt="" />
               {`${numeral(totalUsdc || 0).format(',0.00')}`}
             </div>
@@ -100,15 +100,15 @@ export const ProfilePage = () => {
         </div>
         <div className="mt-4">
           <div className="flex items-center justify-between px-10">
-            <p className="text-white mt-1 py-2 font-bold font-montserrat">Orders</p>
+            <p className=" mt-1 py-2 text-xl font-bold font-righteous">Order History</p>
             <div className="flex items-center items-center" >
-              {/*<p className="text-white text-xs">Reload</p>*/}
+              {/*<p className=" text-xs">Reload</p>*/}
               <img className="w-6 h-6 ml-2 cursor-pointer " style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
             </div>
           </div>
 
           <div className="flex flex-col items-center justify-around px-2">
-            <div className="flex  items-center justify-around  w-full overflow-auto text-white font-bold" style={{}}>
+            <div className="flex  items-center justify-around  w-full overflow-auto  font-bold" style={{}}>
               <div className="" style={{width:'12rem'}}>Order Id</div>
               <div className="">Date</div>
               <div className="">Time</div>
@@ -125,7 +125,7 @@ export const ProfilePage = () => {
                     )
                     :
                     <div
-                        className="column justify-center text-center items-center text-white">
+                        className="column justify-center text-center items-center ">
                       <img className="w-140 h-40 inline" src={NotFoundImage} alt=""/>
                       <p>Nothing to see here.</p>
                     </div>

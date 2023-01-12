@@ -95,32 +95,37 @@ export const OrbitalMenu = ({
             </div>
 
             {!disabled && (
-                <div className="mt-20 flex flex-col items-center">
+                <div className="mx-10 mt-40 flex flex-col items-center text-black text-sm border-1 border-secondary rounded-10xl shadow-md py-4">
+
+                    <p className="w-full ml-20">
+                        <span className="">{'shortcuts'}</span>
+                    </p>
+                    <hr className="w-full h-4p mt-4 bg-secondary"/>
                     <div>
                         <div>
-                            <p className="text-white">
+                            <p className="mt-4">
                                 use <span className="font-bold">{'<- -> ARROW'}</span>
                             </p>
-                            <p className="text-white">to rotate collection menu</p>
+                            <p className="">to rotate collection menu</p>
                         </div>
                         <div className="mt-4">
-                            <p className="text-white">
+                            <p className="">
                                 tap <span className="font-bold">ENTER</span>
                             </p>
-                            <p className="text-white">to open a collection</p>
+                            <p className="">to open a collection</p>
                         </div>
                         <div className="mt-4">
-                            <p className="text-white">
+                            <p className="">
                                 hit <span className="font-bold">SHIFT + ENTER</span>
                             </p>
-                            <p className="text-white">to return to the menu</p>
+                            <p className="">to return to the menu</p>
                         </div>
-                        <div className="mt-4">
-                            <p className="text-white">
-                                hit <span className="font-bold">CTL + S</span>
-                            </p>
-                            <p className="text-white">to switch wallet</p>
-                        </div>
+                        {/*<div className="mt-4">*/}
+                        {/*    <p className="">*/}
+                        {/*        hit <span className="font-bold">CTL + S</span>*/}
+                        {/*    </p>*/}
+                        {/*    <p className="">to switch wallet</p>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             )}

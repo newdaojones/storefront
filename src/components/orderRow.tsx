@@ -5,9 +5,9 @@ import numeral from "numeral";
 import ETHIcon from '../assets/images/eth.svg';
 import USDCIcon from '../assets/images/usdc.svg';
 import DollarIcon from '../assets/images/dollarIcon.svg';
-import AccountEditIcon from '../assets/images/account-edit.svg';
-import ConfirmedIcon from '../assets/images/confirmed_white.svg';
-import PendingIcon from '../assets/images/pending_white.svg';
+import AccountEditIcon from '../assets/images/account-edit_black.svg';
+import ConfirmedIcon from '../assets/images/confirmed_black.svg';
+import PendingIcon from '../assets/images/pending_black.svg';
 
 import ConfirmDialog from "./ConfirmDialogStyle";
 import {ellipseAddress, TxDetails} from "../helpers";
@@ -22,7 +22,7 @@ const SAssetRow = {
     justifyContent: 'space-between',
     verticalAlign: 'center',
     alignItems: 'center',
-    color: 'white',
+    color: 'black',
 };
 const SAssetRowLeft = {
     display: 'flex',
@@ -144,10 +144,10 @@ const OrderRow = (props: any) => {
                                                  <div>
                                                      <p>Edit Transaction</p>
                                                      <p className="text-red text-xs mt-4 w-60">{inputs.formErrors}</p>
-                                                     <form className="text-white mt-4 text-sm">
+                                                     <form className="mt-4 text-sm">
                                                          <fieldset>
                                                              <div
-                                                                 className="flex items-center justify-between text-white rounded">
+                                                                 className="flex items-center justify-between rounded">
                                                                  <label>
                                                                      <p>Name</p>
                                                                      <input type="text"
@@ -179,7 +179,7 @@ const OrderRow = (props: any) => {
 
                                              }
                                              cancelOnClickOutside={true}>
-        <button className="bg-white bg-opacity-10" onClick={() => {
+        <button className="bg-black bg-opacity-10" onClick={() => {
             //selectDepositor(order)
         }}>
             <img className="w-6 h-6" src={AccountEditIcon} alt=""/>
@@ -189,11 +189,11 @@ const OrderRow = (props: any) => {
     const icon = isTransactionConfirmed() ?
         <a target='_blank' rel="noreferrer"
            href={transactionStatusLink(order.transactionHash!!, order.trackingId || "")}>
-            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={ConfirmedIcon} alt="Status"/>
+            <img style={Center} className="w-8 h-8 mr-2 filter-black" src={ConfirmedIcon} alt="Status"/>
         </a> :
         <a target='_blank' rel="noreferrer"
            href={transactionFound ? transactionStatusLink(order.transactionHash!!, order.trackingId || "") :order.trackingId ? payLink(order.trackingId) : ''}>
-            <img style={Center} className="w-8 h-8 mr-2 filter-white" src={PendingIcon} alt=""/>
+            <img style={Center} className="w-8 h-8 mr-2 filter-black" src={PendingIcon} alt=""/>
         </a>
 
 
@@ -203,7 +203,7 @@ const OrderRow = (props: any) => {
                 {icon}
                 <div style={SColumnLeft}>
                     <div style={SAssetName}>{`orderId: ${order.externalOrderId}`}</div>
-                    <div className="flex text-xs text-white overflow-hidden">
+                    <div className="flex text-xs overflow-hidden">
                         {order.transactionHash && order.trackingId ?
                             <a target='_blank' rel="noreferrer"
                                href={transactionStatusLink(order.transactionHash, order.trackingId)}>{`${ellipseAddress(order.transactionHash)}`}</a> : 'Transaction Pending'}
