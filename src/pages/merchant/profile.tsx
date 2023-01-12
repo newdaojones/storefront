@@ -83,16 +83,16 @@ export const ProfilePage = () => {
         <p className=" text-xl font-bold font-righteous text-center">Transaction History</p>
         <div className="flex flex-col items-center justify-center">
           <p className=" px-10 mt-4 font-bold font-montserrat">Total Payments</p>
-          <div className="w-60 flex items-center justify-center bg-white  bg-opacity-25 py-1 px-2 rounded">
+          <div className="w-60 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded">
             <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
             {`${numeral(totalUSD || 0).format(',0.00')}`}
           </div>
           <div className="w-60 flex items-center justify-around mt-2">
-            <div className="w-40 flex items-center justify-center bg-white  bg-opacity-25 py-1 px-2 rounded mr-1">
+            <div className="w-40 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded mr-1">
               <img className="w-8 h-8 mr-2" src={ETHIcon} alt="" />
               {`${numeral(totalEth || 0).format('0,0.0000')}`}
             </div>
-            <div className="w-40 flex items-center justify-center bg-white  bg-opacity-25 py-1 px-2 rounded ml-1">
+            <div className="w-40 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded ml-1">
               <img className="w-8 h-8 mr-2" src={USDCIcon} alt="" />
               {`${numeral(totalUsdc || 0).format(',0.00')}`}
             </div>

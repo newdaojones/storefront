@@ -198,7 +198,7 @@ const OrderRow = (props: any) => {
 
 
     return (
-        <div style={SAssetRow}>
+        <div className="bg-blueBackground rounded-md" style={SAssetRow}>
             <div style={SAssetRowLeft}>
                 {icon}
                 <div style={SColumnLeft}>
