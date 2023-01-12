@@ -211,7 +211,10 @@ const OrderRow = (props: any) => {
                 </div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${order.updatedAt?.substring(0, 16).replace('T', " ")}`}</div>
+                <div style={SAssetName}>{`${order.updatedAt?.substring(0, 12).replace('T', " ")}`}</div>
+            </div>
+            <div style={SPriceLimits}>
+                <div style={SAssetName}>{`${order.updatedAt?.substring(12, 16).replace('T', " ")}`}</div>
             </div>
             <div style={SPriceLimits}>
                 <div style={SColumn}>

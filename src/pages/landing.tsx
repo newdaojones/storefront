@@ -12,6 +12,6 @@ export const Landing = ({text = 'Loading....',}: {
                 <div className="cube c3"></div>
             </div>
         </div>
-        <p className="mt-10 text-white text-sm">{text}</p>
+        <p className="mt-10 text-secondary text-sm">{text}</p>
     </div>
 );
