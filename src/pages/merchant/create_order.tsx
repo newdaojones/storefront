@@ -68,7 +68,7 @@ export const CreateOrderPage = () => {
 
       const orderInstance: IOrder = {
         amount: Number(fixedNumber),
-        externalOrderId: orderId,
+        externalOrderId: "0",
         testnet: isBlockchainTestnetMode(),
         token: "USD",
         toAddress: merchantInfo?.memberAddress,
@@ -138,12 +138,12 @@ export const CreateOrderPage = () => {
           <p className=" text-center text-xl font-bold font-righteous text-center">Create Order</p>
           <p className=" text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
 
-          <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full ">Order ID</p>
-            <input id='orderId' name='orderId' placeholder="Your order ID" type="text"
-                   value={orderId}
-                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
-          </div>
+          {/*<div className="w-full flex items-center justify-between mt-10">*/}
+          {/*  <p className="w-full ">Order ID</p>*/}
+          {/*  <input id='orderId' name='orderId' placeholder="Your order ID" type="text"*/}
+          {/*         value={orderId}*/}
+          {/*         className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>*/}
+          {/*</div>*/}
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full ">Order Value (USD)</p>
@@ -168,7 +168,7 @@ export const CreateOrderPage = () => {
             </select>
           </div>}
 
-          <div className="w-full flex items-center justify-between mt-10">
+          <div className="w-full flex items-center justify-between mt-10 hidden">
             <p className="text-center  mr-8">Description</p>
             <textarea id='orderDescription' name='orderDescription' value={orderDescription} placeholder="Order description" className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>

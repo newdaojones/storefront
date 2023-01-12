@@ -91,6 +91,8 @@ export interface IOrder {
   merchantName?: string,
   toAddress: string,
   nativeAmount: string | null,
+  fees: string | null,
+  tip: string,
   orderDescription: string | null,
   chainId: string,
   customerPhoneNumber: string | null,

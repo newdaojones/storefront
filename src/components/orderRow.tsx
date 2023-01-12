@@ -202,7 +202,7 @@ const OrderRow = (props: any) => {
             <div style={SAssetRowLeft}>
                 {icon}
                 <div style={SColumnLeft}>
-                    <div style={SAssetName}>{`orderId: ${order.externalOrderId}`}</div>
+                    <div style={SAssetName}>{`orderId: ${order.trackingId}`}</div>
                     <div className="flex text-xs overflow-hidden">
                         {order.transactionHash && order.trackingId ?
                             <a target='_blank' rel="noreferrer"

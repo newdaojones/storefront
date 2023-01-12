@@ -168,7 +168,7 @@ export const Pay = () => {
                 <div className="w-3/4 flex justify-around pb-4">
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Order Id</p>
-                        <p className="font-bold text-xl pl-4">{`${currentOrder?.externalOrderId || ''}`}</p>
+                        <p className="font-bold text-xl pl-4">{`${currentOrder?.trackingId || ''}`}</p>
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>
