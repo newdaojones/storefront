@@ -133,35 +133,35 @@ export const CreateOrderPage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 h-3/4 flex justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
+      <div className="w-3/4 h-3/4 flex justify-center bg-blueBackground bg-opacity-25 border-4 border-secondary rounded-10xl shadow-md p-20">
         <div className="flex flex-col items-center justify-center mt-10">
-          <p className="text-white text-center text-xl font-bold font-righteous text-center">Create Order</p>
-          <p className="text-white text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
+          <p className=" text-center text-xl font-bold font-righteous text-center">Create Order</p>
+          <p className=" text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
 
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full text-white">Order ID</p>
+            <p className="w-full ">Order ID</p>
             <input id='orderId' name='orderId' placeholder="Your order ID" type="text"
                    value={orderId}
-                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full text-white">Order Value (USD)</p>
+            <p className="w-full ">Order Value (USD)</p>
             <input id='amount' name='amount' value={amount} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
-                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
+                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full text-white">Customer Phone</p>
+            <p className="w-full ">Customer Phone</p>
             <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel"
                    style={{alignItems: 'end'}} placeholder="+1234567890"
-                   className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
+                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
           </div>
 
           {customerPhone && customerPhone.length > 0 && <div className="w-full flex items-center justify-between mt-10">
-            <p className="w-full text-white">Fiat Provider</p>
+            <p className="w-full ">Fiat Provider</p>
             <select  id='paymentMethod' name='paymentMethod' style={{alignItems: 'end'}}
-                     className="w-3/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded " onChange={handleChange}>
+                     className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded " onChange={handleChange}>
               <option>{OrderPaymentMethod.TRANSAK}</option>
               <option>{OrderPaymentMethod.ONRAMPER}</option>
               <option>{OrderPaymentMethod.WYRE}</option>
@@ -169,8 +169,8 @@ export const CreateOrderPage = () => {
           </div>}
 
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-center text-white mr-8">Description</p>
-            <textarea id='orderDescription' name='orderDescription' value={orderDescription} placeholder="Order description" className="w-4/5 bg-white text-white bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
+            <p className="text-center  mr-8">Description</p>
+            <textarea id='orderDescription' name='orderDescription' value={orderDescription} placeholder="Order description" className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded" onChange={handleChange}/>
           </div>
 
           <div className="mt-10">

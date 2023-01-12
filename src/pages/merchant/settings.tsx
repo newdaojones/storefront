@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import CopyIcon from '../../assets/images/copyIcon.svg';
+import CopyIcon from '../../assets/images/copyIcon_black.svg';
 import {selectMerchantInfo} from "../../store/selector";
 import {getAddressFromAccount} from "@walletconnect/utils";
 import {useWalletConnectClient} from "../../contexts/walletConnect";
@@ -76,30 +76,30 @@ export const SettingsPage = () => {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-3/4 items-center justify-center bg-black bg-opacity-50 border-2 border-secondary rounded-16xl shadow-md p-20">
-        <p className="text-white text-xl font-bold font-righteous text-center">Merchant Settings</p>
+      <div className="w-3/4 items-center justify-center bg-blueBackground bg-opacity-25 border-4 border-secondary rounded-10xl shadow-md p-20 text-balck">
+        <p className=" text-xl font-bold font-righteous text-center">Merchant Settings</p>
 
         <div className="flex flex-col items-center justify-between mt-4 px-14">
           <div className="w-full flex items-center justify-between mt-10">
-            <p className="text-white mr-8">Wallet Address</p>
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
+            <p className=" mr-8">Wallet Address</p>
+            <div className="flex items-center justify-center bg-white  bg-opacity-25 py-1 px-4 rounded">
               {`0x${ellipseAddress(merchantInfo?.memberAddress)}`}
               <img className="ml-4 w-4 h-4 cursor-pointer" src={CopyIcon} onClick={copyAddressToClipboard}/>
             </div>
           </div>
           <div className="w-full flex items-center justify-between mt-4">
-              <p className="text-center text-white mr-8">Merchant Name</p>
-              <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-1 px-4 rounded">
+              <p className="text-center  mr-8">Merchant Name</p>
+              <div className="flex items-center justify-center bg-white  bg-opacity-25 py-1 px-4 rounded">
                 {merchantInfo?.merchantName}
               </div>
           </div>
 
           <div className="w-full flex justify-between mt-4">
-            <p className="text-center text-white  mr-8">Supported Payment Tokens</p>
+            <p className="text-center   mr-8">Supported Payment Tokens</p>
 
             <div className="flex flex-col justify-end bg-white bg-opacity-25 py-1 px-2 rounded">
 
-              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+              <div className="flex items-center justify-end  py-1 px-2 rounded">
                 <div>{'ETH'}</div>
                 <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4" >
                   <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={true}/>
@@ -107,7 +107,7 @@ export const SettingsPage = () => {
                 </label>
               </div>
 
-              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+              <div className="flex items-center justify-end  py-1 px-2 rounded">
                 <div>{'USDC'}</div>
                 <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative ml-4" >
                   <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={PAY_WITH_USDC_ENABLED}/>
@@ -118,24 +118,24 @@ export const SettingsPage = () => {
           </div>
 
           <div className="w-full flex items-center justify-between mt-4">
-            <p className="text-center text-white  mr-8">Test Money</p>
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
+            <p className="text-center   mr-8">Test Money</p>
+            <div className="flex items-center justify-center bg-white  bg-opacity-25 py-2 px-2 rounded" >
               <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative" >
                 <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={isBlockchainTestnetMode()}/>
                 <div className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"
                      //onClick={() => {setEnabled(!enabled);}}
                 />
-                  <span className="ml-3 text-sm text-white">{isBlockchainTestnetMode() ?'ON' :'OFF'}</span>
+                  <span className="ml-3 text-sm ">{isBlockchainTestnetMode() ?'ON' :'OFF'}</span>
               </label>
             </div>
           </div>
 
           <div className="w-full flex justify-between mt-4">
-            <p className="text-center text-white  mr-8">Supported Chains</p>
+            <p className="text-center   mr-8">Supported Chains</p>
 
             <div className="flex flex-col justify-end bg-white bg-opacity-25 py-1 px-2 rounded">
 
-              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+              <div className="flex items-center justify-end  py-1 px-2 rounded">
                 <div>{'Ethereum'}</div>
                 <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4" >
                   <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={true}/>
@@ -143,7 +143,7 @@ export const SettingsPage = () => {
                 </label>
               </div>
 
-              <div className="flex items-center justify-end text-white py-1 px-2 rounded">
+              <div className="flex items-center justify-end  py-1 px-2 rounded">
                 <div>{'Polygon'}</div>
                 <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative ml-4" >
                   <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true} checked={false}/>
@@ -156,10 +156,10 @@ export const SettingsPage = () => {
           </div>
 
           <div className="w-full flex items-center justify-between mt-4">
-            <p className="text-center text-white  mr-8">Dapp Version</p>
-            <div className="flex items-center justify-center bg-white text-white bg-opacity-25 py-2 px-2 rounded" >
+            <p className="text-center   mr-8">Dapp Version</p>
+            <div className="flex items-center justify-center bg-white  bg-opacity-25 py-2 px-2 rounded" >
               <label className="flex items-center cursor-pointer relative" >
-                <span className="ml-3 text-sm text-white">{version ? version : 'n/a'}</span>
+                <span className="ml-3 text-sm ">{version ? version : 'n/a'}</span>
               </label>
             </div>
           </div>
@@ -174,7 +174,7 @@ export const SettingsPage = () => {
 
           {/*Storefront Pay Button*/}
           {/*<div className="w-full flex flex-col items-center justify-around pt-8">*/}
-          {/*  <p className="font-montserrat text-white text-center text-sm mt-2">Add a Pay with Storefront button to your site, or use our sdk.</p>*/}
+          {/*  <p className="font-montserrat  text-center text-sm mt-2">Add a Pay with Storefront button to your site, or use our sdk.</p>*/}
           {/*  {payButton}*/}
           {/*</div>*/}
         </div>
