@@ -1,4 +1,4 @@
-$prim: #ffffff;
+$loadingCubeColor: #7E18FF;
 
 body {
   margin: 0;
@@ -94,7 +94,7 @@ code {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: $prim;
+    background-color: $loadingCubeColor;
     -webkit-animation: foldthecube 2.4s infinite linear both;
     animation: foldthecube 2.4s infinite linear both;
     -webkit-transform-origin: 100% 100%;

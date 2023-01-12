@@ -32,15 +32,16 @@ export const Menu = ({
       return (
           <div>
             <div
-                className="flex items-center justify-between"
-                style={{
+                className="flex items-center justify-between mh-4"
+                style={
+                     !merchantLogin ? {
                   width: '100%',
                   minWidth: size,
                   position: 'relative',
                   backgroundRepeat: 'no-repeat',
                   backgroundSize: 'cover',
                   backgroundImage: `url(${menuBackground})`,
-                }}
+                } : {}}
             >
             {/*left*/}
             <div className="flex items-center justify-between mh-4 mt-2">

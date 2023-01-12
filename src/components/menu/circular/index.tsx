@@ -4,6 +4,7 @@ import meneIcon from '../../../assets/images/menu_icon.png';
 import { MenuItem } from './menu';
 import { IMenuItem } from '../../../models';
 import { chainData } from '../../../consts';
+import menuBackground from "../../../assets/images/background/menu_background.svg";
 
 interface Props {
     size: number;
@@ -69,7 +70,7 @@ export const OrbitalMenu = ({
     }
 
     return (
-        <div>
+        <div className="">
             <div
                 className="flex items-center justify-center mr-8"
                 style={{

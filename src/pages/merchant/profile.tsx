@@ -107,13 +107,15 @@ export const ProfilePage = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-around px-2">
-            <div className="grid min-w-max w-full overflow-auto" style={{}}>
-              <div className="">OrderId</div>
+          <div className="flex flex-col items-center justify-around px-2">
+            <div className="flex  items-center justify-around  w-full overflow-auto text-white font-bold" style={{}}>
+              <div className="" style={{width:'12rem'}}>Order Id</div>
               <div className="">Date</div>
               <div className="">Time</div>
-              <div className="col-span-2">Amount</div>
-              <div className="col-span-2">Status</div>
+              <div className="">Amount</div>
+              <div className="">Status</div>
+            </div>
+            <div className="grid min-w-max w-full overflow-auto" style={{}}>
               {
                 merchantInfo?.orders && merchantInfo?.orders.length > 0 ?
                     merchantInfo?.orders.map(orderItem => (
