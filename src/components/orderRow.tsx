@@ -200,9 +200,9 @@ const OrderRow = (props: any) => {
     return (
         <div className="bg-blueBackground rounded-md" style={SAssetRow}>
             <div style={SAssetRowLeft}>
-                {icon}
+
                 <div style={SColumnLeft}>
-                    <div style={SAssetName}>{`orderId: ${order.trackingId}`}</div>
+                    <div style={SAssetName}>{`${order.trackingId?.substring(0,8)}`}</div>
                     <div className="flex text-xs overflow-hidden">
                         {order.transactionHash && order.trackingId ?
                             <a target='_blank' rel="noreferrer"
@@ -240,6 +240,8 @@ const OrderRow = (props: any) => {
             <div className="w-20 text-sm font-righteous">
                 <p>{transactionFound ? ( confirmed ? `Confirmed` : 'Pending Approval') : `Unpaid`}</p>
             </div>
+
+            {icon}
         </div>
     );
 };

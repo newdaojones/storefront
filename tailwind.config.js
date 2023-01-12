@@ -27,6 +27,7 @@ module.exports = {
         secondary: '#7E18FF',
         terciary: '#FFB01D',
         blueBackground: '#97B1FA',
+        contentBackground: '#e8eeffff',
         footer: '#212134',
       },
       boxShadow: {
