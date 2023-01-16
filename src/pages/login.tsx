@@ -60,7 +60,7 @@ export const Login = () => {
     //const androidIntentLink = "intent://wc/#Intent;scheme=wc;package=com.ndj.wallet;end";
 
     return (
-        <div className="w-full h-screen flex items-center justify-center flex-col">
+        <div className="w-full h-screen flex items-center justify-center flex-col text-charcoal">
             <a href={wcV2Deeplink} target={"_blank"} className="" rel={"noreferrer"}>
                 <div className="flex items-center justify-center pt-2">
                     <div id="qrcode" className="flex items-center justify-center rounded-10xl overflow-hidden qrcode">
@@ -69,8 +69,8 @@ export const Login = () => {
                 </div>
             </a>
             <p onClick={onCopyLinkClicked}
-               className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
-            <p className="font-montserrat text-center text-white mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
+               className="text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
+            <p className="font-montserrat text-center mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
 
             {/*Backpack local Deeplink Button*/}
             {/*<a href={backpackDeeplink} target={"_blank"} rel={"noreferrer"}>*/}
@@ -87,7 +87,7 @@ export const Login = () => {
                     <p className="font-righteous">Connect with Backpack</p>
                 </button>
             </a>
-            <p className="font-montserrat text-center text-white mt-2 mb-10">Or connect directly with your Backpack</p>
+            <p className="font-montserrat text-center mt-2 mb-10">Or connect directly with your Backpack</p>
         </div>
     );
 };

@@ -30,6 +30,7 @@ module.exports = {
         contentBackground: '#e8eeffff',
         footer: '#212134',
         backpackConnectBackground: '#D2CDFF',
+        charcoal: '#1F1F1F',
 
       },
       boxShadow: {
