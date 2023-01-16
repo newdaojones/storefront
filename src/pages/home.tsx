@@ -222,7 +222,7 @@ export const HomePage = () => {
   />
 
   return (
-      <div className="grid">
+      <div className="grid text-black">
       {scanning && qrCode}
         <div className="absolute mt-10 w-full h-full">
           <div className="h-full flex justify-center items-center">
@@ -251,8 +251,8 @@ export const HomePage = () => {
 
 
               <div className="mt-4">
-                <p className="text-white mt-8 text-center font-bold">Scan Payment QR </p>
-                <p className="font-Righteous text-center text-white text-sm" style={{fontStyle: 'normal',}}>
+                <p className="mt-8 text-center font-bold">Scan Payment QR </p>
+                <p className="font-Righteous text-center text-sm" style={{fontStyle: 'normal',}}>
                   Scan the payment QR code provided by the store to checkout</p>
               </div>
               <div className="flex items-center justify-center mt-10">

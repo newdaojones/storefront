@@ -82,7 +82,7 @@ export const Login = () => {
 
             {/*Backpack Universal Link Button */}
             <a href={backpackUniversalLink} target={"_blank"} rel={"noreferrer"}>
-                <button className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+                <button className="flex bg-backpackConnectBackground justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
                     <img className="w-8 h-8 mr-4" src={backpackLogo} alt="" />
                     <p className="font-righteous">Connect with Backpack</p>
                 </button>

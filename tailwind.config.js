@@ -29,6 +29,8 @@ module.exports = {
         blueBackground: '#97B1FA',
         contentBackground: '#e8eeffff',
         footer: '#212134',
+        backpackConnectBackground: '#D2CDFF',
+
       },
       boxShadow: {
         primary: '0px 1px 20px #FF00C7',
