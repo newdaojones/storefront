@@ -20,20 +20,20 @@ export const MerchantLogin = () => {
                         type: 'linear',
                         rotation: 90,
                         colorStops: [
-                            {offset: 0.4, color: 'rgb(115,44,249)'},
-                            {offset: 0.9, color: 'rgb(88,207,252)'},
+                            {offset: 0.4, color: '#d2cdff'},
+                            {offset: 0.9, color: '#c1f8ff'},
                         ],
                     },
                 },
                 cornersDotOptions: {
-                    color: 'rgb(0,255,139)',
+                    color: '#00ff83',
                 },
                 cornersSquareOptions: {
-                    color: 'rgb(255,0,196)',
+                    color: '#7e18ff',
                     type: 'extra-rounded',
                 },
                 backgroundOptions: {
-                    color: 'rgb(15,7,60)',
+                    color: '#13053d',
                 },
             });
 
