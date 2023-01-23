@@ -33,8 +33,9 @@ export const CreateOrderPage = () => {
 
   function handleCreateOrder() {
     if (!orderId) {
-      toast.error("Order Id must be valid");
-      return;
+      setOrderId("0")
+      // toast.error("Order Id must be valid");
+      // return;
     }
     if (!isNumeric(amount)) {
       toast.error("Amount must be a decimal greater than zero");

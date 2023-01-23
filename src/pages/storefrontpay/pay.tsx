@@ -168,7 +168,7 @@ export const Pay = () => {
                 <div className="w-3/4 flex justify-around pb-4">
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Order Id</p>
-                        <p className="font-bold text-xl pl-4">{`${currentOrder?.trackingId || ''}`}</p>
+                        <p className="font-bold text-xl pl-4">{`${currentOrder?.trackingId?.substring(0,8) || ''}`}</p>
                     </div>
                     <div className="flex flex-col pb-4">
                         <p className="text-sm">Amount</p>
@@ -215,19 +215,19 @@ export const Pay = () => {
                 <div id="logo" className="flex items-center justify-center rounded-10xl overflow-hidden">
                     <img className="w-16 h-16" src={logoIcon} alt=""/>
                 </div>
-                <h1 className="text-white text-xl text-center font-bold mx-40 mt-10">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
+                <h1 className="text-xl text-center font-bold mx-40 mt-10">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
 
                 <img className="w-16 h-16 mt-10" src={promo1} alt=""/>
-                <p className="text-white font-bold mt-4">Reach Millions of Users</p>
-                <p className="text-white text-center text-sm mt-4 mx-10">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
+                <p className="font-bold mt-4">Reach Millions of Users</p>
+                <p className="text-center text-sm mt-4 mx-10">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
 
                 <img className="w-16 h-16 mt-10" src={promo2} alt=""/>
-                <p className="text-white font-bold mt-4">Lowest Cost</p>
-                <p className="text-white text-center text-sm mt-4 mx-10">Pay zero transactions fees and save up to 85% on settlement fees. </p>
+                <p className="font-bold mt-4">Lowest Cost</p>
+                <p className="text-center text-sm mt-4 mx-10">Pay zero transactions fees and save up to 85% on settlement fees. </p>
 
                 <img className="w-16 h-16 mt-10" src={promo3} alt=""/>
-                <p className="text-white font-bold mt-4">Easy Integration</p>
-                <p className="text-white text-center text-sm mt-4 mx-10">Integrate with a few clicks using our SDK or plugins. No coding experience needed. </p>
+                <p className="font-bold mt-4">Easy Integration</p>
+                <p className="text-center text-sm mt-4 mx-10">Integrate with a few clicks using our SDK or plugins. No coding experience needed. </p>
             </div>
         </div>
     );
