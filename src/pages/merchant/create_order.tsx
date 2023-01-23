@@ -198,7 +198,7 @@ export const CreateOrderPage = () => {
                    className="w-3/5 bg-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
 
-          <div className="w-full flex items-center justify-between mt-10">
+          <div className="w-full flex items-center justify-between mt-10 hidden">
             <p className="w-full ">Tip</p>
             <input id='tip' name='tip' value={tip} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
                    className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
