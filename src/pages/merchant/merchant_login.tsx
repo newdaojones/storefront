@@ -54,12 +54,12 @@ export const MerchantLogin = () => {
 
     return (
         <div className="h-screen w-screen flex">
-            <div className="w-full flex flex-col items-center justify-center pt-10">
+            <div className="w-full flex flex-col items-center justify-center pt-10 text-charcoal">
                 <div className="flex items-center justify-center ">
                     <img className="w-12 h-12" src={logoIcon} alt=""/>
                     <div className="w-full flex flex-col p-4">
-                        <h1 className="text-xl text-white font-righteous">Storefront Pay</h1>
-                        <h4 className="font-righteous text-white">Merchant Login</h4>
+                        <h1 className="text-xl font-righteous">Storefront Pay</h1>
+                        <h4 className="font-righteous">Merchant Login</h4>
                     </div>
                 </div>
 
@@ -74,8 +74,8 @@ export const MerchantLogin = () => {
                         </div>
                     </a>
                     <p onClick={onCopyLinkClicked}
-                       className="text-white text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
-                    <p className="font-montserrat text-center text-white mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
+                       className="text-xs mt-1 mb-8 cursor-pointer">Copy link</p>
+                    <p className="font-montserrat text-center mt-2 mb-10">Scan or Tap the QrCode <br/>to connect with WalletConnect v2</p>
 
                 </div>
             </div>
