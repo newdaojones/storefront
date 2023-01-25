@@ -17,7 +17,7 @@ export const Dashboard = () => {
           <Route path="/play" component={PlayPage} />
           <Route path="/scan" component={ScanPage} />
           <Route path="/buy" component={BuyPage} />
-          <Route path="/tip" component={Tip} />
+
           <Route path="/confirmation" component={ConfirmationPage} />
           <Redirect to="/home" />
         </Switch>

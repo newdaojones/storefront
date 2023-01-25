@@ -14,6 +14,7 @@ import {ErrorPage} from "./pages/storefrontpay/error";
 import {Landing} from "./pages/landing";
 import {useLocation} from "react-use";
 import {isMerchantUrl} from "./config/appconfig";
+import {Tip} from "./pages/tip";
 
 const Pay = React.lazy(() =>
     import("./pages/storefrontpay/pay").then((module) => ({
@@ -47,6 +48,7 @@ ReactDOM.render(
               <Switch>
                   <Route path={'/pay'} component={Pay}/>
                   <Route path={'/status'} component={TransactionStatus}/>
+                  <Route path="/tip" component={Tip} />
                   <Route path={'/error'} component={ErrorPage}/>
                   <Route path={'/merchant'} component={MerchantMain}/>
                   <Route path={'/'} component={AppSelectorLazy} />

@@ -6,6 +6,7 @@ import {useLocation} from "react-use";
 import {userAction} from "../store/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder} from "../store/selector";
+import {useHistory} from "react-router-dom";
 
 /**
  * Test url
@@ -18,6 +19,7 @@ export const Tip = ({text = 'Loading....',}: {
 }) => {
     const dispatch = useDispatch();
     let query = useLocation().search;
+    const history = useHistory();
 
     const currentOrder = useSelector(selectCurrentOrder);
     const [focusedCustomTip, setFocusedCustomTip] = useState(false)
@@ -26,10 +28,16 @@ export const Tip = ({text = 'Loading....',}: {
 
 
     const onNext = () => {
-        //TODO add payment url
         console.info(`onNext cost: ${cost} tip: ${tipPercent}`);
-        const paymentLinkUrl = "localhost"
-        window.open(paymentLinkUrl, "noreferrer");
+        const paymentLinkUrl = generateTransakLink();
+        if (!paymentLinkUrl) {
+            console.warn(`invalid payment link`)
+            return;
+        }
+        //history.push(paymentLinkUrl);
+        // Simulate an HTTP redirect:
+        window.location.replace(paymentLinkUrl);
+
     }
 
     const onChange = (key: string, value: any) => {
@@ -47,6 +55,25 @@ export const Tip = ({text = 'Loading....',}: {
         }
 
     }
+
+    const generateTransakLink = (): string | null => {
+        if (!currentOrder) {
+            toast.error("Invalid order data");
+            return null;
+        }
+        const apiKey = "00d70e03-a1e7-4660-a7bb-0adab549122d"
+        const destAddress = currentOrder?.toAddress
+        const tipPercentNumber = Number(tipPercent);
+        const tipAmount: number = (tipPercentNumber / 100) * currentOrder.amount;
+        const amountWithTip = currentOrder?.amount + tipAmount;
+        const fees = 0.05 * amountWithTip;
+        const amount = amountWithTip + fees;
+        const payLink =
+            `https://global-stg.transak.com/?apiKey=${apiKey}&countryCode=US&fiatCurrency=USD&cryptoCurrencyCode=USDC&network=ethereum&walletAddress=${destAddress}&fiatAmount=${amount}&defaultNetwork=ethereum&partnerOrderId=${currentOrder.trackingId}`
+        console.info("pay link: $payLink")
+        return payLink;
+    }
+
 
     const onChangeCustomTipPercent = (e: any) => {
         const value = e.target.value;
