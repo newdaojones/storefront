@@ -2,6 +2,12 @@ export interface IOrderParams {
   orderTrackingId: string | null,
 }
 
+export interface ExternalPayUrlParams {
+  trackingId: string | null,
+  subtotal: number,
+  feePercentage: number,
+}
+
 export interface ITransactionStatus extends IOrderParams {
   transactionId: string,
   externalOrderId: string,

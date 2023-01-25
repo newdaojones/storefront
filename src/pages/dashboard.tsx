@@ -6,10 +6,9 @@ import {HomePage} from './home';
 import {ScanPage} from "./scan";
 import {BuyPage} from "./buy";
 import {ConfirmationPage} from "./confirmation";
+import {Tip} from "./tip";
 
 export const Dashboard = () => {
-    console.info(`loading dashboard`);
-
     const mainPage = HomePage;
     return (
       <div className="w-full h-full flex-1">
@@ -18,6 +17,7 @@ export const Dashboard = () => {
           <Route path="/play" component={PlayPage} />
           <Route path="/scan" component={ScanPage} />
           <Route path="/buy" component={BuyPage} />
+          <Route path="/tip" component={Tip} />
           <Route path="/confirmation" component={ConfirmationPage} />
           <Redirect to="/home" />
         </Switch>
