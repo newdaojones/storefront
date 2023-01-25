@@ -205,13 +205,13 @@ export const CreateOrderPage = () => {
                    className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
 
-          <div className="w-full flex items-center justify-between mt-10">
+          <div className="w-full flex items-center justify-between mt-10 hidden">
             <p className="w-full ">Fees</p>
             <input id='fees' name='fees' value={fees ? fees.toFixed(4) : '0'} type="number"
                    className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" readOnly={true}/>
           </div>
 
-          <div className="w-full flex items-center justify-between mt-10">
+          <div className="w-full flex items-center justify-between mt-10 hidden">
             <p className="w-full ">Total (USD)</p>
             <input id='totalAmount' name='totalAmount' value={totalAmount ? totalAmount.toFixed(4): '-'} type="number"
                    className="w-3/5 bg-white bg-opacity-25 py-1 px-2 rounded" readOnly={true}/>

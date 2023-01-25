@@ -66,6 +66,7 @@ export const Tip = ({text = 'Loading....',}: {
         const tipPercentNumber = Number(tipPercent);
         const tipAmount: number = (tipPercentNumber / 100) * currentOrder.amount;
         const amountWithTip = currentOrder?.amount + tipAmount;
+        //TODO 
         const fees = 0.05 * amountWithTip;
         const amount = amountWithTip + fees;
         const payLink =
