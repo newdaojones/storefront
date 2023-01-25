@@ -3,13 +3,25 @@ import UsFlagImage from '../assets/images/us-flag.png'
 import {ExternalPayUrlParams} from "../utils/path_utils";
 import {toast} from "react-toastify";
 import {useLocation} from "react-use";
+import {userAction} from "../store/actions";
+import {useDispatch, useSelector} from "react-redux";
+import {selectCurrentOrder} from "../store/selector";
 
+/**
+ * Test url
+ * http://localhost:3000/tip?trackingId=625484bc-c4ee-4fad-a252-c4db7b6db46a
+ * @param text
+ * @constructor
+ */
 export const Tip = ({text = 'Loading....',}: {
     text?: string;
 }) => {
+    const dispatch = useDispatch();
     let query = useLocation().search;
+
+    const currentOrder = useSelector(selectCurrentOrder);
     const [focusedCustomTip, setFocusedCustomTip] = useState(false)
-    const [cost, setCost] = useState(10)
+    const [cost, setCost] = useState(0)
     const [tipPercent, setTipPercent] = useState('')
 
 
@@ -55,20 +67,47 @@ export const Tip = ({text = 'Loading....',}: {
         const parsed = new URLSearchParams(queryString);
 
         const orderTrackingId = parsed.get("trackingId");
-        const subtotal = parsed.get("subtotal");
-        const orderFeePercentage = parsed.get("feePercentage");
+        // const subtotal = parsed.get("subtotal");
+        // const orderFeePercentage = parsed.get("feePercentage");
 
-        console.log(`trackingId: ${orderTrackingId} subtotal: ${subtotal} fee:${orderFeePercentage}`);
+        console.log(`trackingId: ${orderTrackingId}`);
 
-        if (!subtotal) {
-            throw new Error("subtotal is required.");
+        if (!orderTrackingId) {
+            throw new Error("orderTrackingId is required.");
         }
         return {
-            feePercentage: Number(orderFeePercentage),
-            subtotal: Number(subtotal),
             trackingId: orderTrackingId,
         }
     }
+
+
+    useEffect(() => {
+        if (!currentOrder) {
+            return;
+        }
+
+        if (currentOrder.amount === 0) {
+            toast.error("invalid order amount");
+            return;
+        }
+
+        if (!currentOrder.trackingId) {
+            toast.error("invalid order trackingId");
+            return;
+        }
+
+        if (currentOrder.transactionHash && currentOrder.transactionHash.length > 0) {
+            toast.error("Order has already been paid")
+            return;
+        }
+
+
+        if (currentOrder.trackingId && currentOrder.amount) {
+            console.warn("non null order found, updating cost");
+            setCost(currentOrder.amount);
+        }
+    }, [currentOrder]);
+
 
     useEffect(() => {
         if (query) {
@@ -78,7 +117,11 @@ export const Tip = ({text = 'Loading....',}: {
                     toast.error(`Invalid orderTrackingId`)
                     return;
                 }
-                console.debug(`detected order in query ${order.trackingId}. subtotal: ${order.subtotal} get order`);
+                console.debug(`detected order in query ${order.trackingId}.`);
+                //TODO link only has the tracking id
+                console.debug(`detected order in query ${order.trackingId}. Dispatching get order`);
+                dispatch(userAction.getOrder({orderTrackingId: order.trackingId}))
+
 
             } catch (e: any) {
                 console.log(`error extract From Url: ${e}`);
@@ -90,17 +133,17 @@ export const Tip = ({text = 'Loading....',}: {
 
     return (
         <div className="flex flex-col items-center direction-column text-center justify-center h-full w-full">
-            <div className="widget-container bg-black bg-opacity-10 m-16">
+            <div className="widget-container bg-white bg-opacity-50 p-20">
                 <h3 className=" text-4xl mb-10 text-center">Tip & Sub Total</h3>
                 <p className=" text-lg text-left">Cost of Goods</p>
                 <div className="flex w-full">
                     <input
                         value={cost}
                         onChange={onChangeCostInput}
-                        className="border-secondary outline-none border-2 rounded-md h-11 bg-transparent flex-1  text-md text-right text-lg p-2 shadow-sm shadow-white"
+                        className="border-secondary outline-none border-2 rounded-md h-11 bg-white bg-opacity-90 flex-1  text-md text-right text-lg p-2 shadow-sm shadow-white"
                     />
                     <div
-                        className='border-2 border-secondary rounded-md h-11 w-24 ml-1 flex items-center justify-center  text-lg shadow-sm shadow-white'>
+                        className='border-2 border-secondary rounded-md h-11 w-24 ml-1 flex bg-white bg-opacity-90 items-center justify-center  text-lg shadow-sm shadow-white'>
                         <img src={UsFlagImage} alt='' className="flag mr-2"/>
                         USD
                     </div>
@@ -110,7 +153,7 @@ export const Tip = ({text = 'Loading....',}: {
                     <div className='mt-3 flex w-full justify-end items-center'>
                         <p className=' text-lg m-0 mr-5'> {cost ? (Number(cost) * 0.1).toFixed(2) : ''}</p>
                         <div
-                            className={`h-11 bg-white/50  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent === '10' ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
+                            className={`h-11 bg-white bg-opacity-90 flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent === '10' ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
                             onClick={() => onChange('tipPercent', '10')}
                         >
                             10%
@@ -119,7 +162,7 @@ export const Tip = ({text = 'Loading....',}: {
                     <div className='mt-3 flex w-full justify-end items-center'>
                         <p className=' text-lg m-0 mr-5'> {cost ? (Number(cost) * 0.15).toFixed(2) : ''}</p>
                         <div
-                            className={`h-11 bg-white/50  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent === '15' ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
+                            className={`h-11 bg-white bg-opacity-90  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent === '15' ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
                             onClick={() => onChange('tipPercent', '15')}
                         >
                             15%
@@ -128,7 +171,7 @@ export const Tip = ({text = 'Loading....',}: {
                     <div className='mt-3 flex w-full justify-end items-center'>
                         <p className=' text-lg m-0 mr-5'> {cost ? (Number(cost) * 0.2).toFixed(2) : ''}</p>
                         <div
-                            className={`h-11 bg-white/50  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent === '20' ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
+                            className={`h-11 bg-white bg-opacity-90  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent === '20' ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
                             onClick={() => onChange('tipPercent', '20')}
                         >
                             20%
@@ -143,10 +186,10 @@ export const Tip = ({text = 'Loading....',}: {
                                 autoFocus
                                 onBlur={() => setFocusedCustomTip(false)}
                                 onChange={onChangeCustomTipPercent}
-                                className={`h-11 bg-white/50 text-center outline-none  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white placeholder-white ${tipPercent && !['10', '15', '20'].includes(tipPercent) ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
+                                className={`h-11 bg-white bg-opacity-90  text-center outline-none  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white placeholder-white ${tipPercent && !['10', '15', '20'].includes(tipPercent) ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
                             />
                             : <div
-                                className={`h-11 bg-white/50  flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent && !['10', '15', '20'].includes(tipPercent) ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
+                                className={`h-11 bg-white bg-opacity-90   flex items-center justify-center w-24 rounded-md cursor-pointer shadow-md shadow-white ${tipPercent && !['10', '15', '20'].includes(tipPercent) ? 'bg-gradient-to-b from-purple-200 to-purple-400' : ''}`}
                                 onClick={() => setFocusedCustomTip(true)}
                             >
                                 {tipPercent && !['10', '15', '20'].includes(tipPercent) ? `${tipPercent}%` : '??%'}
@@ -157,7 +200,7 @@ export const Tip = ({text = 'Loading....',}: {
                 <p className="mt-2  text-lg text-left">= Sub-Total</p>
                 <div className="flex w-full">
                     <div
-                        className="border-secondary border-2 rounded-md h-11 bg-transparent flex-1  text-md text-right text-lg p-2 shadow-sm shadow-white">
+                        className="border-secondary border-2 rounded-md h-11 bg-white bg-opacity-90  flex-1  text-md text-right text-lg p-2 shadow-sm shadow-white">
                         {cost ? (Number(cost) + Number(cost) * Number(tipPercent || 0) / 100).toFixed(2) : ''}
                     </div>
                     <div

@@ -4,8 +4,8 @@ export interface IOrderParams {
 
 export interface ExternalPayUrlParams {
   trackingId: string | null,
-  subtotal: number,
-  feePercentage: number,
+  // subtotal: number,
+  // feePercentage: number,
 }
 
 export interface ITransactionStatus extends IOrderParams {
