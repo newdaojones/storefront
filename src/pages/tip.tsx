@@ -7,6 +7,7 @@ import {userAction} from "../store/actions";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder} from "../store/selector";
 import {useHistory} from "react-router-dom";
+import {addHexPrefix} from "@walletconnect/encoding";
 
 /**
  * Test url
@@ -61,12 +62,13 @@ export const Tip = ({text = 'Loading....',}: {
             toast.error("Invalid order data");
             return null;
         }
-        const apiKey = "00d70e03-a1e7-4660-a7bb-0adab549122d"
-        const destAddress = currentOrder?.toAddress
+        const apiKey = "00d70e03-a1e7-4660-a7bb-0adab549122d";
+        const destAddress = addHexPrefix(currentOrder?.toAddress);
+        console.info(`destination address: ${destAddress}`);
         const tipPercentNumber = Number(tipPercent);
         const tipAmount: number = (tipPercentNumber / 100) * currentOrder.amount;
         const amountWithTip = currentOrder?.amount + tipAmount;
-        //TODO 
+        //TODO
         const fees = 0.05 * amountWithTip;
         const amount = amountWithTip + fees;
         const payLink =
