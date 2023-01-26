@@ -127,9 +127,9 @@ export const ConfirmationPage = () => {
     }, [currentOrder, history]);
 
     return (
-        <div className="w-full h-full flex justify-center">
+        <div className="w-full h-full flex justify-center text-charcoal">
             <div className="w-3/4 m-10">
-                <p className="text-white text-terciary font-bold">Payment Successful</p>
+                <p className=" text-terciary font-bold">Payment Successful</p>
                 {/*QR CODE*/}
                 <a target="_blank" rel='noreferrer' className="p-10 link cursor-pointer" href={linkUrl}>
                     <div className="flex items-center justify-center">
@@ -143,23 +143,23 @@ export const ConfirmationPage = () => {
                 {/*Invoice*/}
                 <div className="w-full flex items-center justify-center mt-2">
                     <div style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
-                         className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
+                         className="w-full flex flex-col items-center justify-center bg-white  bg-opacity-10 py-1 px-2 rounded-10xl">
                         <div className="w-full flex justify-between p-4">
-                            <p className="text-white text-start text-xs mr-2 mt-2">Items Total</p>
-                            <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentValueUsd.toFixed(2)}`}</p>
+                            <p className=" text-start text-xs mr-2 mt-2">Items Total</p>
+                            <p className=" text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentValueUsd.toFixed(2)}`}</p>
                         </div>
                         <div className="w-full flex justify-between pl-4 pr-4">
-                            <p className="text-white text-start text-xs mr-2 mt-2">Transaction Fee</p>
-                            <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentFeeUsd.toFixed(6)}`}</p>
+                            <p className=" text-start text-xs mr-2 mt-2">Transaction Fee</p>
+                            <p className=" text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentFeeUsd.toFixed(6)}`}</p>
                         </div>
                         <div className="flex flex-col w-full text-secondary mt-4 justify-between"
                              style={{height: 1, backgroundColor: '#FFB01D', backgroundRepeat: "no-repeat"}}/>
                         <div className="w-full flex justify-between p-4">
-                            <p className="text-white text-start text-xs mr-2 mt-2">Subtotal</p>
-                            <p className="text-white text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
+                            <p className=" text-start text-xs mr-2 mt-2">Subtotal</p>
+                            <p className=" text-start text-xs mr-2 mt-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
                         </div>
                         <div className="w-full flex justify-between pl-4 pr-4 pb-6">
-                            <p className="text-white text-start text-base mr-2">Total Price</p>
+                            <p className=" text-start text-base mr-2">Total Price</p>
                             <p className="text-start text-terciary text-base mr-2">{`$ ${transactionInfo?.paymentTotalUSD.toFixed(2)}`}</p>
                         </div>
                     </div>
@@ -167,26 +167,26 @@ export const ConfirmationPage = () => {
                 {/*Transaction Info*/}
                 <div className="flex items-center justify-center mt-4">
                     <div style={{fontFamily: 'Righteous', fontStyle: 'normal',}}
-                         className="w-full flex flex-col items-center justify-center bg-white text-white bg-opacity-10 py-1 px-2 rounded-10xl">
+                         className="w-full flex flex-col items-center justify-center bg-white  bg-opacity-10 py-1 px-2 rounded-10xl">
                         <div className="w-full flex justify-between p-4">
-                            <p className="text-white text-start text-xs mr-2 mt-2">Transaction Hash</p>
+                            <p className=" text-start text-xs mr-2 mt-2">Transaction Hash</p>
                             <a target="_blank" rel='noreferrer' className="link cursor-pointer"
                                href={linkUrl}>
                                 {/*<img className="w-8 h-8 mt-2 justify-center" src={SearchIcon} alt=""/>*/}
-                                <p className="text-white text-start text-xs mr-2 mt-2">{ellipseAddress(transactionInfo?.transactionHash || "")}</p>
+                                <p className=" text-start text-xs mr-2 mt-2">{ellipseAddress(transactionInfo?.transactionHash || "")}</p>
                             </a>
 
                         </div>
                         <div className="w-full flex justify-between pl-4 pr-4">
-                            <p className="text-white text-start text-xs mr-2">From Address</p>
-                            <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.from)}</p>
+                            <p className=" text-start text-xs mr-2">From Address</p>
+                            <p className=" text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.from)}</p>
                         </div>
                         <div className="w-full flex justify-between p-4">
-                            <p className="text-white text-start text-xs mr-2">To Address</p>
-                            <p className="text-white text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.to)}</p>
+                            <p className=" text-start text-xs mr-2">To Address</p>
+                            <p className=" text-start text-xs mr-2">{ellipseAddress(transactionInfo?.transaction?.to)}</p>
                         </div>
                         <div className="w-full flex justify-between pl-4 pr-4 pb-6">
-                            <p className="text-white text-start text-xs mr-2">Amount</p>
+                            <p className=" text-start text-xs mr-2">Amount</p>
                             <p className="text-start text-terciary text-xs mr-2">{`${formatted}`}</p>
                         </div>
                     </div>
@@ -199,7 +199,7 @@ export const ConfirmationPage = () => {
                     borderRadius: '25px',
                     margin: '10px 0px',
                     cursor: 'pointer'
-                }} className="w-full text-white mt-8 mb-4">Back
+                }} className="w-full  mt-8 mb-4">Back
                 </button>
             </div>
         </div>

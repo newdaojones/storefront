@@ -14,6 +14,7 @@ import {ellipseAddress, TxDetails} from "../helpers";
 import {payLink, transactionStatusLink} from "../utils/link_utils";
 import {ETH_TOKEN} from "../config/currencyConfig";
 import {currentRpcApi} from "../helpers/tx";
+import {printOrderTrackingId} from "../utils";
 
 const SAssetRow = {
     width: '100%',
@@ -202,7 +203,7 @@ const OrderRow = (props: any) => {
             <div style={SAssetRowLeft}>
 
                 <div style={SColumnLeft}>
-                    <div style={SAssetName}>{`${order.trackingId?.substring(0,8)}`}</div>
+                    <div style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>
                     <div className="flex text-xs overflow-hidden">
                         {order.transactionHash && order.trackingId ?
                             <a target='_blank' rel="noreferrer"
@@ -211,10 +212,10 @@ const OrderRow = (props: any) => {
                 </div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${order.updatedAt?.substring(0, 12).replace('T', " ")}`}</div>
+                <div style={SAssetName}>{`${order.updatedAt?.substring(0, 11).replace('T', " ")}`}</div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${order.updatedAt?.substring(12, 16).replace('T', " ")}`}</div>
+                <div style={SAssetName}>{`${order.updatedAt?.substring(11, 16).replace('T', " ")}`}</div>
             </div>
             <div style={SPriceLimits}>
                 <div style={SColumn}>

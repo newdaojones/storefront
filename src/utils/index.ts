@@ -3,6 +3,14 @@ import {ellipseAddress, ParsedTx} from "../helpers";
 import {debugAccountTransaction, debugEtherscanAccountTransaction, debugTransaction, ITransaction} from "../helpers/tx";
 import {EtherscanTx} from "../rpc/etherscan-api";
 import {hexToNumber} from "@walletconnect/encoding";
+import {IOrder} from "../models";
+
+export function printOrderTrackingId(order: IOrder | null) {
+  if (order === null) {
+    return "";
+  }
+  return order.trackingId?.substring(0, 8);
+}
 
 export const sleep = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms));
