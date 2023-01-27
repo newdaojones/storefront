@@ -96,6 +96,7 @@ export interface IOrder {
   orderDescription: string | null,
   chainId: string,
   customerPhoneNumber: string | null,
+  customerEmail: string | null,
   paymentProvider: OrderPaymentMethod | null,
 }
 
