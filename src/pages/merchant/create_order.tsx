@@ -29,6 +29,8 @@ export const CreateOrderPage = () => {
   const [customerPhone, setCustomerPhone] = useState<string | null>(null);
   const [customerEmail, setCustomerEmail] = useState<string | null>(null);
 
+  const [orderDataComplete, setOrderDataComplete] = useState(false);
+
   const defaultPaymentMethod = OrderPaymentMethod.TRANSAK;
   const [paymentMethod, setPaymentMethod] = useState<OrderPaymentMethod>(defaultPaymentMethod);
   let currentOrder = useSelector(selectCurrentOrder);
@@ -103,6 +105,12 @@ export const CreateOrderPage = () => {
       return;
     }
   }
+
+  React.useEffect(() => {
+    const b = isOrderDataComplete();
+    console.info(`checking order data ${b}`)
+    setOrderDataComplete(b)
+  }, [amount, customerEmail, customerPhone]);
 
   React.useEffect(() => {
     if (currentOrder && orderCreated) {
@@ -256,8 +264,7 @@ export const CreateOrderPage = () => {
           {/*</div>*/}
 
           <div className="mt-10">
-            <button onClick={handleCreateOrder} disabled={!isOrderDataComplete()} className="flex justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
-              <img className="w-8 h-8 mr-4" src={logoIcon} alt="" />
+            <button onClick={handleCreateOrder} disabled={!orderDataComplete} className="flex justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
               <p className="font-righteous">Create Order</p>
             </button>
           </div>
