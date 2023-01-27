@@ -27,6 +27,8 @@ export const CreateOrderPage = () => {
   const [orderDescription, setOrderDescription] = useState('');
   const [orderCreated, setOrderCreated] = useState(false);
   const [customerPhone, setCustomerPhone] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
+
   const defaultPaymentMethod = OrderPaymentMethod.TRANSAK;
   const [paymentMethod, setPaymentMethod] = useState<OrderPaymentMethod>(defaultPaymentMethod);
   let currentOrder = useSelector(selectCurrentOrder);
@@ -88,6 +90,7 @@ export const CreateOrderPage = () => {
         orderDescription: orderDescription,
         chainId: chainId,
         customerPhoneNumber: customerPhoneNumber,
+        customerEmail: customerEmail,
         paymentProvider: paymentProvider,
       };
       console.info(`creating order ${orderInstance}`);
@@ -170,6 +173,8 @@ export const CreateOrderPage = () => {
       setOrderDescription(event.target.value);
     } else if (event.target.name === "customerPhone") {
       setCustomerPhone(event.target.value);
+    } else if (event.target.name === "customerEmail") {
+      setCustomerEmail(event.target.value);
     } else if (event.target.name === "paymentMethod") {
       setPaymentMethod(event.target.value);
     } else {
@@ -220,6 +225,13 @@ export const CreateOrderPage = () => {
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full ">Customer Phone</p>
             <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel"
+                   style={{alignItems: 'end'}} placeholder="+1234567890"
+                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
+          </div>
+
+          <div className="w-full flex items-center justify-between mt-10">
+            <p className="w-full ">Customer Email</p>
+            <input id='customerEmail' name='customerEmail' value={customerEmail ?? ''} type="email"
                    style={{alignItems: 'end'}} placeholder="+1234567890"
                    className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
           </div>
