@@ -16,11 +16,22 @@ creditcard {
   background-image: url(../images/creditcard.svg);
 }
 
-button {
-  background-color: #00ff00;
+button:enabled,
+button[enabled]{
+  background-color: #000000;
+  color: #FFFFFF;
   padding: 10px 20px;
   margin: 10px 0px;
   cursor: pointer;
+}
+
+button:disabled,
+button[disabled]{
+  background-color: #FFFFFF;
+  color: #9ca3af;
+  padding: 10px 20px;
+  margin: 10px 0px;
+  cursor: default;
 }
 
 @font-face {
@@ -191,6 +202,17 @@ code {
   }
 }
 
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
 .twoColumnContainer {
   display: flex;

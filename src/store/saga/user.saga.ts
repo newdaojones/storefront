@@ -139,6 +139,7 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
       transactionHash: null,
       chainId: chainId,
       customerPhoneNumber: null,
+      customerEmail: null,
       paymentProvider: null
     }
     const transactionOrder: ITransactionOrder = {

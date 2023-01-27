@@ -145,6 +145,10 @@ export const CreateOrderPage = () => {
 
   }
 
+  const isOrderDataComplete = (): boolean => {
+    return amount !==  null && amount.length > 0 && customerPhone !== null && customerPhone.length > 0 && customerEmail !== null && customerEmail.length > 0;
+  }
+
   const updateAmountValue = () => {
     try {
       const amountNumber: number = Number(amount);
@@ -201,45 +205,45 @@ export const CreateOrderPage = () => {
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full">Subtotal (USD)</p>
             <input id='amount' name='amount' value={amount} min="0.01" max="399.99" type="number"
-                   className="w-3/5 bg-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
+                   className="w-4/5 bg-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10 hidden">
             <p className="w-full ">Tip</p>
             <input id='tip' name='tip' value={tip} placeholder="0.50" step='0.50' min="0.01" max="399.99" type="number"
-                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
+                   className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10 hidden">
             <p className="w-full ">Fees</p>
             <input id='fees' name='fees' value={fees ? fees.toFixed(4) : '0'} type="number"
-                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" readOnly={true}/>
+                   className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded" autoComplete="off" readOnly={true}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10 hidden">
             <p className="w-full ">Total (USD)</p>
             <input id='totalAmount' name='totalAmount' value={totalAmount ? totalAmount.toFixed(4): '-'} type="number"
-                   className="w-3/5 bg-white bg-opacity-25 py-1 px-2 rounded" readOnly={true}/>
+                   className="w-4/5 bg-white bg-opacity-25 py-1 px-2 rounded" readOnly={true}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full ">Customer Phone</p>
             <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel"
                    style={{alignItems: 'end'}} placeholder="+1234567890"
-                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
+                   className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
           </div>
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full ">Customer Email</p>
             <input id='customerEmail' name='customerEmail' value={customerEmail ?? ''} type="email"
-                   style={{alignItems: 'end'}} placeholder="+1234567890"
-                   className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
+                   style={{alignItems: 'end'}} placeholder="test@example.com"
+                   className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded " autoComplete="off" onChange={handleChange}/>
           </div>
 
           {customerPhone && customerPhone.length > 0 && <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full ">Fiat Provider</p>
             <select  id='paymentMethod' name='paymentMethod' style={{alignItems: 'end'}}
-                     className="w-3/5 bg-white  bg-opacity-25 py-1 px-2 rounded " onChange={handleChange}>
+                     className="w-4/5 bg-white  bg-opacity-25 py-1 px-2 rounded " onChange={handleChange}>
               <option>{OrderPaymentMethod.TRANSAK}</option>
               <option>{OrderPaymentMethod.ONRAMPER}</option>
               <option>{OrderPaymentMethod.WYRE}</option>
@@ -252,7 +256,7 @@ export const CreateOrderPage = () => {
           {/*</div>*/}
 
           <div className="mt-10">
-            <button onClick={handleCreateOrder} className="flex bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+            <button onClick={handleCreateOrder} disabled={!isOrderDataComplete()} className="flex justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
               <img className="w-8 h-8 mr-4" src={logoIcon} alt="" />
               <p className="font-righteous">Create Order</p>
             </button>
