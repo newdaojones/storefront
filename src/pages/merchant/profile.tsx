@@ -6,6 +6,7 @@ import DollarIcon from '../../assets/images/dollarIcon.svg';
 import USDCIcon from '../../assets/images/usdc.svg';
 import ExpandArrow from '../../assets/images/down_arrow.svg';
 import RefreshIcon from '../../assets/images/reload_black.svg';
+import ExportIcon from '../../assets/images/export_icon.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
 import {useDispatch, useSelector} from "react-redux";
 import {selectMerchantInfo} from "../../store/selector";
@@ -83,8 +84,10 @@ export const ProfilePage = () => {
       <div className="flex flex-col h-3/4 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-10 overflow-auto mr-8 text-black">
         <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
         <div className="flex flex-col items-center justify-center">
-          <p className=" px-10 mt-4 text-sm">January 2023</p>
-          <img className="w-8 h-8 mr-2" src={ExpandArrow} alt="" />
+          <div className="mt-4 flex items-center justify-center">
+            <p className="text-sm">January 2023</p>
+            <img className="w-6 h-6 mr-2" src={ExpandArrow} alt="" />
+          </div>
           <p className=" px-10 mt-4 font-bold font-montserrat">Gross Sales</p>
           <p className="px-2 mt-4 mb-1 font-montserrat bg-black text-white rounded">USD</p>
           <div className="flex items-center justify-center bg-blueBackground py-1 px-2 text-2xl">
@@ -107,8 +110,8 @@ export const ProfilePage = () => {
           <div className="flex items-center justify-center px-10 py-4">
             <p className="mt-1 py-2 text-xl font-bold font-righteous">Transaction History</p>
             <div className="flex items-center items-center" >
-              <img className="w-6 h-6 ml-2 cursor-pointer " style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
-              <img className="w-6 h-6 ml-2 cursor-pointer " style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
+              <img className="w-6 h-6 ml-2 cursor-pointer " title="Reload" style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
+              <img className="w-6 h-6 ml-2 cursor-pointer " title="Export" style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={ExportIcon} alt="Reload Orders" onClick={refreshOrders}/>
             </div>
           </div>
 
