@@ -198,8 +198,6 @@ const OrderRow = (props: any) => {
         </a>
 
     const orderLocalDate = new Date(order.updatedAt!! + "Z");
-
-    console.info(`order: ${order.amount} localdate ${orderLocalDate.toLocaleString()}`);
     const orderDate = `${orderLocalDate.getMonth() + 1}-${orderLocalDate.getDate()}-${orderLocalDate.getFullYear()}` || null;
     const orderTime = `${orderLocalDate.getHours()}:${orderLocalDate.getMinutes()}` || null;
 
@@ -209,11 +207,12 @@ const OrderRow = (props: any) => {
 
                 <div style={SColumnLeft}>
                     <div style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>
-                    <div className="flex text-xs overflow-hidden">
-                        {order.transactionHash && order.trackingId ?
-                            <a target='_blank' rel="noreferrer"
-                               href={transactionStatusLink(order.transactionHash, order.trackingId)}>{`${ellipseAddress(order.transactionHash)}`}</a> : 'Transaction Pending'}
-                    </div>
+                    {/*subtitle with hash or pending*/}
+                    {/*<div className="flex text-xs overflow-hidden">*/}
+                    {/*    {order.transactionHash && order.trackingId ?*/}
+                    {/*        <a target='_blank' rel="noreferrer"*/}
+                    {/*           href={transactionStatusLink(order.transactionHash, order.trackingId)}>{`${ellipseAddress(order.transactionHash)}`}</a> : 'Transaction Pending'}*/}
+                    {/*</div>*/}
                 </div>
             </div>
             <div style={SPriceLimits}>

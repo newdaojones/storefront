@@ -119,8 +119,8 @@ export const ProfilePage = () => {
               {
                 merchantInfo?.orders && merchantInfo?.orders.length > 0 ?
                     merchantInfo?.orders.map(orderItem => (
-                        <div className="pt-1">
-                          <OrderRow key={orderItem.transactionHash} asset={orderItem} onEdit={onEdit}/>
+                        <div key={orderItem.trackingId} className="pt-1">
+                          <OrderRow key={orderItem.trackingId} asset={orderItem} onEdit={onEdit}/>
                         </div>)
                     )
                     :
