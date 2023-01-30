@@ -197,15 +197,11 @@ const OrderRow = (props: any) => {
             <img style={Center} className="w-8 h-8 mr-2 filter-black" src={PendingIcon} alt=""/>
         </a>
 
-    if (order.updatedAt == null) {
-        console.warn("no order date data");
-        return;
-    }
-    const orderLocalDate = new Date(order.updatedAt);
+    const orderLocalDate = new Date(order.updatedAt!! + "Z");
 
-
-    const orderDate = orderLocalDate.getDate();
-    const orderTime = orderLocalDate.getTime();
+    console.info(`order: ${order.amount} localdate ${orderLocalDate.toLocaleString()}`);
+    const orderDate = `${orderLocalDate.getMonth() + 1}-${orderLocalDate.getDate()}-${orderLocalDate.getFullYear()}` || null;
+    const orderTime = `${orderLocalDate.getHours()}:${orderLocalDate.getMinutes()}` || null;
 
     return (
         <div className="bg-blueBackground rounded-md" style={SAssetRow}>
