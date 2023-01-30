@@ -38,3 +38,9 @@ test('verify bignumber for usdc', async () => {
   const balance = BigNumber.from(numValue || 0);
   expect(balance).toBeGreaterThan(0)
 });
+
+
+test('verify date to local timezone', async () => {
+  const myDate: Date = new Date("2018-02-08T10:30:35Z");
+  console.log('My date and time is = ' + myDate);
+});

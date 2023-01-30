@@ -197,6 +197,15 @@ const OrderRow = (props: any) => {
             <img style={Center} className="w-8 h-8 mr-2 filter-black" src={PendingIcon} alt=""/>
         </a>
 
+    if (order.updatedAt == null) {
+        console.warn("no order date data");
+        return;
+    }
+    const orderLocalDate = new Date(order.updatedAt);
+
+
+    const orderDate = orderLocalDate.getDate();
+    const orderTime = orderLocalDate.getTime();
 
     return (
         <div className="bg-blueBackground rounded-md" style={SAssetRow}>
@@ -212,10 +221,10 @@ const OrderRow = (props: any) => {
                 </div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${order.updatedAt?.substring(0, 11).replace('T', " ")}`}</div>
+                <div style={SAssetName}>{`${orderDate}`}</div>
             </div>
             <div style={SPriceLimits}>
-                <div style={SAssetName}>{`${order.updatedAt?.substring(11, 16).replace('T', " ")}`}</div>
+                <div style={SAssetName}>{`${orderTime}`}</div>
             </div>
             <div style={SPriceLimits}>
                 <div style={SColumn}>
