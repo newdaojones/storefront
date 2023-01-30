@@ -4,6 +4,7 @@ import numeral from 'numeral';
 import ETHIcon from '../../assets/images/ethIcon.svg';
 import DollarIcon from '../../assets/images/dollarIcon.svg';
 import USDCIcon from '../../assets/images/usdc.svg';
+import ExpandArrow from '../../assets/images/down_arrow.svg';
 import RefreshIcon from '../../assets/images/reload_black.svg';
 import NotFoundImage from '../../assets/images/notfound.gif';
 import {useDispatch, useSelector} from "react-redux";
@@ -80,40 +81,44 @@ export const ProfilePage = () => {
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="flex flex-col h-3/4 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-10 overflow-auto mr-8 text-black">
-        <p className=" text-xl font-bold font-righteous text-center">Transaction History</p>
+        <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
         <div className="flex flex-col items-center justify-center">
-          <p className=" px-10 mt-4 font-bold font-montserrat">Total Payments</p>
-          <div className="w-60 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded">
-            <img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />
+          <p className=" px-10 mt-4 text-sm">January 2023</p>
+          <img className="w-8 h-8 mr-2" src={ExpandArrow} alt="" />
+          <p className=" px-10 mt-4 font-bold font-montserrat">Gross Sales</p>
+          <p className="px-2 mt-4 mb-1 font-montserrat bg-black text-white rounded">USD</p>
+          <div className="flex items-center justify-center bg-blueBackground py-1 px-2 text-2xl">
+            {/*<img className="w-8 h-8 mr-2" src={DollarIcon} alt="" />*/}
             {`${numeral(totalUSD || 0).format(',0.00')}`}
           </div>
-          <div className="w-60 flex items-center justify-around mt-2">
-            <div className="w-40 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded mr-1">
-              <img className="w-8 h-8 mr-2" src={ETHIcon} alt="" />
-              {`${numeral(totalEth || 0).format('0,0.0000')}`}
-            </div>
-            <div className="w-40 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded ml-1">
-              <img className="w-8 h-8 mr-2" src={USDCIcon} alt="" />
-              {`${numeral(totalUsdc || 0).format(',0.00')}`}
-            </div>
-          </div>
+          {/*total in eth & usd*/}
+          {/*<div className="w-60 flex items-center justify-around mt-2">*/}
+          {/*  <div className="w-40 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded mr-1">*/}
+          {/*    <img className="w-8 h-8 mr-2" src={ETHIcon} alt="" />*/}
+          {/*    {`${numeral(totalEth || 0).format('0,0.0000')}`}*/}
+          {/*  </div>*/}
+          {/*  <div className="w-40 flex items-center justify-center bg-blueBackground  bg-opacity-25 py-1 px-2 rounded ml-1">*/}
+          {/*    <img className="w-8 h-8 mr-2" src={USDCIcon} alt="" />*/}
+          {/*    {`${numeral(totalUsdc || 0).format(',0.00')}`}*/}
+          {/*  </div>*/}
+          {/*</div>*/}
         </div>
-        <div className="mt-4">
-          <div className="flex items-center justify-between px-10">
-            <p className=" mt-1 py-2 text-xl font-bold font-righteous">Order History</p>
+        <div className="mt-4 bg-blueBackground rounded-xl">
+          <div className="flex items-center justify-center px-10 py-4">
+            <p className="mt-1 py-2 text-xl font-bold font-righteous">Transaction History</p>
             <div className="flex items-center items-center" >
-              {/*<p className=" text-xs">Reload</p>*/}
+              <img className="w-6 h-6 ml-2 cursor-pointer " style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
               <img className="w-6 h-6 ml-2 cursor-pointer " style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
             </div>
           </div>
 
           <div className="flex flex-col items-center justify-around px-2">
             <div className="flex  items-center justify-around  w-full overflow-auto  font-bold" style={{}}>
-              <div className="" style={{width:'12rem'}}>Order Id</div>
-              <div className="">Date</div>
-              <div className="">Time</div>
-              <div className="">Amount</div>
-              <div className="">Status</div>
+              <div className="" style={{width:'12rem'}}>ORDER ID</div>
+              <div className="">DATE</div>
+              <div className="">TIME</div>
+              <div className="">TOTAL</div>
+              <div className="">STATUS</div>
             </div>
             <div className="grid min-w-max w-full overflow-auto" style={{}}>
               {

@@ -19,6 +19,8 @@ import {printOrderTrackingId} from "../utils";
 const SAssetRow = {
     width: '100%',
     padding: '2px',
+    marginLeft: '8px',
+    marginRight: '8px',
     display: 'flex',
     justifyContent: 'space-between',
     verticalAlign: 'center',
@@ -54,7 +56,7 @@ const SPriceLimits = {
     alignItems: 'end',
     fontSize: 'smaller',
     alignSelf: 'center',
-    width: '18%',
+    width: '22%',
 }
 
 const SLimitValues = {
@@ -202,7 +204,8 @@ const OrderRow = (props: any) => {
     const orderTime = `${orderLocalDate.getHours()}:${orderLocalDate.getMinutes()}` || null;
 
     return (
-        <div className="bg-blueBackground rounded-md" style={SAssetRow}>
+        <div className="bg-white rounded-md py-2 px-4" style={SAssetRow}>
+            {icon}
             <div style={SAssetRowLeft}>
 
                 <div style={SColumnLeft}>
@@ -246,7 +249,6 @@ const OrderRow = (props: any) => {
                 <p>{transactionFound ? ( confirmed ? `Confirmed` : 'Pending Approval') : `Unpaid`}</p>
             </div>
 
-            {icon}
         </div>
     );
 };
