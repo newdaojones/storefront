@@ -13,7 +13,7 @@ import {selectMerchantInfo} from "../../store/selector";
 import OrderRow from "../../components/orderRow";
 import useInterval from "@use-it/interval";
 import {userAction} from "../../store/actions";
-import {IMerchant} from "../../models";
+import {IMerchant, IOrderDateRange} from "../../models";
 import {ETH_TOKEN, USDC_TOKEN} from "../../config/currencyConfig";
 import {getCurrentMonthDateRange} from "../../utils";
 import {DatePickerModal} from "../../components/dateRangePickerModal";
@@ -35,10 +35,10 @@ export const ProfilePage = () => {
 
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName} totalUsd: ${merchantInfo?.totalInUsd}`);
 
-  const refreshOrders = () => {
+  const refreshOrders = (events: any, dateRanges: IOrderDateRange = selectedDateRange) => {
     setIsLoadingOrders(true);
     if (merchantInfo) {
-      refreshOrdersForMerchant(merchantInfo);
+      refreshOrdersForMerchant(merchantInfo, dateRanges);
     } else {
       console.warn(`no merchant info`)
     }
@@ -81,16 +81,16 @@ export const ProfilePage = () => {
     }
   }, [merchantInfo]);
 
-  function refreshOrdersForMerchant(merchantInfo: IMerchant) {
-    console.log(`refreshing merchantInfo`)
-    dispatch(userAction.merchantLoginSuccess({address: merchantInfo.memberAddress, dateRange: selectedDateRange}))
+  function refreshOrdersForMerchant(merchantInfo: IMerchant, dateRange: IOrderDateRange) {
+    console.log(`refreshing merchantInfo for dates: ${dateRange.startDate} ${dateRange.endDate}`)
+    dispatch(userAction.merchantLoginSuccess({address: merchantInfo.memberAddress, dateRange: dateRange}))
   }
 
   useInterval(() => {
     if (merchantInfo && count < 10) {
       setIsLoadingOrders(true);
       setCount((currentCount) => currentCount + 1);
-      refreshOrdersForMerchant(merchantInfo);
+      refreshOrdersForMerchant(merchantInfo, selectedDateRange);
       setTimeout(() => {
         setIsLoadingOrders(false);
       }, 2000);
@@ -106,15 +106,16 @@ export const ProfilePage = () => {
   };
   const onSelect = (start: string, end: string) => {
     console.info(`onSelect date picker start: ${start} end: ${end}`)
-    setSelectedDateRange({
-      startDate: start,
-      endDate: end
-    });
+
     setIsDatePickerOpen(false);
     setDateIndicator(`${start.substring(0, 10)} - ${end.substring(0, 10)}`)
-
-    console.info(`refreshing orders`)
-    refreshOrders()
+    let newDateRange = {
+      startDate: start,
+      endDate: end
+    };
+    setSelectedDateRange(newDateRange);
+    console.info(`refreshing orders after date selection`)
+    refreshOrders(null, newDateRange);
   };
 
   return (
