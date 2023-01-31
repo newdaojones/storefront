@@ -2,7 +2,7 @@ import {EUserActionTypes} from '../../enums';
 import {
   IAccountInfo,
   IMerchant,
-  IOrder,
+  IOrder, IOrderDateRange,
   ITicker,
   ITransactionInfo,
   ITransactionOrder,
@@ -135,7 +135,7 @@ const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionH
 };
 
 
-const merchantLoginSuccess = (payload: {address: string}) => {
+const merchantLoginSuccess = (payload: {address: string, dateRange: IOrderDateRange}) => {
   return {
     type: EUserActionTypes.GET_MERCHANT_INFO,
     payload

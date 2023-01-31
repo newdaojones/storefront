@@ -3,7 +3,7 @@ import {ellipseAddress, ParsedTx} from "../helpers";
 import {debugAccountTransaction, debugEtherscanAccountTransaction, debugTransaction, ITransaction} from "../helpers/tx";
 import {EtherscanTx} from "../rpc/etherscan-api";
 import {hexToNumber} from "@walletconnect/encoding";
-import {IOrder} from "../models";
+import {IOrder, IOrderDateRange} from "../models";
 
 export function printOrderTrackingId(order: IOrder | null) {
   if (order === null) {
@@ -71,4 +71,15 @@ export const getDisplayName = (account: string, ensName: string | null) : string
 
 export function isNumeric(n: any) {
   return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+export const getCurrentMonthDateRange = () : IOrderDateRange => {
+  const date = new Date();
+  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  console.info(`first: ${firstDay.toLocaleString()} last: ${lastDay.toLocaleString()}`);
+  return {
+    startDate: firstDay.toISOString(),
+    endDate: lastDay.toISOString()
+  }
 }

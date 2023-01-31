@@ -5,7 +5,7 @@ import {UserService} from '../../services';
 import {userAction} from '../actions';
 import {toast} from 'react-toastify';
 import {ens} from '../../utils/walletConnect';
-import {IMerchant, IOrder, ITicker, ITransactionOrder} from '../../models';
+import {IMerchant, IOrder, IOrderDateRange, ITicker, ITransactionOrder} from '../../models';
 import {currentRpcApi, encodeTransaction, ITransaction} from "../../helpers/tx";
 import * as H from "history";
 import {createBrowserHistory} from "history";
@@ -67,10 +67,10 @@ function* watchGetEnsName(action: { type: EUserActionTypes; payload: string }) {
   }
 }
 
-function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {address: string}}) {
+function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {address: string, dateRange: IOrderDateRange}}) {
   try {
     console.log(`watchGetMerchantInfo`)
-    const res: AxiosResponse<IMerchant> = yield call(() => UserService.getMerchantInfoApi(action.payload.address));
+    const res: AxiosResponse<IMerchant> = yield call(() => UserService.getMerchantInfoApi(action.payload.address, action.payload.dateRange));
     yield put(userAction.getMerchantInfoSuccess(res.data));
   } catch (err: any) {
     console.error(`watchGetMerchantInfo ${err.message}`)

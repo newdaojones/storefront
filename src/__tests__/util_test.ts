@@ -1,4 +1,4 @@
-import {isNumeric} from "../utils";
+import {getCurrentMonthDateRange, isNumeric} from "../utils";
 import {fromWad} from "../helpers";
 import {USDC_DECIMALS} from "../config/currencyConfig";
 import {BigNumber, utils} from "ethers";
@@ -43,4 +43,10 @@ test('verify bignumber for usdc', async () => {
 test('verify date to local timezone', async () => {
   const myDate: Date = new Date("2018-02-08T10:30:35Z");
   console.log('My date and time is = ' + myDate);
+});
+
+
+test('verify date range', async () => {
+  const dateRange = getCurrentMonthDateRange();
+  console.log(`My date and time is = [${dateRange.startDate}, ${dateRange.endDate}]`);
 });

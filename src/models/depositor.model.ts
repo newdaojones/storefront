@@ -115,4 +115,8 @@ export interface IMerchant {
   totalInUsd?: number,
 }
 
+export interface IOrderDateRange {
+  startDate: string | null,
+  endDate: string | null,
+}
 

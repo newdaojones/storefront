@@ -1,5 +1,5 @@
 import axios from './axios';
-import {IMerchant, IOrder} from "../models";
+import {IMerchant, IOrder, IOrderDateRange} from "../models";
 
 export const UserService = (function () {
   const loginApi = async (payload: string) => {
@@ -18,8 +18,8 @@ export const UserService = (function () {
     return axios.get(`/merchants/${payload}/nonce`);
   };
 
-  const getMerchantInfoApi = async (address: string) => {
-    return axios.get(`/merchants/${address}`);
+  const getMerchantInfoApi = async (address: string, dateRange: IOrderDateRange) => {
+    return axios.post(`/merchants/${address}`, dateRange);
   };
 
   const getOrderApi = async (orderTrackingId: string) => {

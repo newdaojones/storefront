@@ -16,7 +16,7 @@ import {getAppMetadata, getSdkError} from "@walletconnect/utils";
 import {getPublicKeysFromAccounts} from '../helpers/solana';
 import {useDispatch} from 'react-redux';
 import {userAction} from '../store/actions';
-import {sleep} from '../utils';
+import {getCurrentMonthDateRange, sleep} from '../utils';
 import {toast} from 'react-toastify';
 import {AccountBalances, isExceptionUnrecoverable} from "../helpers";
 import {getRequiredNamespaces} from "../helpers/namespaces";
@@ -25,6 +25,7 @@ import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
 import {isMerchantUrl} from "../config/appconfig";
+import {IOrderDateRange} from "../models";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -336,7 +337,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
           localStorage.setItem(NDJ_ADDRESS, account);
 
           dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
-          dispatch(userAction.merchantLoginSuccess({address: address}));
+          const thisMonthRange: IOrderDateRange = getCurrentMonthDateRange();
+          dispatch(userAction.merchantLoginSuccess({address: address, dateRange: thisMonthRange}));
 
         } catch (err: any) {
           localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
