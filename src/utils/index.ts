@@ -73,13 +73,34 @@ export function isNumeric(n: any) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+
+
+export const getNowUTC = () => {
+  const now = new Date();
+  //console.debug(`timezone ${now.getTimezoneOffset()}`);
+  return new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+}
+
 export const getCurrentMonthDateRange = () : IOrderDateRange => {
-  const date = new Date();
+  const date = getNowUTC();
   const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
   const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  console.info(`first: ${firstDay.toLocaleString()} last: ${lastDay.toLocaleString()}`);
+  firstDay.setUTCHours(0);
+  lastDay.setUTCHours(23)
+  lastDay.setUTCMinutes(59)
+  lastDay.setUTCSeconds(59)
+  lastDay.setUTCMilliseconds(999)
+  //console.info(`getCurrentMonthDateRange ${firstDay.toISOString()} last: ${lastDay.toISOString()}`);
+
   return {
     startDate: firstDay.toISOString(),
     endDate: lastDay.toISOString()
+  }
+}
+
+export const getDateRange = (start: string, end: string) : IOrderDateRange => {
+  return {
+    startDate: start,
+    endDate: end
   }
 }

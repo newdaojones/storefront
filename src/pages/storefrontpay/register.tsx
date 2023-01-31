@@ -128,9 +128,9 @@ export const RegisterMerchant = () => {
                         <div className="w-full flex flex-col p-4">
                             <button onClick={onRegister} className="w-full flex bg-primary justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden">
                                 <img className="w-8 h-8 mr-4" src={logoIcon} alt="" />
-                                <p className="font-righteous text-white">Register</p>
+                                <p className="font-righteous `">Register</p>
                             </button>
-                            <p className="font-montserrat text-center text-white mt-2 mb-10">Or connect directly with your Backpack</p>
+                            <p className="font-montserrat text-center  mt-2 mb-10">Or connect directly with your Backpack</p>
                         </div>
                     </div>
                     <p className="mx-10 text-center text-sm mb-10">Check out our integrations <a className="font-bold font-righteous"
@@ -143,19 +143,19 @@ export const RegisterMerchant = () => {
                 <div id="logo" className="flex items-center justify-center rounded-10xl overflow-hidden">
                     <img className="w-16 h-16" src={logoIcon} alt=""/>
                 </div>
-                <h1 className="text-white text-xl text-center font-bold mx-40 mt-10">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
+                <h1 className=" text-xl text-center font-bold mx-40 mt-10">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
 
                 <img className="w-16 h-16 mt-10" src={promo1} alt=""/>
-                <p className="text-white font-bold mt-4">Reach Millions of Users</p>
-                <p className="text-white text-center text-sm mt-4 mx-10">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
+                <p className=" font-bold mt-4">Reach Millions of Users</p>
+                <p className=" text-center text-sm mt-4 mx-10">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
 
                 <img className="w-16 h-16 mt-10" src={promo2} alt=""/>
-                <p className="text-white font-bold mt-4">Lowest Cost</p>
-                <p className="text-white text-center text-sm mt-4 mx-10">Pay zero transactions fees and save up to 85% on settlement fees. </p>
+                <p className=" font-bold mt-4">Lowest Cost</p>
+                <p className=" text-center text-sm mt-4 mx-10">Pay zero transactions fees and save up to 85% on settlement fees. </p>
 
                 <img className="w-16 h-16 mt-10" src={promo3} alt=""/>
-                <p className="text-white font-bold mt-4">Easy Integration</p>
-                <p className="text-white text-center text-sm mt-4 mx-10">Integrate with a few clicks using our SDK or plugins. No coding experience needed. </p>
+                <p className=" font-bold mt-4">Easy Integration</p>
+                <p className=" text-center text-sm mt-4 mx-10">Integrate with a few clicks using our SDK or plugins. No coding experience needed. </p>
             </div>
         </div>
     );

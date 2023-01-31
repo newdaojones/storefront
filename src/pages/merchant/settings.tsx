@@ -165,7 +165,7 @@ export const SettingsPage = () => {
           </div>
 
           <div className="flex w-full items-center justify-around py-1 pt-5 rounded">
-            <button className="flex w-40 bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4"
+            <button className="blackButton flex w-40 bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4"
                     onClick={onSaveSettings}>
               <p className="font-righteous">Save</p>
             </button>

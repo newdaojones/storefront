@@ -49,4 +49,6 @@ test('verify date to local timezone', async () => {
 test('verify date range', async () => {
   const dateRange = getCurrentMonthDateRange();
   console.log(`My date and time is = [${dateRange.startDate}, ${dateRange.endDate}]`);
+  expect(dateRange.startDate).toEqual("2023-01-01T00:00:00.000Z")
+  expect(dateRange.endDate).toEqual("2023-01-31T23:59:59.999Z")
 });

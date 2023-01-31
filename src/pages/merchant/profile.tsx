@@ -15,6 +15,8 @@ import useInterval from "@use-it/interval";
 import {userAction} from "../../store/actions";
 import {IMerchant} from "../../models";
 import {ETH_TOKEN, USDC_TOKEN} from "../../config/currencyConfig";
+import {getCurrentMonthDateRange} from "../../utils";
+import {DatePickerModal} from "../../components/dateRangePickerModal";
 
 export const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -26,17 +28,34 @@ export const ProfilePage = () => {
   const [totalEth, setTotalEth] = useState(0);
   const [totalUSD, setTotalUSD] = useState(0);
 
+  //FIXME add date range state
+  const [selectedDateRange, setSelectedDateRange] = useState(getCurrentMonthDateRange());
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [dateIndicator, setDateIndicator] = useState("Current Month");
+
   console.log(`merchant ${merchantInfo} add ${merchantInfo?.memberAddress} ${merchantInfo?.merchantName} totalUsd: ${merchantInfo?.totalInUsd}`);
 
   const refreshOrders = () => {
     setIsLoadingOrders(true);
     if (merchantInfo) {
       refreshOrdersForMerchant(merchantInfo);
+    } else {
+      console.warn(`no merchant info`)
     }
 
     setTimeout(() => {
       setIsLoadingOrders(false);
     }, 2000);
+  }
+
+  const selectionRange = {
+    startDate: new Date(),
+    endDate: new Date(),
+    key: 'selection',
+  }
+
+  const openCloseDatePicker = () => {
+    setIsDatePickerOpen(!isDatePickerOpen);
   }
 
   React.useEffect(() => {
@@ -61,9 +80,10 @@ export const ProfilePage = () => {
       setTotalUSD(totalUsd);
     }
   }, [merchantInfo]);
+
   function refreshOrdersForMerchant(merchantInfo: IMerchant) {
     console.log(`refreshing merchantInfo`)
-    dispatch(userAction.merchantLoginSuccess({address: merchantInfo.memberAddress}))
+    dispatch(userAction.merchantLoginSuccess({address: merchantInfo.memberAddress, dateRange: selectedDateRange}))
   }
 
   useInterval(() => {
@@ -75,18 +95,37 @@ export const ProfilePage = () => {
         setIsLoadingOrders(false);
       }, 2000);
     }
-  }, 30000);
+  }, 60000);
 
   let onEdit = () => {
   };
+
+  const onCloseDatePicker = () => {
+    console.info(`close date picker`)
+    setIsDatePickerOpen(false)
+  };
+  const onSelect = (start: string, end: string) => {
+    console.info(`onSelect date picker start: ${start} end: ${end}`)
+    setSelectedDateRange({
+      startDate: start,
+      endDate: end
+    });
+    setIsDatePickerOpen(false);
+    setDateIndicator(`${start.substring(0, 10)} - ${end.substring(0, 10)}`)
+
+    console.info(`refreshing orders`)
+    refreshOrders()
+  };
+
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="flex flex-col h-3/4 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-10 overflow-auto mr-8 text-black">
         <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
         <div className="flex flex-col items-center justify-center">
           <div className="mt-4 flex items-center justify-center">
-            <p className="text-sm">January 2023</p>
-            <img className="w-6 h-6 mr-2" src={ExpandArrow} alt="" />
+            <p className="text-sm">{dateIndicator}</p>
+            <img className="w-6 h-6 mr-2" src={ExpandArrow} onClick={openCloseDatePicker} alt="" />
+            <DatePickerModal onClose={onCloseDatePicker} onSelect={onSelect} open={isDatePickerOpen}/>
           </div>
           <p className=" px-10 mt-4 font-bold font-montserrat">Gross Sales</p>
           <p className="px-2 mt-4 mb-1 font-montserrat bg-black text-white rounded">USD</p>
@@ -106,7 +145,7 @@ export const ProfilePage = () => {
           {/*  </div>*/}
           {/*</div>*/}
         </div>
-        <div className="mt-4 bg-blueBackground rounded-xl">
+        <div className="mt-4 bg-blueBackground rounded-xl pb-6">
           <div className="flex items-center justify-center px-10 py-4">
             <p className="mt-1 py-2 text-xl font-bold font-righteous">Transaction History</p>
             <div className="flex items-center items-center" >

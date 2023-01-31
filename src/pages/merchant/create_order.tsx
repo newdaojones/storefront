@@ -264,7 +264,7 @@ export const CreateOrderPage = () => {
           {/*</div>*/}
 
           <div className="mt-10">
-            <button onClick={handleCreateOrder} disabled={!orderDataComplete} className="flex justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+            <button onClick={handleCreateOrder} disabled={!orderDataComplete} className="blackButton flex justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
               <p className="font-righteous">Create Order</p>
             </button>
           </div>
