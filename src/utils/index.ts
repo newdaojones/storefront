@@ -90,7 +90,9 @@ export const getCurrentMonthDateRange = () : IOrderDateRange => {
   lastDay.setUTCMinutes(59)
   lastDay.setUTCSeconds(59)
   lastDay.setUTCMilliseconds(999)
-  //console.info(`getCurrentMonthDateRange ${firstDay.toISOString()} last: ${lastDay.toISOString()}`);
+  console.info(`getCurrentMonthDateRange ${firstDay.toISOString()} last: ${lastDay.toISOString()}`);
+
+  console.warn(`date ${firstDay.toLocaleDateString()} last: ${lastDay.toISOString()}`);
 
   return {
     startDate: firstDay.toISOString(),
@@ -103,4 +105,15 @@ export const getDateRange = (start: string, end: string) : IOrderDateRange => {
     startDate: start,
     endDate: end
   }
+}
+
+export function formatDate(date: Date) {
+  const month = date.toLocaleString('default', { month: 'long' });
+  return (
+      [
+        month,
+        date.getDate(),
+        date.getFullYear(),
+      ].join(' ')
+  );
 }

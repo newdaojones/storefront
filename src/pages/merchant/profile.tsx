@@ -15,7 +15,7 @@ import useInterval from "@use-it/interval";
 import {userAction} from "../../store/actions";
 import {IMerchant, IOrderDateRange} from "../../models";
 import {ETH_TOKEN, USDC_TOKEN} from "../../config/currencyConfig";
-import {getCurrentMonthDateRange} from "../../utils";
+import {formatDate, getCurrentMonthDateRange} from "../../utils";
 import {DatePickerModal} from "../../components/dateRangePickerModal";
 
 export const ProfilePage = () => {
@@ -104,11 +104,15 @@ export const ProfilePage = () => {
     console.info(`close date picker`)
     setIsDatePickerOpen(false)
   };
-  const onSelect = (start: string, end: string) => {
+  const onSelect = (startDate: Date, endDate: Date) => {
+    const start = startDate.toISOString()
+    const end = endDate.toISOString()
     console.info(`onSelect date picker start: ${start} end: ${end}`)
 
     setIsDatePickerOpen(false);
-    setDateIndicator(`${start.substring(0, 10)} - ${end.substring(0, 10)}`)
+    const formattedStart = formatDate(startDate);
+    const formattedEnd = formatDate(endDate);
+    setDateIndicator(`${formattedStart} - ${formattedEnd}`)
     let newDateRange = {
       startDate: start,
       endDate: end

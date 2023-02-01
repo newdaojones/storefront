@@ -11,7 +11,7 @@ export const DatePickerModal = ({
 }: {
   open: boolean;
   onClose: () => void;
-  onSelect: (account: string, end: string) => void;
+  onSelect: (start: Date, end: Date) => void;
 }) => {
 
   const handleSelect = (ranges: any) => {
@@ -20,7 +20,7 @@ export const DatePickerModal = ({
     const end: Date = ranges.selection.endDate;
 
     console.warn(`ranges start: ${start} end: ${end}`);
-    onSelect(start.toISOString(), end.toISOString())
+    onSelect(start, end)
     // {
     //   selection: {
     //     startDate: [native Date Object],

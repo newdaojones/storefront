@@ -1,4 +1,4 @@
-import {getCurrentMonthDateRange, isNumeric} from "../utils";
+import {formatDate, getCurrentMonthDateRange, isNumeric} from "../utils";
 import {fromWad} from "../helpers";
 import {USDC_DECIMALS} from "../config/currencyConfig";
 import {BigNumber, utils} from "ethers";
@@ -49,6 +49,17 @@ test('verify date to local timezone', async () => {
 test('verify date range', async () => {
   const dateRange = getCurrentMonthDateRange();
   console.log(`My date and time is = [${dateRange.startDate}, ${dateRange.endDate}]`);
-  expect(dateRange.startDate).toEqual("2023-01-01T00:00:00.000Z")
-  expect(dateRange.endDate).toEqual("2023-01-31T23:59:59.999Z")
+  expect(dateRange.startDate).toEqual("2023-02-01T00:00:00.000Z")
+  expect(dateRange.endDate).toEqual("2023-02-28T23:59:59.999Z")
+
 });
+
+test('verify date format', async () => {
+  const date = new Date()
+  const result = formatDate(date);
+  console.log(`result ${result}`); //  👉️ "2022-03-07 16:10:22"
+  expect(result).toEqual("February 1 2023")
+
+});
+
+
