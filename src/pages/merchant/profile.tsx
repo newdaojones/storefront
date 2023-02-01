@@ -124,7 +124,7 @@ export const ProfilePage = () => {
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
-      <div className="flex flex-col h-3/4 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-6 overflow-auto mr-8 text-black">
+      <div className="flex flex-col h-4/5 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-6 overflow-auto mr-8 text-black">
         <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
         <div className="flex flex-col items-center justify-center">
           <div className="mt-4 flex items-center justify-center">
@@ -150,7 +150,7 @@ export const ProfilePage = () => {
           {/*  </div>*/}
           {/*</div>*/}
         </div>
-        <div className="mt-4 bg-blueBackground rounded-xl pb-6">
+        <div className="h-full mt-4 bg-blueBackground rounded-xl pb-6" style={{minHeight: '40%'}}>
           <div className="flex items-center justify-center px-4 py-4">
             <p className="mt-1 py-2 text-xl font-bold font-righteous">Transaction History</p>
             <div className="flex items-center items-center" >

@@ -15,6 +15,8 @@ import {payLink, transactionStatusLink} from "../utils/link_utils";
 import {ETH_TOKEN} from "../config/currencyConfig";
 import {currentRpcApi} from "../helpers/tx";
 import {printOrderTrackingId} from "../utils";
+import {Dropdown} from "./menu/dropdown";
+import {OrderDropdown} from "./orders/orderDropdown";
 
 const SAssetRow = {
     width: '100%',
@@ -22,7 +24,7 @@ const SAssetRow = {
     marginLeft: '8px',
     marginRight: '8px',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'between',
     verticalAlign: 'center',
     alignItems: 'center',
     color: 'black',
@@ -30,38 +32,31 @@ const SAssetRow = {
 const SAssetRowLeft = {
     display: 'flex',
     alignItems: 'start',
-    width: '35%',
+    width: '12%',
 };
 const Center = {
     alignSelf: 'center',
 };
 
-const SColumnLeft = {
-    alignItems: 'start',
-    paddingLeft: '10px',
-    width: '10%',
-};
 const SColumn = {
-    alignItems: 'end',
+    alignItems: 'start',
     padding: '4px',
-    width: 'max-content',
+    width: 'auto',
 };
 const SAssetName = {
-    display: 'flex',
     fontSize: '10',
 };
 
 const SPriceLimits = {
     display: 'flex',
-    alignItems: 'end',
+    alignItems: 'start',
     fontSize: 'smaller',
     alignSelf: 'center',
-    width: '22%',
 }
 
 const SLimitValues = {
     display: 'flex',
-    alignItems: 'right',
+    alignItems: 'center',
 };
 
 
@@ -189,26 +184,32 @@ const OrderRow = (props: any) => {
         </button>
     </ConfirmDialog>;
 
-    const icon = isTransactionConfirmed() ?
-        <a className="ml-4" target='_blank' rel="noreferrer"
-           href={transactionStatusLink(order.transactionHash!!, order.trackingId || "")}>
-            <img style={Center} className="w-8 h-8 mr-2 filter-black" src={ConfirmedIcon} alt="Status"/>
-        </a> :
-        <a className="ml-4" target='_blank' rel="noreferrer"
-           href={transactionFound ? transactionStatusLink(order.transactionHash!!, order.trackingId || "") :order.trackingId ? payLink(order.trackingId) : ''}>
-            <img style={Center} className="w-8 h-8 mr-2 filter-black" src={PendingIcon} alt=""/>
-        </a>
+    // const icon = isTransactionConfirmed() ?
+    //     <a className="ml-4" target='_blank' rel="noreferrer"
+    //        href={transactionStatusLink(order.transactionHash!!, order.trackingId || "")}>
+    //         <img style={Center} className="w-8 h-8 mr-2 filter-black" src={ConfirmedIcon} alt="Status"/>
+    //     </a> :
+    //     <a className="ml-4" target='_blank' rel="noreferrer"
+    //        href={transactionFound ? transactionStatusLink(order.transactionHash!!, order.trackingId || "") :order.trackingId ? payLink(order.trackingId) : ''}>
+    //         <img style={Center} className="w-8 h-8 mr-2 filter-black" src={PendingIcon} alt=""/>
+    //     </a>
 
     const orderLocalDate = new Date(order.updatedAt!! + "Z");
     const orderDate = `${orderLocalDate.getMonth() + 1}-${orderLocalDate.getDate()}-${orderLocalDate.getFullYear()}` || null;
     const orderTime = `${orderLocalDate.getHours()}:${orderLocalDate.getMinutes()}` || null;
 
     return (
-        <div className="bg-white rounded-md py-6 px-6" style={SAssetRow}>
-            {icon}
-            <div style={SAssetRowLeft}>
-                <div style={SColumnLeft}>
-                    <div className="" style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>
+        <div className="w-full h-full flex justify-between bg-white rounded-md py-6 px-6" style={SAssetRow}>
+            <div className="flex w-1/4">
+                <OrderDropdown
+                    onCancel={() => {}}
+                    onBlockExplorer={() => {}}
+                    onCopyHash={() => {}}
+                    onResendSMS={() => {}}
+                    onRevistLink={() => {}}
+                />
+                <div className="" style={SPriceLimits}>
+                    <div className="ml-4" style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>
                     {/*subtitle with hash or pending*/}
                     {/*<div className="flex text-xs overflow-hidden">*/}
                     {/*    {order.transactionHash && order.trackingId ?*/}
@@ -225,9 +226,9 @@ const OrderRow = (props: any) => {
             </div>
             <div style={SPriceLimits}>
                 <div style={SColumn}>
-                    <div style={SLimitValues}>
-                        <img className="w-6 h-6 mr-2" src={DollarIcon} alt=""/>
-                        {numeral(order.amount || 0).format('0,0.00')}
+                    <div className="mr-8" style={SLimitValues}>
+                        {/*<img className="w-6 h-6 mr-2" src={DollarIcon} alt=""/>*/}
+                        {`USD ${numeral(order.amount || 0).format('0,0.00')}`}
                     </div>
                     {order.transactionHash && order.trackingId ?
                         order.token === ETH_TOKEN ?
