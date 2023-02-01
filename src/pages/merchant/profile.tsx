@@ -120,7 +120,7 @@ export const ProfilePage = () => {
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
-      <div className="flex flex-col h-3/4 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-10 overflow-auto mr-8 text-black">
+      <div className="flex flex-col h-3/4 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-6 overflow-auto mr-8 text-black">
         <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
         <div className="flex flex-col items-center justify-center">
           <div className="mt-4 flex items-center justify-center">
@@ -147,7 +147,7 @@ export const ProfilePage = () => {
           {/*</div>*/}
         </div>
         <div className="mt-4 bg-blueBackground rounded-xl pb-6">
-          <div className="flex items-center justify-center px-10 py-4">
+          <div className="flex items-center justify-center px-4 py-4">
             <p className="mt-1 py-2 text-xl font-bold font-righteous">Transaction History</p>
             <div className="flex items-center items-center" >
               <img className="w-6 h-6 ml-2 cursor-pointer " title="Reload" style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
@@ -155,9 +155,10 @@ export const ProfilePage = () => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-around px-2">
-            <div className="flex  items-center justify-around  w-full overflow-auto  font-bold" style={{}}>
-              <div className="" style={{width:'12rem'}}>ORDER ID</div>
+          <div className="flex flex-col items-center justify-around px-1">
+            <div className="w-full flex items-center justify-between overflow-auto font-bold" style={{}}>
+              <div className=""></div>
+              <div className="" style={{width:'15%'}}>ORDER ID</div>
               <div className="">DATE</div>
               <div className="">TIME</div>
               <div className="">TOTAL</div>

@@ -16,8 +16,8 @@ creditcard {
   background-image: url(../images/creditcard.svg);
 }
 
-blackButton:enabled,
-blackButton[enabled]{
+.blackButton:enabled,
+.blackButton[enabled]{
   background-color: #000000;
   color: #FFFFFF;
   padding: 10px 20px;
@@ -25,8 +25,8 @@ blackButton[enabled]{
   cursor: pointer;
 }
 
-blackButton:disabled,
-blackButton[disabled]{
+.blackButton:disabled,
+.blackButton[disabled]{
   background-color: #FFFFFF;
   color: #9ca3af;
   padding: 10px 20px;

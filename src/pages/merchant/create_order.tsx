@@ -131,6 +131,7 @@ export const CreateOrderPage = () => {
       setTotalAmount(0);
       setOrderDescription('');
       setCustomerPhone('');
+      setCustomerEmail('');
       window.open(linkUrl, "_blank");
     }
   }, [currentOrder, orderCreated, dispatch]);
@@ -212,7 +213,7 @@ export const CreateOrderPage = () => {
 
           <div className="w-full flex items-center justify-between mt-10">
             <p className="w-full">Subtotal (USD)</p>
-            <input id='amount' name='amount' value={amount} min="0.01" max="399.99" type="number"
+            <input id='amount' name='amount' placeholder="40.50" value={amount} min="0.01" max="399.99" type="number"
                    className="w-4/5 bg-white bg-opacity-25 py-1 px-2 rounded" autoComplete="off" onChange={handleChange}/>
           </div>
 

@@ -30,7 +30,7 @@ const SAssetRow = {
 const SAssetRowLeft = {
     display: 'flex',
     alignItems: 'start',
-    width: '40%',
+    width: '35%',
 };
 const Center = {
     alignSelf: 'center',
@@ -38,8 +38,8 @@ const Center = {
 
 const SColumnLeft = {
     alignItems: 'start',
-    paddingLeft: '0px',
-    width: 'max-content',
+    paddingLeft: '10px',
+    width: '10%',
 };
 const SColumn = {
     alignItems: 'end',
@@ -190,11 +190,11 @@ const OrderRow = (props: any) => {
     </ConfirmDialog>;
 
     const icon = isTransactionConfirmed() ?
-        <a target='_blank' rel="noreferrer"
+        <a className="ml-4" target='_blank' rel="noreferrer"
            href={transactionStatusLink(order.transactionHash!!, order.trackingId || "")}>
             <img style={Center} className="w-8 h-8 mr-2 filter-black" src={ConfirmedIcon} alt="Status"/>
         </a> :
-        <a target='_blank' rel="noreferrer"
+        <a className="ml-4" target='_blank' rel="noreferrer"
            href={transactionFound ? transactionStatusLink(order.transactionHash!!, order.trackingId || "") :order.trackingId ? payLink(order.trackingId) : ''}>
             <img style={Center} className="w-8 h-8 mr-2 filter-black" src={PendingIcon} alt=""/>
         </a>
@@ -204,12 +204,11 @@ const OrderRow = (props: any) => {
     const orderTime = `${orderLocalDate.getHours()}:${orderLocalDate.getMinutes()}` || null;
 
     return (
-        <div className="bg-white rounded-md py-2 px-4" style={SAssetRow}>
+        <div className="bg-white rounded-md py-6 px-6" style={SAssetRow}>
             {icon}
             <div style={SAssetRowLeft}>
-
                 <div style={SColumnLeft}>
-                    <div style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>
+                    <div className="" style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>
                     {/*subtitle with hash or pending*/}
                     {/*<div className="flex text-xs overflow-hidden">*/}
                     {/*    {order.transactionHash && order.trackingId ?*/}
