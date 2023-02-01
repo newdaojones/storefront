@@ -125,7 +125,7 @@ export const ProfilePage = () => {
         <div className="flex flex-col items-center justify-center">
           <div className="mt-4 flex items-center justify-center">
             <p className="text-sm">{dateIndicator}</p>
-            <img className="w-6 h-6 mr-2" src={ExpandArrow} onClick={openCloseDatePicker} alt="" />
+            <img className="w-6 h-6 mr-2 cursor-pointer" src={ExpandArrow} onClick={openCloseDatePicker} alt="" />
             <DatePickerModal onClose={onCloseDatePicker} onSelect={onSelect} open={isDatePickerOpen}/>
           </div>
           <p className=" px-10 mt-4 font-bold font-montserrat">Gross Sales</p>
