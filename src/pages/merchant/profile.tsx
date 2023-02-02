@@ -150,7 +150,7 @@ export const ProfilePage = () => {
           {/*  </div>*/}
           {/*</div>*/}
         </div>
-        <div className="h-full mt-4 bg-blueBackground rounded-xl pb-6" >
+        <div className="h-full mt-4 bg-blueBackground rounded-xl pb-6 pr-4" >
           <div className="flex items-center justify-center px-4 py-4">
             <p className="mt-1 py-2 text-xl font-bold font-righteous">Transaction History</p>
             <div className="flex items-center items-center" >

@@ -15,12 +15,9 @@ import {payLink, transactionBlockExplorerLink, transactionStatusLink} from "../u
 import {ETH_TOKEN} from "../config/currencyConfig";
 import {currentRpcApi} from "../helpers/tx";
 import {printOrderTrackingId} from "../utils";
-import {Dropdown} from "./menu/dropdown";
 import {OrderDropdown} from "./orders/orderDropdown";
 import {toast} from "react-toastify";
-import withClickOutside from "./orders/withClickOutside";
 import ClickAwayListener from 'react-click-away-listener';
-import menuIcon from "../assets/images/pending_black.svg";
 
 const SAssetRow = {
     width: '100%',
