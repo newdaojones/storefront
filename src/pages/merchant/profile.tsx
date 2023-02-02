@@ -168,7 +168,7 @@ export const ProfilePage = () => {
               <div className="">TOTAL</div>
               <div className="">STATUS</div>
             </div>
-            <div className="grid min-w-max w-full overflow-auto" style={{}}>
+            <div className="grid w-full">
               {
                 merchantInfo?.orders && merchantInfo?.orders.length > 0 ?
                     merchantInfo?.orders.map(orderItem => (

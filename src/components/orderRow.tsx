@@ -18,6 +18,9 @@ import {printOrderTrackingId} from "../utils";
 import {Dropdown} from "./menu/dropdown";
 import {OrderDropdown} from "./orders/orderDropdown";
 import {toast} from "react-toastify";
+import withClickOutside from "./orders/withClickOutside";
+import ClickAwayListener from 'react-click-away-listener';
+import menuIcon from "../assets/images/pending_black.svg";
 
 const SAssetRow = {
     width: '100%',
@@ -75,6 +78,8 @@ const OrderRow = (props: any) => {
     const [ transactionFound, setTransactionFound ] = useState(false)
     const [ confirmed, setConfirmed ] = useState(false)
     const [ blockTransactionData, setBlockTransactionData ] = useState<TxDetails>()
+
+    const [ popupVisible, setPopupVisible ] = useState(false)
 
     const handleChange = (event: any) => {
         const name = event.target.name;
@@ -212,7 +217,16 @@ const OrderRow = (props: any) => {
         const linkUrl = transactionBlockExplorerLink(order.chainId, blockTransactionData?.hash!!)
         window.open(linkUrl, "_blank");
     }
+
     const popoverRef = useRef<HTMLDivElement>(null);
+
+    const handleClickAway = () => {
+        console.log('Maybe close the popup');
+        setPopupVisible(false);
+    };
+
+
+
 
     const orderLocalDate = new Date(order.updatedAt!! + "Z");
     const orderDate = `${orderLocalDate.getMonth() + 1}-${orderLocalDate.getDate()}-${orderLocalDate.getFullYear()}` || null;
@@ -221,15 +235,19 @@ const OrderRow = (props: any) => {
     return (
         <div className="w-full h-full flex justify-between bg-white rounded-md py-6 px-6" style={SAssetRow}>
             <div className="flex w-1/4" ref={popoverRef}>
-                <OrderDropdown
-                    popoverRefElement={popoverRef}
-                    transactionConfirmed={isTransactionConfirmed()}
-                    onCancel={() => {}}
-                    onBlockExplorer={blockExplorerLink}
-                    onCopyHash={copyHash}
-                    onResendSMS={() => {}}
-                    onRevistLink={revisitTransaction}
-                />
+                <ClickAwayListener onClickAway={handleClickAway}>
+                    {<OrderDropdown
+                        popoverRefElement={popoverRef.current!!}
+                        transactionConfirmed={isTransactionConfirmed()}
+                        onCancel={() => {}}
+                        onBlockExplorer={blockExplorerLink}
+                        onCopyHash={copyHash}
+                        onResendSMS={() => {}}
+                        onRevistLink={revisitTransaction}
+                    />
+                    }
+                </ClickAwayListener>
+
                 <div className="" style={SPriceLimits}>
                     <div className="ml-4" style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>
                     {/*subtitle with hash or pending*/}
