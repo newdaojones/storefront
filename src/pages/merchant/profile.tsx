@@ -17,6 +17,8 @@ import {IMerchant, IOrderDateRange} from "../../models";
 import {ETH_TOKEN, USDC_TOKEN} from "../../config/currencyConfig";
 import {formatDate, getCurrentMonthDateRange} from "../../utils";
 import {DatePickerModal} from "../../components/dateRangePickerModal";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 export const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -104,6 +106,24 @@ export const ProfilePage = () => {
     console.info(`close date picker`)
     setIsDatePickerOpen(false)
   };
+
+  const exportData = async () => {
+    console.warn(`exporting pdf...`)
+    const pdf = new jsPDF("portrait", "pt", "a4");
+    const element = document.querySelector("#pdf");
+    if (!element) {
+      console.warn("invalid pdf element");
+      return;
+    }
+    const data = await html2canvas(element as HTMLElement, {scale: 1.5});
+    const img = data.toDataURL("image/png");
+    const imgProperties = pdf.getImageProperties(img);
+    const pdfWidth = pdf.internal.pageSize.getWidth() * 0.9;
+    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+    pdf.addImage(img, "PNG", 10, 40, pdfWidth, pdfHeight);
+    pdf.save("merchant_orders.pdf");
+  };
+
   const onSelect = (startDate: Date, endDate: Date) => {
     const start = startDate.toISOString()
     const end = endDate.toISOString()
@@ -128,7 +148,7 @@ export const ProfilePage = () => {
         <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
         <div className="flex flex-col items-center justify-center">
           <div className="mt-4 flex items-center justify-center">
-            <p className="text-sm">{dateIndicator}</p>
+            <p className="text-sm cursor-pointer" onClick={openCloseDatePicker} >{dateIndicator}</p>
             <img className="w-6 h-6 mr-2 cursor-pointer" src={ExpandArrow} onClick={openCloseDatePicker} alt="" />
             <DatePickerModal onClose={onCloseDatePicker} onSelect={onSelect} open={isDatePickerOpen}/>
           </div>
@@ -154,13 +174,13 @@ export const ProfilePage = () => {
           <div className="flex items-center justify-center px-4 py-4">
             <p className="mt-1 py-2 text-xl font-bold font-righteous">Transaction History</p>
             <div className="flex items-center items-center" >
-              <img className="w-6 h-6 ml-2 cursor-pointer " title="Reload" style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
-              <img className="w-6 h-6 ml-2 cursor-pointer " title="Export" style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={ExportIcon} alt="Reload Orders" onClick={refreshOrders}/>
+              <img className="w-4 h-4 ml-2 cursor-pointer " title="Reload" style = {{animation: !isLoadingOrders ? '': 'spin 2s linear normal' }} src={RefreshIcon} alt="Reload Orders" onClick={refreshOrders}/>
+              <img className="w-5 h-5 ml-2 cursor-pointer " title="Export" src={ExportIcon} alt="Reload Orders" onClick={exportData}/>
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-around px-1">
-            <div className="w-full flex items-center justify-between overflow-auto font-bold" style={{}}>
+          <div id="pdf" className="flex flex-col items-center justify-around px-1">
+            <div className="w-full flex items-center justify-between overflow-auto font-bold pr-6 pb-2" style={{}}>
               <div className=""></div>
               <div className="" style={{width:'15%'}}>ORDER ID</div>
               <div className="">DATE</div>
