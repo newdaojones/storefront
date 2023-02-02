@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {IOrder} from "../models";
 import numeral from "numeral";
 import ETHIcon from '../assets/images/eth.svg';
@@ -11,12 +11,13 @@ import PendingIcon from '../assets/images/pending_black.svg';
 
 import ConfirmDialog from "./ConfirmDialogStyle";
 import {ellipseAddress, TxDetails} from "../helpers";
-import {payLink, transactionStatusLink} from "../utils/link_utils";
+import {payLink, transactionBlockExplorerLink, transactionStatusLink} from "../utils/link_utils";
 import {ETH_TOKEN} from "../config/currencyConfig";
 import {currentRpcApi} from "../helpers/tx";
 import {printOrderTrackingId} from "../utils";
 import {Dropdown} from "./menu/dropdown";
 import {OrderDropdown} from "./orders/orderDropdown";
+import {toast} from "react-toastify";
 
 const SAssetRow = {
     width: '100%',
@@ -194,19 +195,40 @@ const OrderRow = (props: any) => {
     //         <img style={Center} className="w-8 h-8 mr-2 filter-black" src={PendingIcon} alt=""/>
     //     </a>
 
+    const revisitTransaction = () => {
+        const transactionStatusUrl = transactionStatusLink(order.transactionHash!!, order.trackingId || "")
+        const transactionPayLink = order.trackingId ? payLink(order.trackingId) : ''
+        const revistLink = isTransactionConfirmed() ? transactionStatusUrl : transactionPayLink;
+        window.open(revistLink, "_blank");
+    }
+    const copyHash = () => {
+        const hash = order.transactionHash || "";
+        navigator.clipboard.writeText(hash);
+        toast.info("Copied", {
+            autoClose: 600,
+        })
+    }
+    const blockExplorerLink = () => {
+        const linkUrl = transactionBlockExplorerLink(order.chainId, blockTransactionData?.hash!!)
+        window.open(linkUrl, "_blank");
+    }
+    const popoverRef = useRef<HTMLDivElement>(null);
+
     const orderLocalDate = new Date(order.updatedAt!! + "Z");
     const orderDate = `${orderLocalDate.getMonth() + 1}-${orderLocalDate.getDate()}-${orderLocalDate.getFullYear()}` || null;
     const orderTime = `${orderLocalDate.getHours()}:${orderLocalDate.getMinutes()}` || null;
 
     return (
         <div className="w-full h-full flex justify-between bg-white rounded-md py-6 px-6" style={SAssetRow}>
-            <div className="flex w-1/4">
+            <div className="flex w-1/4" ref={popoverRef}>
                 <OrderDropdown
+                    popoverRefElement={popoverRef}
+                    transactionConfirmed={isTransactionConfirmed()}
                     onCancel={() => {}}
-                    onBlockExplorer={() => {}}
-                    onCopyHash={() => {}}
+                    onBlockExplorer={blockExplorerLink}
+                    onCopyHash={copyHash}
                     onResendSMS={() => {}}
-                    onRevistLink={() => {}}
+                    onRevistLink={revisitTransaction}
                 />
                 <div className="" style={SPriceLimits}>
                     <div className="ml-4" style={SAssetName}>{`${printOrderTrackingId(order)}`}</div>

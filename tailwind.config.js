@@ -31,6 +31,7 @@ module.exports = {
         footer: '#212134',
         backpackConnectBackground: '#D2CDFF',
         charcoal: '#1F1F1F',
+        greyedOut: '#626262'
 
       },
       boxShadow: {

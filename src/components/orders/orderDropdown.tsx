@@ -1,8 +1,10 @@
-import React, {useRef} from "react";
+import React, {RefObject, useRef} from "react";
 import {createPopper} from "@popperjs/core";
 import menuIcon from '../../assets/images/pending_black.svg';
 
 interface Props {
+    transactionConfirmed: boolean;
+    popoverRefElement: RefObject<HTMLDivElement>;
     onRevistLink?: () => void;
     onResendSMS?: () => void;
     onBlockExplorer: () => void;
@@ -10,9 +12,10 @@ interface Props {
     onCancel: () => void;
 }
 
-export const OrderDropdown = ({ onRevistLink = () => {}, onResendSMS = () => {}, onBlockExplorer = () => {}, onCopyHash = () => {}, onCancel = () => {}}: Props) => {
+export const OrderDropdown = ({ popoverRefElement, transactionConfirmed, onRevistLink = () => {}, onResendSMS = () => {}, onBlockExplorer = () => {}, onCopyHash = () => {}, onCancel = () => {}}: Props) => {
     const btnDropdownRef = useRef<HTMLImageElement>(null);
-    const popoverRef = useRef<HTMLDivElement>(null);
+    // const popoverRef = useRef<HTMLDivElement>(popoverRefElement);
+    const popoverRef = popoverRefElement;
     const color = 'white';
     const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
     const openDropdownPopover = () => {
@@ -77,29 +80,29 @@ export const OrderDropdown = ({ onRevistLink = () => {}, onResendSMS = () => {},
                             </p>
                             <div
                                 className={
-                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent cursor-pointer" +
-                                    (color === "white" ? " text-slate-700" : "text-white")
+                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
+                                    (transactionConfirmed ? " text-slate-700 cursor-pointer" : "text-greyedOut")
                                 }
-                                onClick={resendSMS}
+                                onClick={transactionConfirmed ? resendSMS : () => {}}
                             >
                                 Re-Send Order
                             </div>
                             <div
                                 className={
-                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent cursor-pointer" +
-                                    (color === "white" ? " text-slate-700" : "text-white")
+                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
+                                    (transactionConfirmed ? " text-slate-700 cursor-pointer" : "text-greyedOut")
                                 }
-                                onClick={blockExplorer}
+                                onClick={transactionConfirmed ? blockExplorer : () => {}}
                             >
                                 View on Block Explorer
                             </div>
 
                             <div
                                 className={
-                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent cursor-pointer" +
-                                    (color === "white" ? " text-slate-700" : "text-white")
+                                    "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
+                                    (transactionConfirmed ? " text-slate-700 cursor-pointer" : "text-greyedOut")
                                 }
-                                onClick={copyHash}
+                                onClick={transactionConfirmed ? copyHash : () => {}}
                             >
                                 Copy Hash
                             </div>
