@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import logoIcon from "../../assets/images/logo.svg";
 import {payLink} from "../../utils/link_utils";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder, selectMerchantInfo} from "../../store/selector";
@@ -201,8 +200,8 @@ export const CreateOrderPage = () => {
         <div className="w-full h-full flex items-center justify-center">
             <div
                 className="w-3/4 h-3/4 flex justify-center bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-20">
-                <div className="flex flex-col items-center justify-center mt-10">
-                    <p className=" text-center text-xl font-bold font-righteous text-center">Create Order</p>
+                <div className="flex flex-col items-center justify-center">
+                    <p className=" text-center text-xl font-bold font-montserrat text-center">Create Order</p>
                     <p className=" text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
 
                     {/*<div className="w-full flex items-center justify-between mt-10">*/}

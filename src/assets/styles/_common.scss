@@ -247,5 +247,5 @@ Toggle comp
    transform: translateX(100%);
    @apply border-white;
  }input:checked + .toggle-bg {
-    @apply bg-secondary border-secondary;
+    @apply bg-black border-black;
   }
