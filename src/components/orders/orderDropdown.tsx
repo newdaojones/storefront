@@ -28,11 +28,6 @@ export const OrderDropdown = ({ popoverRefElement, transactionConfirmed, onRevis
         }
     };
 
-    // React.useEffect(() => {
-    //     console.warn(`close popup`);
-    //     setDropdownPopoverShow(isVisible);
-    // }, [isVisible]);
-
     const closeDropdownPopover = () => {
         setDropdownPopoverShow(false);
     };
@@ -63,7 +58,7 @@ export const OrderDropdown = ({ popoverRefElement, transactionConfirmed, onRevis
                 <div className="w-full sm:w-6/12 md:w-4/12 px-4 min-w-max">
                     <div className="relative flex align-middle w-full">
                         <img
-                            className="w-8 h-8 font-bold uppercase text-sm hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 cursor-pointer"
+                            className="w-6 h-6 font-bold uppercase text-sm hover:shadow-lg outline-none focus:outline-none mr-1 my-1 ease-linear transition-all duration-150 cursor-pointer"
                             src={menuIcon} alt=""
                             ref={btnDropdownRef}
                             onClick={() => {
@@ -84,19 +79,19 @@ export const OrderDropdown = ({ popoverRefElement, transactionConfirmed, onRevis
                             >
                                 <p
                                     className={
-                                        "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent cursor-pointer" +
-                                        (color === "white" ? " text-slate-700" : "text-white")
+                                        "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent cursor-pointer " +
+                                        (" text-slate-700")
                                     }
                                     onClick={revistLink}
                                 >
-                                    Re-visit Order
+                                    Re-Visit Order
                                 </p>
                                 <div
                                     className={
                                         "text-xs py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
-                                        (transactionConfirmed ? " text-slate-700 cursor-pointer" : "text-greyedOut")
+                                        (!transactionConfirmed ? " text-slate-700 cursor-pointer" : "text-greyedOut")
                                     }
-                                    onClick={transactionConfirmed ? resendSMS : () => {}}
+                                    onClick={!transactionConfirmed ? resendSMS : () => {}}
                                 >
                                     Re-Send Order
                                 </div>
