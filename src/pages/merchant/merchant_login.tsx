@@ -10,8 +10,8 @@ export const MerchantLogin = () => {
     React.useEffect(() => {
         if (qrCodeUri) {
             const qrCode = new QRCodeStyling({
-                width: 255,
-                height: 255,
+                width: 270,
+                height: 270,
                 type: 'svg',
                 data: qrCodeUri,
                 dotsOptions: {

@@ -267,18 +267,20 @@ const OrderRow = (props: any) => {
                         {/*<img className="w-6 h-6 mr-2" src={DollarIcon} alt=""/>*/}
                         {`USD ${numeral(order.amount || 0).format('0,0.00')}`}
                     </div>
-                    {order.transactionHash && order.trackingId ?
-                        order.token === ETH_TOKEN ?
-                            <div style={SLimitValues}>
-                                <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>
-                                {numeral(order.nativeAmount || 0).format('0,0.000000')}
-                            </div>
-                            :
-                            <div style={SLimitValues}>
-                                <img className="w-6 h-6 mr-2" src={USDCIcon} alt=""/>
-                                {numeral(order.nativeAmount || 0).format('0,0.00')}
-                            </div>
-                        : ''}
+
+                    {/* USDC, ETH label for row */}
+                    {/*{order.transactionHash && order.trackingId ?*/}
+                    {/*    order.token === ETH_TOKEN ?*/}
+                    {/*        <div style={SLimitValues}>*/}
+                    {/*            <img className="w-6 h-6 mr-2" src={ETHIcon} alt=""/>*/}
+                    {/*            {numeral(order.nativeAmount || 0).format('0,0.000000')}*/}
+                    {/*        </div>*/}
+                    {/*        :*/}
+                    {/*        <div style={SLimitValues}>*/}
+                    {/*            <img className="w-6 h-6 mr-2" src={USDCIcon} alt=""/>*/}
+                    {/*            {numeral(order.nativeAmount || 0).format('0,0.00')}*/}
+                    {/*        </div>*/}
+                    {/*    : ''}*/}
                 </div>
             </div>
 
