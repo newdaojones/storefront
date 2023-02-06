@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import logoIcon from "../../assets/images/logo.svg";
 import {payLink} from "../../utils/link_utils";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentOrder, selectMerchantInfo} from "../../store/selector";

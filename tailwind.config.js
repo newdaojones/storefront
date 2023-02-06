@@ -17,6 +17,8 @@ module.exports = {
         '16xl': '64px',
         '10xl': '40px',
         '8xl': '40px 40px 0px 0px',
+        'left': '0.375rem 0 0 0.375rem',
+        'right': '0 0.375rem 0.375rem 0',
       },
       borderWidth: {
         1: '1px',
