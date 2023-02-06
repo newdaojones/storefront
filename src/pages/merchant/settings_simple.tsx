@@ -82,19 +82,20 @@ export const SettingsSimplePage = () => {
     return (
         <div className="w-full h-full flex items-center justify-center">
             <div
-                className="w-3/4 items-center justify-center bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-20 text-balck">
-                <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName} Settings`}</p>
+                className="w-3/4 justify-center bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-20 text-balck">
+                <p className=" text-xl font-bold font-montserrat text-center">{`${merchantInfo?.merchantName}'s Settings`}</p>
+                <p className=" text-center text-sm">{isBlockchainTestnetMode() ? 'Test Money' : 'Real Money'}</p>
 
                 <div className="flex flex-col items-center justify-between mt-4 px-14 bg-blueBackground rounded-xl">
 
                     <div className="w-full flex items-center justify-center mt-4 font-bold text-lg">
-                        <p className={"p-2 mt-4 mb-1 font-montserrat rounded-left " +
-                        (settingsTab == regular ? "text-white bg-black" : "text-black bg-white cursor-pointer")}
+                        <p className={"p-2 mt-4 mb-1 font-montserrat rounded-left border-1 " +
+                        (settingsTab == regular ? "text-white bg-black border-black" : "text-black border-black bg-white cursor-pointer")}
                            onClick={() => setSettingsTab(regular)}
                         >Regular</p>
 
-                        <p className={"p-2 mt-4 mb-1 font-montserrat rounded-right " +
-                        (settingsTab == advanced ? "text-white bg-black" : "text-black bg-white cursor-pointer")}
+                        <p className={"p-2 mt-4 mb-1 font-montserrat rounded-right border-1 " +
+                        (settingsTab == advanced ? "text-white border-black bg-black" : "text-black border-black bg-white cursor-pointer")}
                            onClick={() => setSettingsTab(advanced)}
                         >Advanced</p>
                     </div>
@@ -110,7 +111,7 @@ export const SettingsSimplePage = () => {
                             </div>
                         </div>
                         <div className="w-full flex items-center justify-between mt-4">
-                            <p className="font-bold text-center  mr-8">Merchant Name</p>
+                            <p className="font-bold text-center mr-8">Merchant Name</p>
                             <div className="flex items-center justify-center bg-white py-1 px-4 rounded">
                                 {merchantInfo?.merchantName}
                             </div>

@@ -145,7 +145,7 @@ export const ProfilePage = () => {
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="flex flex-col h-4/5 w-3/4 bg-contentBackground border-4 border-secondary rounded-10xl shadow-md p-6 overflow-auto mr-8 text-black">
-        <p className=" text-xl font-bold font-righteous text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
+        <p className=" text-xl font-bold font-montserrat text-center">{`${merchantInfo?.merchantName}'s Dashboard`}</p>
         <div className="flex flex-col items-center justify-center">
           <div className="mt-4 flex items-center justify-center">
             <p className="text-sm cursor-pointer" onClick={openCloseDatePicker} >{dateIndicator}</p>
