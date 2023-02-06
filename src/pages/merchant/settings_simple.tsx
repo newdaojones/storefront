@@ -88,13 +88,13 @@ export const SettingsSimplePage = () => {
 
                 <div className="flex flex-col items-center justify-between mt-4 px-14 bg-blueBackground rounded-xl">
 
-                    <div className="w-full flex items-center justify-center mt-4 font-bold text-lg">
-                        <p className={"p-2 mt-4 mb-1 font-montserrat rounded-left border-1 " +
+                    <div className="w-full flex items-center justify-center mt-2 font-bold text-sm">
+                        <p className={"px-2 py-1 mt-4 mb-1 font-montserrat rounded-left border-1 " +
                         (settingsTab == regular ? "text-white bg-black border-black" : "text-black border-black bg-white cursor-pointer")}
                            onClick={() => setSettingsTab(regular)}
                         >Regular</p>
 
-                        <p className={"p-2 mt-4 mb-1 font-montserrat rounded-right border-1 " +
+                        <p className={"px-2 py-1 mt-4 mb-1 font-montserrat rounded-right border-1 " +
                         (settingsTab == advanced ? "text-white border-black bg-black" : "text-black border-black bg-white cursor-pointer")}
                            onClick={() => setSettingsTab(advanced)}
                         >Advanced</p>
@@ -209,7 +209,7 @@ export const SettingsSimplePage = () => {
                         <button
                             className="blackButton flex w-40 bg-white justify-center items-center rounded-10xl overflow-hidden mt-8"
                             onClick={onSaveSettings}>
-                            <p className="font-righteous">Save</p>
+                            <p className="font-bold font-montserrat text-sm">Save</p>
                         </button>
                     </div>
 
