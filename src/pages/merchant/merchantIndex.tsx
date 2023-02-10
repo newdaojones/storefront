@@ -16,6 +16,7 @@ import {OrbitalMenu} from "../../components/menu/circular";
 import {MerchantLogin} from "./merchant_login";
 import {RegisterMerchant} from "../storefrontpay/register";
 import menuBackground from "../../assets/images/background/menu_background.svg";
+import {isBlockchainTestnetMode} from "../../config/appconfig";
 
 /**
  * http://localhost:3000/storefront/merchant
@@ -100,8 +101,9 @@ export const MerchantMain = () => {
             {
                 isLoading || isInitializing ?
                     <Landing text={isWaitingForApproval ? "Waiting for signature..." : "Loading..."}/>
-                    : account ? merchantLogin.merchantExists ? <MerchantDashboard/> : <RegisterMerchant/> :
-                    <MerchantLogin/>
+                    : account ?
+                        merchantLogin.merchantExists ? <MerchantDashboard/> : (isBlockchainTestnetMode() ? <RegisterMerchant/> : MerchantLogin ):
+                        <MerchantLogin/>
             }
             <AccountModal
                 account={account}

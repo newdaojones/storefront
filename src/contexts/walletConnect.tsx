@@ -24,7 +24,7 @@ import {currentRpcApi} from "../helpers/tx";
 import {UserService} from "../services";
 import axios from "../services/axios";
 import {useLocation} from "react-use";
-import {isMerchantUrl} from "../config/appconfig";
+import {isBlockchainTestnetMode, isMerchantUrl} from "../config/appconfig";
 import {IOrderDateRange} from "../models";
 
 const loadingTimeout = 5; // seconds
@@ -170,7 +170,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     if (!pathname && !hostname) {
       return;
     }
-    console.info(`checking pathname ${pathname} hostname: ${hostname}`);
+    //console.info(`checking pathname ${pathname} hostname: ${hostname}`);
 
     merchantLogin.isMerchantUser = isMerchantUrl(hostname, pathname ?? '');
     setMerchantLogin(merchantLogin);
@@ -292,6 +292,10 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
             const memberNonce = loginRes.data.nonce;
             if (!memberNonce) {
               console.warn("not a member")
+              if (!isBlockchainTestnetMode()) {
+                toast.error("Merchant address not whitelisted")
+                return;
+              }
               merchantLogin.merchantExists = false
             } else {
               console.warn("merchant does exist as a member");
