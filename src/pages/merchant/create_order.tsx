@@ -30,7 +30,7 @@ export const CreateOrderPage = () => {
 
     const [orderDataComplete, setOrderDataComplete] = useState(false);
 
-    const defaultPaymentMethod = OrderPaymentMethod.TRANSAK;
+    const defaultPaymentMethod = OrderPaymentMethod.CHECKOUT;
     const [paymentMethod, setPaymentMethod] = useState<OrderPaymentMethod>(defaultPaymentMethod);
     let currentOrder = useSelector(selectCurrentOrder);
 
@@ -263,6 +263,7 @@ export const CreateOrderPage = () => {
                             <select id='paymentMethod' name='paymentMethod' style={{alignItems: 'end'}}
                                     className="w-4/5 bg-white py-1 px-2 rounded "
                                     onChange={handleChange}>
+                                <option>{OrderPaymentMethod.CHECKOUT}</option>
                                 <option>{OrderPaymentMethod.TRANSAK}</option>
                                 <option>{OrderPaymentMethod.ONRAMPER}</option>
                                 <option>{OrderPaymentMethod.WYRE}</option>

@@ -72,7 +72,8 @@ export interface ITransactionInfo {
 export enum OrderPaymentMethod {
   WYRE="WYRE",
   TRANSAK="TRANSAK",
-  ONRAMPER="ONRAMPER"
+  ONRAMPER="ONRAMPER",
+  CHECKOUT="CHECKOUT"
 }
 
 //FIXME there's a bunch of payment related attributes (transactionHash, nativeAmount, chainId, etc), that are only there when an order is paid.
