@@ -4,7 +4,7 @@ import {toast} from "react-toastify";
 import {isDevMode} from "../config/flavorconfig";
 
 // BACKEND API URLs
-const devUrl = 'http://localhost:5000/';
+const devUrl = 'http://localhost:8080/';
 const testUrl = 'https://test-api.jxndao.com/';
 const prodUrl = 'https://api.jxndao.com/';
 

@@ -101,10 +101,10 @@ export const ConfirmationPage = () => {
                     },
                 },
                 cornersDotOptions: {
-                    color: 'rgb(0,255,139)',
+                    color: '#d2cdff',
                 },
                 cornersSquareOptions: {
-                    color: 'rgb(255,0,196)',
+                    color: '#00ff83',
                     type: 'extra-rounded',
                 },
                 backgroundOptions: {

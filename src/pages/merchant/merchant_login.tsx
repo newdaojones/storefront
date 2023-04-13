@@ -26,10 +26,10 @@ export const MerchantLogin = () => {
                     },
                 },
                 cornersDotOptions: {
-                    color: '#00ff83',
+                    color: '#d2cdff',
                 },
                 cornersSquareOptions: {
-                    color: '#7e18ff',
+                    color: '#00ff83',
                     type: 'extra-rounded',
                 },
                 backgroundOptions: {
