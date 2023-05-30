@@ -13,13 +13,14 @@ import {
   TransactionState
 } from '../../models';
 import { userState } from '../states/user.state';
-import {ParsedTx} from "../../helpers";
-import {EtherscanTx} from "../../rpc/etherscan-api";
+import { ParsedTx } from "../../helpers";
+import { EtherscanTx } from "../../rpc/etherscan-api";
 
 export const userReducer = createReducer<IUserState>(userState, {
   [userActionTypes.LOGIN_SUCCESS]: setLoginSuccessStatus,
   [userActionTypes.GET_ENS_NAME_SUCCESS]: setEnsNameStatus,
   [userActionTypes.GET_USER_INFO_SUCCESS]: setUserInfo,
+  [userActionTypes.GET_MERCHANT_INFO]: setLoading,
   [userActionTypes.GET_MERCHANT_INFO_SUCCESS]: setMerchantInfo,
   [userActionTypes.GET_PRICE_TICKERS_SUCCESS]: setTickersStatus,
   [userActionTypes.SET_TRANSACTION_IN_PROGRESS]: setTransactionInProgress,
@@ -33,9 +34,14 @@ export const userReducer = createReducer<IUserState>(userState, {
 
 function setLoginSuccessStatus(state: IUserState, { payload }: IAction<IAccountInfo>) {
   return produce(state, draft => {
-    draft.loading = false;
     draft.isLogged = true;
     draft.accountInfo = payload;
+  });
+}
+
+function setLoading(state: IUserState) {
+  return produce(state, draft => {
+    draft.loading = true;
   });
 }
 
@@ -69,9 +75,10 @@ function setUserInfo(state: IUserState, { payload }: IAction<IUserInfo>) {
   });
 }
 
-function setMerchantInfo(state: IUserState, { payload }: IAction<IMerchant>) {
+function setMerchantInfo(state: IUserState, { payload }: IAction<IMerchant | undefined>) {
   return produce(state, draft => {
     draft.merchantInfo = payload;
+    draft.loading = false
   });
 }
 

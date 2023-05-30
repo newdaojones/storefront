@@ -1,22 +1,21 @@
-import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import {AccountModal} from '../../components';
+import { AccountModal } from '../../components';
 
-import {MerchantDashboard} from './merchant_dashboard';
-import {Landing} from '../landing';
+import { MerchantDashboard } from './merchant_dashboard';
+import { Landing } from '../landing';
 
 import FindIcon from '../../assets/images/find.svg';
 import StorefrontIcon from '../../assets/images/storefront.svg';
 import SettingsIcon from '../../assets/images/settings.svg';
 
-import {selectEnsName} from '../../store/selector';
-import {useWalletConnectClient} from '../../contexts/walletConnect';
-import {OrbitalMenu} from "../../components/menu/circular";
-import {MerchantLogin} from "./merchant_login";
-import {RegisterMerchant} from "../storefrontpay/register";
+import { selectEnsName, selectMerchantInfo, selectUserLoading } from '../../store/selector';
+import { useWalletConnectClient } from '../../contexts/walletConnect';
+import { OrbitalMenu } from "../../components/menu/circular";
+import { MerchantLogin } from "./merchant_login";
+import { RegisterMerchant } from "../storefrontpay/register";
 import menuBackground from "../../assets/images/background/menu_background.svg";
-import {isBlockchainTestnetMode} from "../../config/appconfig";
 
 /**
  * http://localhost:3000/storefront/merchant
@@ -40,6 +39,8 @@ export const MerchantMain = () => {
         accounts,
         merchantLogin,
     } = useWalletConnectClient();
+    const merchantInfo = useSelector(selectMerchantInfo);
+    const userLoading = useSelector(selectUserLoading);
 
     const onSelectAccount = (item: string) => {
         setOpenSwitchAccount(false);
@@ -62,9 +63,9 @@ export const MerchantMain = () => {
     }, [initialized, connect, session]);
 
     let menuItems = [
-        {route: '/merchant/profile', icon: StorefrontIcon, text: "Dashboard"},
-        {route: '/merchant/order', icon: FindIcon, text: "Create Order"},
-        {route: '/merchant/settings', icon: SettingsIcon, text: "Settings"},
+        { route: '/merchant/profile', icon: StorefrontIcon, text: "Dashboard" },
+        { route: '/merchant/order', icon: FindIcon, text: "Create Order" },
+        { route: '/merchant/settings', icon: SettingsIcon, text: "Settings" },
     ];
 
     let ens = ensName;
@@ -74,36 +75,36 @@ export const MerchantMain = () => {
 
     return (
         <div className="h-screen w-screen flex">
-            {account && merchantLogin.merchantExists &&
-            <div>
-                <div className="flex items-center justify-between h-10"
-                     style={{
-                         width: '100%',
-                         minWidth: '200px',
-                         position: 'absolute',
-                         backgroundRepeat: 'no-repeat',
-                         backgroundSize: 'cover',
-                         backgroundImage: `url(${menuBackground})`,
-                     }}/>
+            {account && merchantLogin.merchantExists && !!merchantInfo &&
+                <div>
+                    <div className="flex items-center justify-between h-10"
+                        style={{
+                            width: '100%',
+                            minWidth: '200px',
+                            position: 'absolute',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: 'cover',
+                            backgroundImage: `url(${menuBackground})`,
+                        }} />
 
-                <OrbitalMenu
-                    status={isLoading ? 'Connecting...' : account ? 'Connected' : 'Disconnected'}
-                    onDisconnect={onDisconnect}
-                    onSelectAccount={() => setOpenSwitchAccount(true)}
-                    account={account}
-                    ensName={ens}
-                    items={menuItems}
-                    size={450}
-                    key={'orbMenu'}
-                />
-            </div>
+                    <OrbitalMenu
+                        status={isLoading ? 'Connecting...' : account ? 'Connected' : 'Disconnected'}
+                        onDisconnect={onDisconnect}
+                        onSelectAccount={() => setOpenSwitchAccount(true)}
+                        account={account}
+                        ensName={ens}
+                        items={menuItems}
+                        size={450}
+                        key={'orbMenu'}
+                    />
+                </div>
             }
             {
-                isLoading || isInitializing ?
-                    <Landing text={isWaitingForApproval ? "Waiting for signature..." : "Loading..."}/>
+                isLoading || isInitializing || userLoading ?
+                    <Landing text={isWaitingForApproval ? "Waiting for signature..." : "Loading..."} />
                     : account ?
-                        merchantLogin.merchantExists ? <MerchantDashboard/> : (isBlockchainTestnetMode() ? <RegisterMerchant/> : MerchantLogin ):
-                        <MerchantLogin/>
+                        merchantLogin.merchantExists && merchantInfo ? <MerchantDashboard /> : <RegisterMerchant /> :
+                        <MerchantLogin />
             }
             <AccountModal
                 account={account}
@@ -115,4 +116,4 @@ export const MerchantMain = () => {
         </div>
     );
 }
-;
+    ;

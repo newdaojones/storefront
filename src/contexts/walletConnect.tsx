@@ -1,7 +1,7 @@
 import Client from '@walletconnect/sign-client';
-import {PairingTypes, SessionTypes} from '@walletconnect/types';
-import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react';
-import {PublicKey} from '@solana/web3.js';
+import { PairingTypes, SessionTypes } from '@walletconnect/types';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
 import moment from 'moment';
 import * as encoding from '@walletconnect/encoding';
 
@@ -12,20 +12,20 @@ import {
   DEFAULT_PROJECT_ID,
   DEFAULT_RELAY_URL,
 } from '../consts';
-import {getAppMetadata, getSdkError} from "@walletconnect/utils";
-import {getPublicKeysFromAccounts} from '../helpers/solana';
-import {useDispatch} from 'react-redux';
-import {userAction} from '../store/actions';
-import {getCurrentMonthDateRange, sleep} from '../utils';
-import {toast} from 'react-toastify';
-import {AccountBalances, isExceptionUnrecoverable} from "../helpers";
-import {getRequiredNamespaces} from "../helpers/namespaces";
-import {currentRpcApi} from "../helpers/tx";
-import {UserService} from "../services";
+import { getAppMetadata, getSdkError } from "@walletconnect/utils";
+import { getPublicKeysFromAccounts } from '../helpers/solana';
+import { useDispatch } from 'react-redux';
+import { userAction } from '../store/actions';
+import { getCurrentMonthDateRange, sleep } from '../utils';
+import { toast } from 'react-toastify';
+import { AccountBalances, isExceptionUnrecoverable } from "../helpers";
+import { getRequiredNamespaces } from "../helpers/namespaces";
+import { currentRpcApi } from "../helpers/tx";
+import { UserService } from "../services";
 import axios from "../services/axios";
-import {useLocation} from "react-use";
-import {isBlockchainTestnetMode, isMerchantUrl} from "../config/appconfig";
-import {IOrderDateRange} from "../models";
+import { useLocation } from "react-use";
+import { isBlockchainTestnetMode, isMerchantUrl } from "../config/appconfig";
+import { IOrderDateRange } from "../models";
 
 const loadingTimeout = 5; // seconds
 const SIGNATURE_PREFIX = 'NDJ_SIGNATURE_V2_';
@@ -92,7 +92,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   const [balances, setBalances] = useState<AccountBalances>({});
 
-  const merchantLoginInitialState = {isMerchantUser: false, merchantExists: false};
+  const merchantLoginInitialState = { isMerchantUser: false, merchantExists: false };
   const [merchantLogin, setMerchantLogin] = useState<MerchantLoginStatus>(merchantLoginInitialState);
   const [isMerchantAccount, setIsMerchantAccount] = useState<boolean | null>(null);
 
@@ -129,16 +129,16 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
     try {
 
       const arr = await Promise.all(
-          _accounts.map(async account => {
-            const [namespace, reference, address] = account.split(":");
-            const chainId = `${namespace}:${reference}`;
-            const assets = await currentRpcApi.getAccountBalance(address, chainId);
-            assets.forEach(asset =>
-                console.info(`account balance for chainId:${chainId} address:${address} \n
+        _accounts.map(async account => {
+          const [namespace, reference, address] = account.split(":");
+          const chainId = `${namespace}:${reference}`;
+          const assets = await currentRpcApi.getAccountBalance(address, chainId);
+          assets.forEach(asset =>
+            console.info(`account balance for chainId:${chainId} address:${address} \n
               --> balance = ${asset.symbol} ${asset.balance}`)
-            );
-            return { account, assets: assets };
-          }),
+          );
+          return { account, assets: assets };
+        }),
       );
 
       const balances: AccountBalances = {};
@@ -155,8 +155,8 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
 
   const onSessionConnected = useCallback(async (_session: SessionTypes.Struct) => {
     const allNamespaceAccounts = Object.values(_session.namespaces)
-        .map(namespace => namespace.accounts)
-        .flat();
+      .map(namespace => namespace.accounts)
+      .flat();
     const allNamespaceChains = Object.keys(_session.namespaces);
     setSession(_session);
     setChains(allNamespaceChains);
@@ -249,7 +249,7 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
         setAccount(account);
         localStorage.setItem(NDJ_ADDRESS, account);
 
-        dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
+        dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference }));
 
       } catch (err: any) {
         console.error(`login exception: ${err} ${err?.message}. Disconnecting...`)
@@ -270,95 +270,94 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
    * This should be used when we access the merchant app, as opposed to one step login when using the purchase app with no signature
    */
   const loginWithSignedNonce = useCallback(
-      async (account: string) => {
-        try {
-          setIsLoading(true);
+    async (account: string) => {
+      try {
+        setIsLoading(true);
 
 
-          if (account && isMerchantAccount === false) {
-            console.warn(`user trying to login account: ${account} as merchant when user is consumer`);
-            toast.info(`You are trying to login as merchant when already logged in as consumer with account: ${account}. Use disconnect if you want to use a new session. `);
-            setTimeout(() => {
-              window.location.assign('/');
-            }, 5000);
-            return;
-          }
-
-          const startTime = moment();
-          const [namespace, reference, address] = account.split(':');
-
-          try {
-            const loginRes = await UserService.loginApi(address);
-            const memberNonce = loginRes.data.nonce;
-            if (!memberNonce) {
-              console.warn("not a member")
-              if (!isBlockchainTestnetMode()) {
-                toast.error("Merchant address not whitelisted")
-                return;
-              }
-              merchantLogin.merchantExists = false
-            } else {
-              console.warn("merchant does exist as a member");
-              merchantLogin.merchantExists = true
-            }
-            setMerchantLogin(merchantLogin)
-          } catch (e) {
-            console.log(e)
-          }
-
-
-          const res = await UserService.nonceApi(address);
-          let nonce = res.data.nonce;
-
-          if (!nonce) {
-            console.warn(`registration nonce is not valid. exit`)
-            throw new Error(res.data.message);
-          }
-
-          let signature: string | null = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
-          if (!signature) {
-            setIsWaitingForApproval(true);
-            signature = await signNonce(account, nonce) || null;
-            setIsWaitingForApproval(false);
-          }
-          if (signature) {
-            axios.setAuthorizationToken(signature);
-            axios.setNonce(nonce);
-          } else {
-            toast("Invalid signature")
-            setIsWaitingForApproval(false);
-          }
-
-          const duration = moment.duration(moment().diff(startTime)).asSeconds();
-          const waitTime = loadingTimeout - duration;
-
-          if (waitTime > 0) {
-            await sleep(waitTime * 1000);
-          }
-
-          setIsMerchantAccount(true);
-          setAccount(account);
-          localStorage.setItem(NDJ_ADDRESS, account);
-
-          dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference}));
-          const thisMonthRange: IOrderDateRange = getCurrentMonthDateRange();
-          dispatch(userAction.merchantLoginSuccess({address: address, dateRange: thisMonthRange}));
-
-        } catch (err: any) {
-          localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
-          console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
-
-          if (showToasts) {
-            toast.error(`Error: ${err.message}.`);
-          }
-
-          disconnect().then(() => console.log(`disconnect done.`));
-
-        } finally {
-          setIsLoading(false);
+        if (account && isMerchantAccount === false) {
+          console.warn(`user trying to login account: ${account} as merchant when user is consumer`);
+          toast.info(`You are trying to login as merchant when already logged in as consumer with account: ${account}. Use disconnect if you want to use a new session. `);
+          setTimeout(() => {
+            window.location.assign('/');
+          }, 5000);
+          return;
         }
-      },
-      [client, session, merchantLogin]
+
+        const startTime = moment();
+        const [namespace, reference, address] = account.split(':');
+
+        try {
+          const loginRes = await UserService.loginApi(address);
+          const memberNonce = loginRes.data.nonce;
+          if (!memberNonce) {
+            console.warn("not a member")
+            if (!isBlockchainTestnetMode()) {
+              toast.error("Merchant address not whitelisted")
+              return;
+            }
+            merchantLogin.merchantExists = false
+          } else {
+            console.warn("merchant does exist as a member");
+            merchantLogin.merchantExists = true
+          }
+          setMerchantLogin(merchantLogin)
+        } catch (e) {
+          console.log(e)
+        }
+
+
+        const res = await UserService.nonceApi(address);
+        let nonce = res.data.nonce;
+
+        if (!nonce) {
+          console.warn(`registration nonce is not valid. exit`)
+          throw new Error(res.data.message);
+        }
+
+        let signature: string | null = localStorage.getItem(`${SIGNATURE_PREFIX}_${account}`) as string;
+        if (!signature) {
+          setIsWaitingForApproval(true);
+          signature = await signNonce(account, nonce) || null;
+          setIsWaitingForApproval(false);
+        }
+        if (signature) {
+          axios.setAuthorizationToken(signature);
+          axios.setNonce(nonce);
+        } else {
+          toast("Invalid signature")
+          setIsWaitingForApproval(false);
+        }
+
+        const duration = moment.duration(moment().diff(startTime)).asSeconds();
+        const waitTime = loadingTimeout - duration;
+
+        if (waitTime > 0) {
+          await sleep(waitTime * 1000);
+        }
+
+        setIsMerchantAccount(true);
+        setAccount(account);
+        localStorage.setItem(NDJ_ADDRESS, account);
+
+        dispatch(userAction.loginSuccess({ address: address, namespace: namespace, reference: reference }));
+        const thisMonthRange: IOrderDateRange = getCurrentMonthDateRange();
+        dispatch(userAction.merchantLoginSuccess({ address: address, dateRange: thisMonthRange }));
+      } catch (err: any) {
+        localStorage.removeItem(`${SIGNATURE_PREFIX}_${account}`);
+        console.error(`loginWithSignedNonce exception: ${err} ${err?.message}`)
+
+        if (showToasts) {
+          toast.error(`Error: ${err.message}.`);
+        }
+
+        disconnect().then(() => console.log(`disconnect done.`));
+
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [client, session, merchantLogin]
   );
 
   function disconnectAndReload() {
@@ -459,20 +458,20 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   }, [client, session]);
 
   const refreshBalances = useCallback(
-      async (_accounts: string[]) => {
-        try {
-          if (!client) {
-            throw new Error('WalletConnect is not initialized');
-          }
-          if (!session) {
-            throw new Error('Session is not connected');
-          }
-          await getAccountBalances(_accounts);
-        } catch (err: any) {
-          toast.error(`Error while refreshing balances: ${err.message}`);
+    async (_accounts: string[]) => {
+      try {
+        if (!client) {
+          throw new Error('WalletConnect is not initialized');
         }
-      },
-      [client, session]
+        if (!session) {
+          throw new Error('Session is not connected');
+        }
+        await getAccountBalances(_accounts);
+      } catch (err: any) {
+        toast.error(`Error while refreshing balances: ${err.message}`);
+      }
+    },
+    [client, session]
   );
 
   const switchAccount = useCallback(
@@ -499,11 +498,11 @@ export function WalletConnectProvider({ children }: { children: ReactNode | Reac
   );
 
   const enableToasts = useCallback(
-      async (enabled: boolean) => {
-        console.warn('enableToasts', enabled);
-        setShowToasts(enabled);
-      },
-      []
+    async (enabled: boolean) => {
+      console.warn('enableToasts', enabled);
+      setShowToasts(enabled);
+    },
+    []
   );
 
   const _subscribeToEvents = useCallback(

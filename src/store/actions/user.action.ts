@@ -1,4 +1,4 @@
-import {EUserActionTypes} from '../../enums';
+import { EUserActionTypes } from '../../enums';
 import {
   IAccountInfo,
   IMerchant,
@@ -10,8 +10,8 @@ import {
   TransactionState
 } from '../../models';
 import * as H from "history";
-import {toast} from "react-toastify";
-import {EtherscanTx} from "../../rpc/etherscan-api";
+import { toast } from "react-toastify";
+import { EtherscanTx } from "../../rpc/etherscan-api";
 
 //namespace, reference, address
 const loginSuccess = (payload: IAccountInfo) => {
@@ -28,7 +28,7 @@ const getAccountInfoSuccess = (payload: IUserInfo) => {
   };
 };
 
-const getMerchantInfoSuccess = (payload: IMerchant) => {
+const getMerchantInfoSuccess = (payload: IMerchant | undefined) => {
   return {
     type: EUserActionTypes.GET_MERCHANT_INFO_SUCCESS,
     payload,
@@ -65,7 +65,7 @@ const setTransactionInfoWallet = (payload: ITransactionInfo) => {
   };
 };
 
-const setCreateTransaction = (payload: { amount: number;  account: string; token: string, toAddress: string; orderTrackingId: string}) => {
+const setCreateTransaction = (payload: { amount: number; account: string; token: string, toAddress: string; orderTrackingId: string }) => {
   return {
     type: EUserActionTypes.SET_CREATE_TRANSACTION,
     payload
@@ -112,7 +112,7 @@ const setCreateMerchantSuccess = (payload: IMerchant) => {
 
 const updateMerchantSuccess = (payload: IMerchant) => {
   console.info(`updateMerchantSuccess order ${payload.merchantName} ${payload.memberAddress}`)
-  toast.success("Settings updated", {autoClose: 2000})
+  toast.success("Settings updated", { autoClose: 2000 })
   return {
     type: EUserActionTypes.UPDATE_MERCHANT_SUCCESS,
     payload
@@ -127,7 +127,7 @@ const getOrderSuccess = (payload: IOrder) => {
   };
 };
 
-const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionHash: string, nativeAmount: string, token: string }) => {
+const setOrderTransactionHash = (payload: { orderTrackingId: string, transactionHash: string, nativeAmount: string, token: string }) => {
   return {
     type: EUserActionTypes.SET_ORDER_TRANSACTION_HASH,
     payload
@@ -135,7 +135,7 @@ const setOrderTransactionHash = (payload: {orderTrackingId: string, transactionH
 };
 
 
-const merchantLoginSuccess = (payload: {address: string, dateRange: IOrderDateRange}) => {
+const merchantLoginSuccess = (payload: { address: string, dateRange: IOrderDateRange }) => {
   return {
     type: EUserActionTypes.GET_MERCHANT_INFO,
     payload
@@ -152,14 +152,14 @@ const createOrder = (payload: IOrder) => {
 const createMerchant = (payload: IMerchant, history: H.History) => {
   return {
     type: EUserActionTypes.CREATE_MERCHANT,
-    payload: {merchant: payload, history: history}
+    payload: { merchant: payload, history: history }
   };
 };
 
 const updateMerchant = (payload: IMerchant) => {
   return {
     type: EUserActionTypes.UPDATE_MERCHANT_SETTINGS,
-    payload: {merchant: payload}
+    payload: { merchant: payload }
   };
 };
 

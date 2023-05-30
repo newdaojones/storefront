@@ -1,18 +1,18 @@
-import {all, call, put, takeLatest} from 'redux-saga/effects';
-import {AxiosResponse} from 'axios';
-import {EUserActionTypes} from '../../enums';
-import {UserService} from '../../services';
-import {userAction} from '../actions';
-import {toast} from 'react-toastify';
-import {ens} from '../../utils/walletConnect';
-import {IMerchant, IOrder, IOrderDateRange, ITicker, ITransactionOrder} from '../../models';
-import {currentRpcApi, encodeTransaction, ITransaction} from "../../helpers/tx";
+import { all, call, put, takeLatest } from 'redux-saga/effects';
+import { AxiosResponse } from 'axios';
+import { EUserActionTypes } from '../../enums';
+import { UserService } from '../../services';
+import { userAction } from '../actions';
+import { toast } from 'react-toastify';
+import { ens } from '../../utils/walletConnect';
+import { IMerchant, IOrder, IOrderDateRange, ITicker, ITransactionOrder } from '../../models';
+import { currentRpcApi, encodeTransaction, ITransaction } from "../../helpers/tx";
 import * as H from "history";
-import {createBrowserHistory} from "history";
-import {getAccountChainId} from "../../utils";
-import {ParsedTx} from "../../helpers";
-import {etherscanGetAccountTransactions, EtherscanTx} from "../../rpc/etherscan-api";
-import {isBlockchainTestnetMode} from "../../config/appconfig";
+import { createBrowserHistory } from "history";
+import { getAccountChainId } from "../../utils";
+import { ParsedTx } from "../../helpers";
+import { etherscanGetAccountTransactions, EtherscanTx } from "../../rpc/etherscan-api";
+import { isBlockchainTestnetMode } from "../../config/appconfig";
 
 export function storageKey(storagePrefix: string): string {
   return `${storagePrefix}`;
@@ -67,18 +67,23 @@ function* watchGetEnsName(action: { type: EUserActionTypes; payload: string }) {
   }
 }
 
-function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: {address: string, dateRange: IOrderDateRange}}) {
+function* watchGetMerchantInfo(action: { type: EUserActionTypes; payload: { address: string, dateRange: IOrderDateRange } }) {
   try {
     console.log(`watchGetMerchantInfo`)
-    const res: AxiosResponse<IMerchant> = yield call(() => UserService.getMerchantInfoApi(action.payload.address, action.payload.dateRange));
-    yield put(userAction.getMerchantInfoSuccess(res.data));
+    const res: AxiosResponse<any> = yield call(() => UserService.getMerchantInfoApi(action.payload.address, action.payload.dateRange));
+
+    if (res.data.code !== 404) {
+    }
+    yield put(userAction.getMerchantInfoSuccess(res.data.code === 404 ? undefined : res.data));
+
   } catch (err: any) {
     console.error(`watchGetMerchantInfo ${err.message}`)
+    yield put(userAction.getMerchantInfoSuccess(undefined));
     //toast.error(err.message);
   }
 }
 
-function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: {orderTrackingId: string}}) {
+function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: { orderTrackingId: string } }) {
   try {
     console.log(`watchGetOrderInfo orderTrackingId: ${action.payload.orderTrackingId}`)
     const res: AxiosResponse<IOrder> = yield call(() => UserService.getOrderApi(action.payload.orderTrackingId));
@@ -89,7 +94,7 @@ function* watchGetOrderInfo(action: { type: EUserActionTypes; payload: {orderTra
   }
 }
 
-function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}) {
+function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder }) {
   try {
     const res: AxiosResponse<IOrder> = yield call(() => UserService.createNewOrder(action.payload.toAddress, action.payload));
     console.info(`calling create new order got externalOrderId: ${res.data.externalOrderId} amount ${res.data.amount} trackingId: ${res.data.trackingId}`)
@@ -100,7 +105,7 @@ function* watchCreateNewOrder(action: { type: EUserActionTypes; payload: IOrder}
   }
 }
 
-function* watchLinkOrderTransaction(action: { type: EUserActionTypes; payload: { orderTrackingId: string, transactionHash: string, nativeAmount: number, token: string }}) {
+function* watchLinkOrderTransaction(action: { type: EUserActionTypes; payload: { orderTrackingId: string, transactionHash: string, nativeAmount: number, token: string } }) {
   try {
     yield call(() => UserService.linkOrderTransaction(action.payload.orderTrackingId, action.payload.transactionHash, action.payload.nativeAmount, action.payload.token));
     //yield put(userAction.setLinkTransactionSuccess(res));
@@ -119,13 +124,13 @@ function* watchGetTickers() {
   }
 }
 
-function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {account: string; toAddress: string; amount: number, token: string, orderTrackingId: string }}) {
+function* watchCreateTransactions(action: { type: EUserActionTypes; payload: { account: string; toAddress: string; amount: number, token: string, orderTrackingId: string } }) {
   try {
     const res: ITransaction = yield call(() => encodeTransaction(action.payload.account, action.payload.toAddress, action.payload.amount,
-        action.payload.token, action.payload.orderTrackingId));
+      action.payload.token, action.payload.orderTrackingId));
 
     const chainId = getAccountChainId(action.payload.account);
-    const order : IOrder = {
+    const order: IOrder = {
       fees: 0,
       tip: 0,
       externalOrderId: "",
@@ -152,7 +157,7 @@ function* watchCreateTransactions(action: { type: EUserActionTypes; payload: {ac
   }
 }
 
-function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
+function* watchUnsetTransaction(action: { type: EUserActionTypes }) {
   try {
     yield put(userAction.setCreateTransactionSuccess(null));
     yield put(userAction.setCreateOrderSuccess(null));
@@ -161,7 +166,7 @@ function* watchUnsetTransaction(action: { type: EUserActionTypes}) {
   }
 }
 
-function* watchUnsetOrder(action: { type: EUserActionTypes}) {
+function* watchUnsetOrder(action: { type: EUserActionTypes }) {
   try {
     yield put(userAction.setCreateOrderSuccess(null));
   } catch (err: any) {
@@ -169,18 +174,18 @@ function* watchUnsetOrder(action: { type: EUserActionTypes}) {
   }
 }
 
-function* watchCreateMerchant(action: { type: EUserActionTypes; payload: {merchant: IMerchant, history: H.History}}) {
+function* watchCreateMerchant(action: { type: EUserActionTypes; payload: { merchant: IMerchant, history: H.History } }) {
   try {
     const res: AxiosResponse = yield call(() => UserService.createNewMerchant(action.payload.merchant)
-        // .catch(
-        // onrejectionhandled => {
-        //   console.warn(`called failed ${onrejectionhandled.response.data} ${onrejectionhandled.data}`);
-        //   if (onrejectionhandled && onrejectionhandled.includes("There's already a merchant for the same member")) {
-        //     action.payload.history.replace("/merchant/profile");
-        //   }
-        // }
-    // )
-  );
+      // .catch(
+      // onrejectionhandled => {
+      //   console.warn(`called failed ${onrejectionhandled.response.data} ${onrejectionhandled.data}`);
+      //   if (onrejectionhandled && onrejectionhandled.includes("There's already a merchant for the same member")) {
+      //     action.payload.history.replace("/merchant/profile");
+      //   }
+      // }
+      // )
+    );
     console.info(`createMerchant response ${res} ${res.status} ${res.data}`)
     if (res.status !== 200) {
       console.error(`error result in create new merchant`);
@@ -193,7 +198,7 @@ function* watchCreateMerchant(action: { type: EUserActionTypes; payload: {mercha
   }
 }
 
-function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: {merchant: IMerchant}}) {
+function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: { merchant: IMerchant } }) {
   try {
     const res: AxiosResponse = yield call(() => UserService.updateMerchantSettings(action.payload.merchant));
     console.info(`updateMerchant response ${res} ${res.status} ${res.data}`)
@@ -207,7 +212,7 @@ function* watchUpdateMerchant(action: { type: EUserActionTypes; payload: {mercha
   }
 }
 
-function* watchGetPendingTransactions(action: { type: EUserActionTypes; payload: { address: string, chainId: string}}) {
+function* watchGetPendingTransactions(action: { type: EUserActionTypes; payload: { address: string, chainId: string } }) {
   try {
     console.log(`watchGetPendingTransactions address: ${action.payload.address} chainId: ${action.payload.chainId}`)
 
