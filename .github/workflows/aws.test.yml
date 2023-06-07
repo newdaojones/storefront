@@ -27,6 +27,11 @@ jobs:
       run: |
         cp src/config/flavorconfig.test src/config/flavorconfig.tsx
 
+    - name: Link QR reader package
+      run: |
+        cd deps/react-qr-reader; yarn link
+        cd ../..; yarn link react-qr-reader
+    
     - name: Build
       run: |
         yarn install
