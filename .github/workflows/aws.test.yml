@@ -30,7 +30,7 @@ jobs:
     - name: Build
       run: |
         yarn install
-        yarn build
+        CI= yarn build
 
     - name: Publish
       uses: burnett01/rsync-deployments@5.2
