@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import logoIcon from '../../assets/images/logo.svg';
 import promo1 from '../../assets/images/promo_image_1.svg';
 import promo2 from '../../assets/images/promo_image_2.svg';
@@ -6,20 +6,21 @@ import promo3 from '../../assets/images/promo_image_3.svg';
 import confirmedIcon from '../../assets/images/confirmed.svg';
 import pendingIcon from '../../assets/images/loading.svg';
 
-import {useLocation} from "react-use";
-import {extractTransactionIdFromUrl, ITransactionStatus} from "../../utils/path_utils";
-import {useHistory} from "react-router-dom";
-import {currentRpcApi} from "../../helpers/tx";
-import {ellipseAddress, TxDetails} from "../../helpers";
-import {toast} from "react-toastify";
-import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentOrder} from "../../store/selector";
-import {userAction} from "../../store/actions";
+import { useLocation } from "react-use";
+import { extractTransactionIdFromUrl, ITransactionStatus } from "../../utils/path_utils";
+import { useHistory } from "react-router-dom";
+import { currentRpcApi } from "../../helpers/tx";
+import { ellipseAddress, TxDetails } from "../../helpers";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentOrder } from "../../store/selector";
+import { userAction } from "../../store/actions";
 import numeral from "numeral";
-import {transactionBlockExplorerLink} from "../../utils/link_utils";
+import { transactionBlockExplorerLink } from "../../utils/link_utils";
 import useInterval from "@use-it/interval";
-import {IOrder} from "../../models";
-import {printOrderTrackingId} from "../../utils";
+import { IOrder } from "../../models";
+import { printOrderTrackingId } from "../../utils";
+import { web3Service } from '../../rpc/web3Service';
 
 /**
  * Example URL
@@ -32,37 +33,28 @@ export const TransactionStatus = () => {
     let query = useLocation().search;
     const dispatch = useDispatch();
     const history = useHistory();
-    const [ transactionFound, setTransactionFound ] = useState(false)
-    const [ confirmed, setConfirmed ] = useState(false)
-    const [ blockTransactionData, setBlockTransactionData ] = useState<TxDetails>()
+    const [transactionFound, setTransactionFound] = useState(false)
+    const [confirmed, setConfirmed] = useState(false)
+    const [blockTransactionData, setBlockTransactionData] = useState<TxDetails>()
+    const [network, setNetwork] = useState<string>('')
 
-    const [ transactionId, setTransactionId ] = useState<ITransactionStatus | null>(null)
+    const [transactionId, setTransactionId] = useState<ITransactionStatus | null>(null)
 
     const currentOrder = useSelector(selectCurrentOrder)
 
-    const getTransactionDetails = (transaction: ITransactionStatus, order: IOrder) => {
-        const txDetailsPromise = currentRpcApi.getTransactionByHash(transaction.transactionId, order.chainId);
-        txDetailsPromise.then(
-            response => {
-                if (!response) {
-                    console.warn(`invalid response from transaction api ${response}`);
-                    return;
-                }
-                setBlockTransactionData(response);
-                if (response?.hash) {
-                    setTransactionFound(true);
-                } else {
-                    console.warn(`invalid hash from transaction api ${response} hash: ${response.hash}`);
-                }
+    const getTransactionDetails = async (transaction: ITransactionStatus, order: IOrder) => {
+        const res = await web3Service.getTransactionReceipt(transaction.transactionId);
 
-                if (response?.blockHash) {
-                    console.debug(`transaction block hash found. blockHash: ${response.blockHash}`);
-                    setConfirmed(true);
-                } else {
-                    console.debug(`blockHash from transaction api missing. not yet confirmed blockHash: ${response.blockHash} blockNumber: ${response.blockNumber}`);
-                }
-            }
-        )
+        if (!res) {
+            return
+        }
+
+        const receipt = res.receipt as unknown as TxDetails;
+
+        setNetwork(res.network)
+        setBlockTransactionData(receipt);
+        setTransactionFound(!!receipt?.transactionHash);
+        setConfirmed(!!receipt?.blockHash);
     }
 
     React.useEffect(() => {
@@ -76,7 +68,7 @@ export const TransactionStatus = () => {
                 if (transactionData.orderTrackingId && !currentOrder?.transactionHash) {
                     setTransactionId(transactionData);
                     console.info(`dispatch get order for trackingId ${transactionData.orderTrackingId}`)
-                    dispatch(userAction.getOrder({orderTrackingId: transactionData.orderTrackingId}));
+                    dispatch(userAction.getOrder({ orderTrackingId: transactionData.orderTrackingId }));
                     console.log(`transactionId: ${transactionId?.transactionId} response orderTrackingId: ${transactionData.orderTrackingId}  orderTrackingId: ${transactionId?.orderTrackingId} externalId: ${transactionId?.externalOrderId}`);
                 }
 
@@ -106,16 +98,16 @@ export const TransactionStatus = () => {
         }
     }, [transactionId, currentOrder, blockTransactionData]);
 
-    const blockExplorerLink = currentOrder && blockTransactionData?.hash ? transactionBlockExplorerLink(currentOrder.chainId, blockTransactionData?.hash!!) : '';
+    const blockExplorerLink = currentOrder && blockTransactionData?.transactionHash ? transactionBlockExplorerLink(network, blockTransactionData?.transactionHash!!) : '';
     return (
         <div className="h-screen w-screen flex twoColumnContainer text-charcoal">
             {/*Left Column*/}
             <div className="h-full w-full flex items-center justify-center flex-col bg-white shadow-md">
                 <div className="flex items-center justify-center pt-10">
-                    <img className="w-12 h-12" src={logoIcon} alt=""/>
+                    <img className="w-12 h-12" src={logoIcon} alt="" />
                     <div className="w-full flex flex-col p-4">
                         <h1 className="text-xl font-righteous">Storefront Pay</h1>
-                        <h1 className="text-sm ">{ currentOrder?.testnet ? 'Test Money' : 'Real Money'}</h1>
+                        <h1 className="text-sm ">{currentOrder?.testnet ? 'Test Money' : 'Real Money'}</h1>
                     </div>
                 </div>
 
@@ -151,27 +143,27 @@ export const TransactionStatus = () => {
                         <div className="w-3/4 flex justify-center items-center pb-4">
                             <div className="flex flex-col justify-center items-center pb-4">
                                 <p className="text-sm">Status</p>
-                                <p className="font-bold text-xl pl-4">{transactionFound ? (confirmed? `Confirmed`:`Pending Approval`) : `Transaction not found`}</p>
+                                <p className="font-bold text-xl pl-4">{transactionFound ? (confirmed ? `Confirmed` : `Pending Approval`) : `Transaction not found`}</p>
                             </div>
-                            <img className="w-20 h-20 ml-4" style = {{animation: confirmed ? '': `spin 3s linear infinite` }} src={confirmed? confirmedIcon: pendingIcon} alt="" />
+                            <img className="w-20 h-20 ml-4" style={{ animation: confirmed ? '' : `spin 3s linear infinite` }} src={confirmed ? confirmedIcon : pendingIcon} alt="" />
                         </div>
                     </div>
                 )}
 
-                <div className="text-xs mt-1 ">{transactionFound?
+                <div className="text-xs mt-1 ">{transactionFound ?
                     <div className="flex flex-col justify-center items-center">
                         <p>Transaction Hash</p>
                         <a href={blockExplorerLink}>
-                            <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.hash)}</p>
+                            <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.transactionHash)}</p>
                         </a>
                         <p className="pt-2">Native Amount</p>
                         <p>{`${numeral(currentOrder?.nativeAmount).format('0,0.000000')} ${currentOrder?.token}`}</p>
 
-                        { confirmed && blockTransactionData?.blockHash &&
+                        {confirmed && blockTransactionData?.blockHash &&
                             <div className="pt-2 flex flex-col justify-center items-center">
                                 <p>Block Hash</p>
                                 <a href={blockExplorerLink}>
-                                <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.blockHash)}</p>
+                                    <p className="cursor-pointer">{ellipseAddress(blockTransactionData?.blockHash)}</p>
                                 </a>
                             </div>
                         }
@@ -186,19 +178,19 @@ export const TransactionStatus = () => {
             {/*Right Column*/}
             <div className="w-full flex items-center justify-center flex-col py-10">
                 <div id="logo" className="flex items-center justify-center rounded-10xl overflow-hidden">
-                    <img className="w-16 h-16" src={logoIcon} alt=""/>
+                    <img className="w-16 h-16" src={logoIcon} alt="" />
                 </div>
                 <h1 className=" text-xl text-center font-bold mx-40 mt-10">Accept Crypto Payments and Drive Incremental Sales Now!</h1>
 
-                <img className="w-16 h-16 mt-10" src={promo1} alt=""/>
+                <img className="w-16 h-16 mt-10" src={promo1} alt="" />
                 <p className=" font-bold mt-4">Reach Millions of Users</p>
                 <p className=" text-center text-sm mt-4 mx-10">Access to millions of users using wallet apps, and capitalise on the world's largest adoption rate. </p>
 
-                <img className="w-16 h-16 mt-10" src={promo2} alt=""/>
+                <img className="w-16 h-16 mt-10" src={promo2} alt="" />
                 <p className=" font-bold mt-4">Lowest Cost</p>
                 <p className=" text-center text-sm mt-4 mx-10">Pay zero transactions fees and save up to 85% on settlement fees. </p>
 
-                <img className="w-16 h-16 mt-10" src={promo3} alt=""/>
+                <img className="w-16 h-16 mt-10" src={promo3} alt="" />
                 <p className=" font-bold mt-4">Easy Integration</p>
                 <p className=" text-center text-sm mt-4 mx-10">Integrate with a few clicks using our SDK or plugins. No coding experience needed. </p>
             </div>

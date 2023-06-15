@@ -105,6 +105,7 @@ export interface TxDetails {
   nonce: string;
   to: string;
   value: string;
+  transactionHash: string;
 }
 
 export interface GasPricesResponse {

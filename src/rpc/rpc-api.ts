@@ -1,8 +1,8 @@
-import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
+import { AssetData, ParsedTx, TxDetails } from "../helpers/types";
 import {
     EthereumXyzApi
 } from "./ethereumxyz-api";
-import {InfuraApi} from "./infura-api";
+import { InfuraApi } from "./infura-api";
 
 export interface RpcApi {
     getAccountBalance(address: string, chainId: string): Promise<AssetData[]>;

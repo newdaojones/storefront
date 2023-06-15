@@ -1,15 +1,15 @@
-import axios, {AxiosInstance} from "axios";
-import {AssetData, ParsedTx, TxDetails} from "../helpers/types";
-import {ethereumRpcUrl, polygonRpcUrl} from "../config/appconfig";
-import {web3} from "../utils/walletConnect";
-import {AbiInput, AbiOutput, AbiType, StateMutabilityType} from "web3-utils";
-import {getCurrency, PAY_WITH_USDC_ENABLED, USDC_TOKEN} from "../config/currencyConfig";
-import {toWad} from "../helpers";
-import {RpcApi} from "./rpc-api";
+import axios, { AxiosInstance } from "axios";
+import { AssetData, ParsedTx, TxDetails } from "../helpers/types";
+import { avalancheRpcUrl, polygonRpcUrl } from "../config/appconfig";
+import { avalancheWeb3 } from "../utils/walletConnect";
+import { AbiInput, AbiOutput, AbiType, StateMutabilityType } from "web3-utils";
+import { getCurrency, PAY_WITH_USDC_ENABLED, USDC_TOKEN } from "../config/currencyConfig";
+import { toWad } from "../helpers";
+import { RpcApi } from "./rpc-api";
 
 
-const ethInstance: AxiosInstance = axios.create({
-    baseURL: ethereumRpcUrl,
+const avalancheInstance: AxiosInstance = axios.create({
+    baseURL: avalancheRpcUrl,
     timeout: 30000, // 30 secs
     headers: {
         Accept: "application/json",
@@ -79,27 +79,27 @@ export const getERC20TransferData = async (fromAddress: string, toAddress: strin
     let minABI: AbiItem[] = [
         {
             "constant": true,
-            "inputs": [{"name": "_owner", "type": "address"}],
+            "inputs": [{ "name": "_owner", "type": "address" }],
             "name": "balanceOf",
-            "outputs": [{"name": "balance", "type": "uint256"}],
+            "outputs": [{ "name": "balance", "type": "uint256" }],
             "type": "function"
         },
         {
             "constant": true,
             "inputs": [],
             "name": "decimals",
-            "outputs": [{"name": "", "type": "uint8"}],
+            "outputs": [{ "name": "", "type": "uint8" }],
             "type": "function"
         },
         {
             "constant": false,
-            "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}],
+            "inputs": [{ "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" }],
             "name": "transfer",
-            "outputs": [{"name": "", "type": "bool"}],
+            "outputs": [{ "name": "", "type": "bool" }],
             "type": "function"
         }
     ];
-    const contract = new web3.eth.Contract(minABI, currency?.contractAddress, {from: fromAddress});
+    const contract = new avalancheWeb3.eth.Contract(minABI, currency?.contractAddress, { from: fromAddress });
     console.debug(`got contract instance ${contract}`)
     const _value = toWad(sendAmount.toString(), currency?.decimals);
     console.info(`send amount ${sendAmount} toWad -> ${_value} for ${token} with decimals: ${currency?.decimals}`)
@@ -117,11 +117,11 @@ export async function infuraGetCustomTokenAccountBalance(address: string, token:
     }
 
     let minABI: AbiItem[] = [
-        {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
-        {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"},
-        {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function"}
+        { "constant": true, "inputs": [{ "name": "_owner", "type": "address" }], "name": "balanceOf", "outputs": [{ "name": "balance", "type": "uint256" }], "type": "function" },
+        { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "name": "", "type": "uint8" }], "type": "function" },
+        { "constant": false, "inputs": [{ "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" }], "name": "transfer", "outputs": [{ "name": "", "type": "bool" }], "type": "function" }
     ];
-    const contract = new web3.eth.Contract(minABI, currency?.contractAddress);
+    const contract = new avalancheWeb3.eth.Contract(minABI, currency?.contractAddress);
     const balance = await contract.methods.balanceOf(address).call()
     await balance
     console.debug(`balance for custom token ${balance}`)
@@ -138,11 +138,11 @@ export async function infuraGetCustomTokenAccountBalance(address: string, token:
 }
 
 async function infuraGetEthAccountBalance(data: any): Promise<AssetData> {
-    const response = await ethInstance.post(
+    const response = await avalancheInstance.post(
         "",
         data
     );
-    const {result} = response.data;
+    const { result } = response.data;
     //FIXME this constants should go to the currency stuff
     const assetData = {
         symbol: "ETH",
@@ -159,7 +159,7 @@ async function infuraGetPolygonAccountBalance(data: any): Promise<AssetData> {
         "",
         data
     );
-    const {result} = response.data;
+    const { result } = response.data;
     //FIXME this constants should go to the currency stuff
     const assetData = {
         symbol: "MATIC",
@@ -184,11 +184,11 @@ export const getPendingTransactions = async (address: string, chainId: string): 
         "params": ["newPendingTransactions"],
         "id": 1
     };
-    const response = await ethInstance.post(
+    const response = await avalancheInstance.post(
         "",
         data
     );
-    const {result} = response.data;
+    const { result } = response.data;
     console.info(`got getPendingTransactions: ${result}`)
     return result;
 }
@@ -207,11 +207,11 @@ export const infuraGetAccountTransactions = async (address: string, chainId: str
         "params": [address],
         "id": 1
     };
-    const response = await ethInstance.post(
+    const response = await avalancheInstance.post(
         "",
         data
     );
-    const {result} = response.data;
+    const { result } = response.data;
     console.info(`got nonce: ${result}`)
     return result;
 };
@@ -234,11 +234,11 @@ export const infuraGetTransactionByHash = async (hash: string, chainId: string):
         "params": [hash],
         "id": 1
     };
-    const response = await ethInstance.post(
+    const response = await avalancheInstance.post(
         "",
         data
     );
-    const {result} = response.data;
+    const { result } = response.data;
     console.info(`got trx details: ${result}`)
     return result;
 };
@@ -255,11 +255,11 @@ export const infuraGetAccountNonce = async (address: string, chainId: string): P
         "params": [address, "latest"],
         "id": 1
     };
-    const response = await ethInstance.post(
+    const response = await avalancheInstance.post(
         "",
         data
     );
-    const {result} = response.data;
+    const { result } = response.data;
     console.warn(`got nonce: ${result}`)
     return result;
 };
@@ -271,8 +271,8 @@ const infuraGetGasPrices = async (chainId: string): Promise<string> => {
         "params": [],
         "id": 1
     };
-    const response = await ethInstance.post('', data);
-    const {result} = response.data;
+    const response = await avalancheInstance.post('', data);
+    const { result } = response.data;
     console.debug(`infura got gas price for chainId ${chainId} response ${result}`);
     return result;
 };

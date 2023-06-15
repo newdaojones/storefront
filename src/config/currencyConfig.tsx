@@ -1,5 +1,5 @@
-import {formatFixed} from "@ethersproject/bignumber";
-import {BigNumber} from "ethers";
+import { formatFixed } from "@ethersproject/bignumber";
+import { BigNumber } from "ethers";
 
 export const ETH_TOKEN = 'ETH';
 export const ETH_DECIMALS = 18;
@@ -10,9 +10,11 @@ export const USDC_TOKEN = 'USDC';
 export const USDC_DECIMALS = 6;
 
 const USDCContractAddressGorli = "0x07865c6e87b9f70255377e024ace6630c1eaa37f"; //on ethereum gorli
+const USDCContractAddressFuji = "0x5425890298aed601595a70ab815c96711a31bc65"; //on avalanche fuji
 // const USDCContractAddressGorli = "0x179c54e1fea2cd75de3dc5fa61869b93d8c5b317"; //wyre USDC on ethereum gorli
 
 const USDCContractAddressMainnet = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //on ethereum mainnet also on goerli, but using the wyre one here.
+const USDCContractAddressAvalanche = "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e";
 
 //TODO need to be extended to polygon
 
@@ -30,8 +32,10 @@ export interface SupportedCurrency {
     contractAddress: string;
 }
 export const supportedCurrencies: SupportedCurrency[] = [
-    {chain: "eip155:5", token: USDC_TOKEN, decimals: USDC_DECIMALS, contractAddress: USDCContractAddressGorli},
-    {chain: "eip155:1", token: USDC_TOKEN, decimals: USDC_DECIMALS, contractAddress: USDCContractAddressMainnet}
+    { chain: "eip155:5", token: USDC_TOKEN, decimals: USDC_DECIMALS, contractAddress: USDCContractAddressGorli },
+    { chain: "eip155:1", token: USDC_TOKEN, decimals: USDC_DECIMALS, contractAddress: USDCContractAddressMainnet },
+    { chain: "eip155:43113", token: USDC_TOKEN, decimals: USDC_DECIMALS, contractAddress: USDCContractAddressFuji },
+    { chain: "eip155:43114", token: USDC_TOKEN, decimals: USDC_DECIMALS, contractAddress: USDCContractAddressAvalanche },
 ];
 
 export function getCurrency(chainId: string, token: string): SupportedCurrency | null {

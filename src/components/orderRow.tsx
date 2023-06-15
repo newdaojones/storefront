@@ -1,6 +1,6 @@
 import * as React from "react";
-import {useRef, useState} from "react";
-import {IOrder} from "../models";
+import { useRef, useState } from "react";
+import { IOrder } from "../models";
 import numeral from "numeral";
 import ETHIcon from '../assets/images/eth.svg';
 import USDCIcon from '../assets/images/usdc.svg';
@@ -10,14 +10,15 @@ import ConfirmedIcon from '../assets/images/confirmed_black.svg';
 import PendingIcon from '../assets/images/pending_black.svg';
 
 import ConfirmDialog from "./ConfirmDialogStyle";
-import {ellipseAddress, TxDetails} from "../helpers";
-import {payLink, transactionBlockExplorerLink, transactionStatusLink} from "../utils/link_utils";
-import {ETH_TOKEN} from "../config/currencyConfig";
-import {currentRpcApi} from "../helpers/tx";
-import {printOrderTrackingId} from "../utils";
-import {OrderDropdown} from "./orders/orderDropdown";
-import {toast} from "react-toastify";
+import { ellipseAddress, TxDetails } from "../helpers";
+import { payLink, transactionBlockExplorerLink, transactionStatusLink } from "../utils/link_utils";
+import { ETH_TOKEN } from "../config/currencyConfig";
+import { currentRpcApi } from "../helpers/tx";
+import { printOrderTrackingId } from "../utils";
+import { OrderDropdown } from "./orders/orderDropdown";
+import { toast } from "react-toastify";
 import ClickAwayListener from 'react-click-away-listener';
+import { web3Service } from "../rpc/web3Service";
 
 const SAssetRow = {
     width: '100%',
@@ -62,7 +63,7 @@ const SLimitValues = {
 
 
 const OrderRow = (props: any) => {
-    const {asset} = props;
+    const { asset } = props;
     const order: IOrder = asset
     let initialState = {
         name: '',
@@ -72,46 +73,47 @@ const OrderRow = (props: any) => {
         formErrors: '',
     };
     const [inputs, setInputs] = useState(initialState);
-    const [ transactionFound, setTransactionFound ] = useState(false)
-    const [ confirmed, setConfirmed ] = useState(false)
-    const [ blockTransactionData, setBlockTransactionData ] = useState<TxDetails>()
+    const [transactionFound, setTransactionFound] = useState(false)
+    const [confirmed, setConfirmed] = useState(false)
+    const [blockTransactionData, setBlockTransactionData] = useState<TxDetails>()
+    const [network, setNetwork] = useState<string>('')
 
-    const [ popupVisible, setPopupVisible ] = useState(false)
+    const [popupVisible, setPopupVisible] = useState(false)
 
     const handleChange = (event: any) => {
         const name = event.target.name;
         const value = event.target.value;
-        setInputs(values => ({...values, [name]: value}))
+        setInputs(values => ({ ...values, [name]: value }))
     }
 
-    React.useEffect(() => {
-        if (order && order.transactionHash && !blockTransactionData) {
-            //instead of requiring an account, this should be a public page, and get the chain id from the order.
-            const txDetailsPromise = currentRpcApi.getTransactionByHash(order.transactionHash, order.chainId);
-            txDetailsPromise.then(
-                response => {
-                    if (!response) {
-                        console.warn(`invalid response from transaction api ${response}`);
-                        return;
-                    }
-                    setBlockTransactionData(response)
-                    if (response?.hash) {
-                        console.log(`transaction found. hash: ${response?.hash}`);
-                        setTransactionFound(true);
-                    } else {
-                        console.warn(`invalid hash from transaction api ${response} hash: ${response?.hash}`);
-                    }
-
-                    if (response?.blockHash) {
-                        console.log(`transaction block hash found. blockHash: ${response.blockHash}`);
-                        setConfirmed(true);
-                    } else {
-                        console.warn(`invalid blockHash from transaction api ${response} blockHash: ${response.blockHash} blockNumber: ${response.blockNumber}`);
-                    }
-                }
-            )
+    const getReceipt = React.useCallback(async () => {
+        if (!order?.transactionHash || blockTransactionData) {
+            return
         }
-    }, [order, blockTransactionData]);
+
+        const res = await web3Service.getTransactionReceipt(order?.transactionHash)
+
+        if (!res) {
+            return
+        }
+
+        setNetwork(res.network)
+
+        const receipt = res.receipt as unknown as TxDetails
+        setBlockTransactionData(receipt)
+
+        if (receipt.transactionHash) {
+            setTransactionFound(true);
+        }
+
+        if (receipt.blockHash) {
+            setConfirmed(true);
+        }
+    }, [order, blockTransactionData])
+
+    React.useEffect(() => {
+        getReceipt()
+    }, [getReceipt]);
 
     const onEditConfirmed = (): boolean => {
         // if (!(inputs.walletAddress || inputs.ensAddress)) {
@@ -134,56 +136,56 @@ const OrderRow = (props: any) => {
     }
 
     let editDepositorDialog = <ConfirmDialog onConfirm={() => onEditConfirmed()}
-                                             onCancel={() => {
-                                             }}
-                                             onShow={() => {
-                                                 console.log(`showing depositor edit dialog`)
-                                             }}
-                                             content={() => <div><p>Create</p></div>}
-                                             confirmButtonContent={'Edit'}
-                                             contentProps={
-                                                 <div>
-                                                     <p>Edit Transaction</p>
-                                                     <p className="text-red text-xs mt-4 w-60">{inputs.formErrors}</p>
-                                                     <form className="mt-4 text-sm">
-                                                         <fieldset>
-                                                             <div
-                                                                 className="flex items-center justify-between rounded">
-                                                                 <label>
-                                                                     <p>Name</p>
-                                                                     <input type="text"
-                                                                            className="mb-4 text-primary rounded p-2"
-                                                                            name="name" readOnly={true}
-                                                                            value={inputs.name || ""}
-                                                                     />
-                                                                 </label>
-                                                             </div>
-                                                             <label>
-                                                                 <p>ENS Address</p>
-                                                                 <input type="text"
-                                                                        className="mb-4 text-primary rounded p-2"
-                                                                        name="ensAddress"
-                                                                        value={inputs.ensAddress || ""}
-                                                                        onChange={handleChange}/>
-                                                             </label>
-                                                             <label>
-                                                                 <p>Wallet Address</p>
-                                                                 <input type="text"
-                                                                        className="mb-4 text-primary rounded p-2"
-                                                                        name="walletAddress"
-                                                                        value={inputs.walletAddress || ""}
-                                                                        onChange={handleChange}/>
-                                                             </label>
-                                                         </fieldset>
-                                                     </form>
-                                                 </div>
+        onCancel={() => {
+        }}
+        onShow={() => {
+            console.log(`showing depositor edit dialog`)
+        }}
+        content={() => <div><p>Create</p></div>}
+        confirmButtonContent={'Edit'}
+        contentProps={
+            <div>
+                <p>Edit Transaction</p>
+                <p className="text-red text-xs mt-4 w-60">{inputs.formErrors}</p>
+                <form className="mt-4 text-sm">
+                    <fieldset>
+                        <div
+                            className="flex items-center justify-between rounded">
+                            <label>
+                                <p>Name</p>
+                                <input type="text"
+                                    className="mb-4 text-primary rounded p-2"
+                                    name="name" readOnly={true}
+                                    value={inputs.name || ""}
+                                />
+                            </label>
+                        </div>
+                        <label>
+                            <p>ENS Address</p>
+                            <input type="text"
+                                className="mb-4 text-primary rounded p-2"
+                                name="ensAddress"
+                                value={inputs.ensAddress || ""}
+                                onChange={handleChange} />
+                        </label>
+                        <label>
+                            <p>Wallet Address</p>
+                            <input type="text"
+                                className="mb-4 text-primary rounded p-2"
+                                name="walletAddress"
+                                value={inputs.walletAddress || ""}
+                                onChange={handleChange} />
+                        </label>
+                    </fieldset>
+                </form>
+            </div>
 
-                                             }
-                                             cancelOnClickOutside={true}>
+        }
+        cancelOnClickOutside={true}>
         <button className="bg-black bg-opacity-10" onClick={() => {
             //selectDepositor(order)
         }}>
-            <img className="w-6 h-6" src={AccountEditIcon} alt=""/>
+            <img className="w-6 h-6" src={AccountEditIcon} alt="" />
         </button>
     </ConfirmDialog>;
 
@@ -211,7 +213,7 @@ const OrderRow = (props: any) => {
         })
     }
     const blockExplorerLink = () => {
-        const linkUrl = transactionBlockExplorerLink(order.chainId, blockTransactionData?.hash!!)
+        const linkUrl = transactionBlockExplorerLink(network, order.transactionHash!!)
         window.open(linkUrl, "_blank");
     }
 
@@ -236,10 +238,10 @@ const OrderRow = (props: any) => {
                     {<OrderDropdown
                         popoverRefElement={popoverRef.current!!}
                         transactionConfirmed={isTransactionConfirmed()}
-                        onCancel={() => {}}
+                        onCancel={() => { }}
                         onBlockExplorer={blockExplorerLink}
                         onCopyHash={copyHash}
-                        onResendSMS={() => {}}
+                        onResendSMS={() => { }}
                         onRevistLink={revisitTransaction}
                     />
                     }
@@ -285,7 +287,7 @@ const OrderRow = (props: any) => {
             </div>
 
             <div className="w-20 text-sm font-righteous">
-                <p>{transactionFound ? ( confirmed ? `Confirmed` : 'Pending Approval') : `Unpaid`}</p>
+                <p>{transactionFound ? (confirmed ? `Confirmed` : 'Pending Approval') : `Unpaid`}</p>
             </div>
 
         </div>

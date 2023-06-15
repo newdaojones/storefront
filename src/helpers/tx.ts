@@ -1,10 +1,10 @@
 import * as encoding from "@walletconnect/encoding";
-import {BigNumber, utils} from "ethers";
+import { BigNumber, utils } from "ethers";
 
-import {fromWad, toWad} from "./utilities";
-import {AccountBalances, ParsedTx} from "./types";
-import {web3} from "../utils/walletConnect";
-import {RpcApi, RpcSourceAdapter} from "../rpc/rpc-api";
+import { fromWad, toWad } from "./utilities";
+import { AccountBalances, ParsedTx } from "./types";
+import { avalancheWeb3 } from "../utils/walletConnect";
+import { RpcApi, RpcSourceAdapter } from "../rpc/rpc-api";
 import {
     ETH_DECIMALS,
     getCurrency,
@@ -13,8 +13,8 @@ import {
     USDC_DECIMALS,
     USDC_TOKEN
 } from "../config/currencyConfig";
-import {getERC20TransferData} from "../rpc/infura-api";
-import {EtherscanTx} from "../rpc/etherscan-api";
+import { getERC20TransferData } from "../rpc/infura-api";
+import { EtherscanTx } from "../rpc/etherscan-api";
 
 export const DEFAULT_GAS_LIMIT = 21000;
 export const currentRpcApi: RpcApi = new RpcSourceAdapter();
@@ -37,8 +37,8 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
     const bigN = BigNumber.from(_value.toString())
     const formatted = utils.formatUnits(bigN, "ether")
     console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
-    const val1 = web3.utils.hexToNumber(value);
-    const val2 = web3.utils.toDecimal(value);
+    const val1 = avalancheWeb3.utils.hexToNumber(value);
+    const val2 = avalancheWeb3.utils.toDecimal(value);
     const val3 = encoding.hexToNumber(value);
     console.debug(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
 }
@@ -126,7 +126,7 @@ async function encodeNativeTransaction(account: string, toAddress: string, sendA
  * @param orderTrackingId
  */
 async function encodeERC20Transaction(account: string, toAddress: string, sendAmount: number,
-                                             token: string, orderTrackingId: string): Promise<ITransaction> {
+    token: string, orderTrackingId: string): Promise<ITransaction> {
     console.warn(`encoding ERC20 trx for ${sendAmount} ${token}`);
     const [namespace, reference] = account.split(":");
     const chainId = `${namespace}:${reference}`;
@@ -170,7 +170,7 @@ async function encodeERC20Transaction(account: string, toAddress: string, sendAm
  * @param orderTrackingId
  */
 export async function encodeTransaction(account: string, toAddress: string, sendAmount: number,
-                                        token: string, orderTrackingId: string): Promise<ITransaction> {
+    token: string, orderTrackingId: string): Promise<ITransaction> {
     try {
         if (isUSDStableToken(token)) {
             return encodeERC20Transaction(account, toAddress, sendAmount, token, orderTrackingId);
@@ -185,12 +185,12 @@ export async function encodeTransaction(account: string, toAddress: string, send
 
 
 export const encodeNumberAsHex = (value: number): string => {
-    const hex3 = web3.utils.numberToHex(value);
+    const hex3 = avalancheWeb3.utils.numberToHex(value);
     return encoding.sanitizeHex(hex3);
 }
 
 export const getHexValueAsBigNumberUsingNumber = (value: string): string => {
-    const decoded = web3.utils.hexToNumber(value);
+    const decoded = avalancheWeb3.utils.hexToNumber(value);
     return utils.formatUnits(decoded, "ether")
 }
 

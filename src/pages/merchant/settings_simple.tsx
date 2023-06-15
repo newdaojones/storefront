@@ -1,23 +1,23 @@
-import React, {useState} from 'react';
-import {useDispatch, useSelector} from "react-redux";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import CopyIcon from '../../assets/images/copyIcon_black.svg';
-import {selectMerchantInfo} from "../../store/selector";
-import {getAddressFromAccount} from "@walletconnect/utils";
-import {useWalletConnectClient} from "../../contexts/walletConnect";
-import {ellipseAddress} from "../../helpers";
-import {userAction} from "../../store/actions";
-import {IMerchant} from "../../models";
-import {toast} from "react-toastify";
-import {PAY_WITH_USDC_ENABLED} from "../../config/currencyConfig";
-import {version} from '../../../package.json';
-import {isBlockchainTestnetMode} from "../../config/appconfig";
+import { selectMerchantInfo } from "../../store/selector";
+import { getAddressFromAccount } from "@walletconnect/utils";
+import { useWalletConnectClient } from "../../contexts/walletConnect";
+import { ellipseAddress } from "../../helpers";
+import { userAction } from "../../store/actions";
+import { IMerchant } from "../../models";
+import { toast } from "react-toastify";
+import { PAY_WITH_USDC_ENABLED } from "../../config/currencyConfig";
+import { version } from '../../../package.json';
+import { isBlockchainTestnetMode } from "../../config/appconfig";
 
 const regular: number = 0;
 const advanced: number = 1;
 
 export const SettingsSimplePage = () => {
     const dispatch = useDispatch();
-    const {enableToasts, session, account, disconnect} = useWalletConnectClient();
+    const { enableToasts, session, account, disconnect } = useWalletConnectClient();
     let merchantInfo = useSelector(selectMerchantInfo);
     const [enabled, setEnabled] = useState(true);
     const [settingsTab, setSettingsTab] = useState(regular);
@@ -25,7 +25,7 @@ export const SettingsSimplePage = () => {
 
     const onDisconnect = () => {
         console.info(`onDisconnect called`);
-        toast.info("Disconnecting...", {autoClose: 1000})
+        toast.info("Disconnecting...", { autoClose: 1000 })
         enableToasts(false).then(r => {
             session && disconnect(true).then(r => {
                 console.info(`disconnected`)
@@ -41,7 +41,7 @@ export const SettingsSimplePage = () => {
     };
 
     const logoutButton = <button onClick={onDisconnect}
-                                 className="flex w-40 bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
+        className="flex w-40 bg-white justify-center items-center rounded-10xl border border-solid border-t-2 border-slate-800 overflow-hidden mt-4">
         <p className="font-righteous">Logout</p>
     </button>
 
@@ -54,7 +54,7 @@ export const SettingsSimplePage = () => {
     const copyAddressToClipboard = () => {
         console.info(`copying to clipboard`);
         if (account) {
-            navigator.clipboard.writeText(getAddressFromAccount(account)).then(r => toast.success("Copied!", {autoClose: 1500}));
+            navigator.clipboard.writeText(getAddressFromAccount(account)).then(r => toast.success("Copied!", { autoClose: 1500 }));
         } else {
             console.warn("no account");
         }
@@ -90,13 +90,13 @@ export const SettingsSimplePage = () => {
 
                     <div className="w-full flex items-center justify-center mt-2 font-bold text-sm">
                         <p className={"px-2 py-1 mt-4 mb-1 font-montserrat rounded-left border-1 " +
-                        (settingsTab == regular ? "text-white bg-black border-black" : "text-black border-black bg-white cursor-pointer")}
-                           onClick={() => setSettingsTab(regular)}
+                            (settingsTab == regular ? "text-white bg-black border-black" : "text-black border-black bg-white cursor-pointer")}
+                            onClick={() => setSettingsTab(regular)}
                         >Regular</p>
 
                         <p className={"px-2 py-1 mt-4 mb-1 font-montserrat rounded-right border-1 " +
-                        (settingsTab == advanced ? "text-white border-black bg-black" : "text-black border-black bg-white cursor-pointer")}
-                           onClick={() => setSettingsTab(advanced)}
+                            (settingsTab == advanced ? "text-white border-black bg-black" : "text-black border-black bg-white cursor-pointer")}
+                            onClick={() => setSettingsTab(advanced)}
                         >Advanced</p>
                     </div>
 
@@ -107,7 +107,7 @@ export const SettingsSimplePage = () => {
                             <div className="flex items-center justify-center bg-white py-1 px-4 rounded">
                                 {`0x${ellipseAddress(merchantInfo?.memberAddress)}`}
                                 <img className="ml-4 w-4 h-4 cursor-pointer" src={CopyIcon}
-                                     onClick={copyAddressToClipboard}/>
+                                    onClick={copyAddressToClipboard} />
                             </div>
                         </div>
                         <div className="w-full flex items-center justify-between mt-4">
@@ -132,28 +132,36 @@ export const SettingsSimplePage = () => {
                             <p className="text-center font-bold  mr-8">Supported Chains</p>
 
                             <div className="flex flex-col justify-end bg-white py-1 px-2 rounded">
-
+                                <div className="flex items-center justify-end  py-1 px-2 rounded">
+                                    <div>{'Avalanche'}</div>
+                                    <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4">
+                                        <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true}
+                                            checked={true} />
+                                        <div
+                                            className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
+                                    </label>
+                                </div>
                                 <div className="flex items-center justify-end  py-1 px-2 rounded">
                                     <div>{'Ethereum'}</div>
                                     <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4">
                                         <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true}
-                                               checked={true}/>
+                                            checked={false} />
                                         <div
-                                            className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"/>
+                                            className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
                                     </label>
                                 </div>
 
                                 <div className="flex items-center justify-end py-1 px-2 rounded">
                                     <div>{'Polygon'}</div>
                                     <label htmlFor="toggle-tesnet"
-                                           className="flex items-center cursor-pointer relative ml-4">
+                                        className="flex items-center cursor-pointer relative ml-4">
                                         <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true}
-                                               checked={false}/>
+                                            checked={false} />
                                         <div
                                             className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"
                                             onClick={() => {
                                                 setPolygonEnabled(!polygonEnabled);
-                                            }}/>
+                                            }} />
                                     </label>
                                 </div>
                             </div>
@@ -168,20 +176,20 @@ export const SettingsSimplePage = () => {
                                     <div>{'ETH'}</div>
                                     <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4">
                                         <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true}
-                                               checked={true}/>
+                                            checked={true} />
                                         <div
-                                            className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"/>
+                                            className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
                                     </label>
                                 </div>
 
                                 <div className="flex items-center justify-end  py-1 px-2 rounded">
                                     <div>{'USDC'}</div>
                                     <label htmlFor="toggle-tesnet"
-                                           className="flex items-center cursor-pointer relative ml-4">
+                                        className="flex items-center cursor-pointer relative ml-4">
                                         <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true}
-                                               checked={PAY_WITH_USDC_ENABLED}/>
+                                            checked={PAY_WITH_USDC_ENABLED} />
                                         <div
-                                            className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"/>
+                                            className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full" />
                                     </label>
                                 </div>
                             </div>
@@ -192,10 +200,10 @@ export const SettingsSimplePage = () => {
                             <div className="flex items-center justify-center bg-white py-2 px-2 rounded">
                                 <label htmlFor="toggle-tesnet" className="flex items-center cursor-pointer relative">
                                     <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true}
-                                           checked={isBlockchainTestnetMode()}/>
+                                        checked={isBlockchainTestnetMode()} />
                                     <div
                                         className="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"
-                                        //onClick={() => {setEnabled(!enabled);}}
+                                    //onClick={() => {setEnabled(!enabled);}}
                                     />
                                     <span className="ml-3 text-sm ">{isBlockchainTestnetMode() ? 'ON' : 'OFF'}</span>
                                 </label>

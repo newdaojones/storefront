@@ -1,7 +1,8 @@
-import {APP_URL, isBlockchainTestnetMode, MERCHANT_APP_URL} from "../config/appconfig";
+import { APP_URL, isBlockchainTestnetMode, MERCHANT_APP_URL } from "../config/appconfig";
 
 export const DEFAULT_MAIN_CHAINS = [
-  "eip155:1",// ethereum mainnet
+  // "eip155:1",// ethereum mainnet
+  "eip155:43114", // Avalanche
   // "eip155:10",
   // "eip155:100",
   //"eip155:137",// polygon mainnet infura inodes requires that the account enters a payment method
@@ -13,7 +14,8 @@ export const DEFAULT_MAIN_CHAINS = [
 
 export const DEFAULT_TEST_CHAINS = [
   // testnets
-  "eip155:5",//ethereum gorli
+  // "eip155:5",//ethereum gorli
+  "eip155:43113", // Avalanche Fuji
   // "eip155:42",//ethereum kovan
   // "eip155:69",
   // "eip155:80001",//polygon mumbai
@@ -22,7 +24,7 @@ export const DEFAULT_TEST_CHAINS = [
   // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",
 ];
 
-export const DEFAULT_CHAINS = isBlockchainTestnetMode() ? DEFAULT_TEST_CHAINS: DEFAULT_MAIN_CHAINS;
+export const DEFAULT_CHAINS = isBlockchainTestnetMode() ? DEFAULT_TEST_CHAINS : DEFAULT_MAIN_CHAINS;
 
 // Wallet connect project ID
 export const DEFAULT_PROJECT_ID = 'f17194a7efd15ee24623a532ccff7c77';
@@ -67,7 +69,7 @@ export enum DEFAULT_COSMOS_METHODS {
   COSMOS_SIGN_AMINO = "cosmos_signAmino",
 }
 
-export enum DEFAULT_COSMOS_EVENTS {}
+export enum DEFAULT_COSMOS_EVENTS { }
 
 /**
  * SOLANA
@@ -77,4 +79,4 @@ export enum DEFAULT_SOLANA_METHODS {
   SOL_SIGN_MESSAGE = "solana_signMessage",
 }
 
-export enum DEFAULT_SOLANA_EVENTS {}
+export enum DEFAULT_SOLANA_EVENTS { }

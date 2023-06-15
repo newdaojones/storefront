@@ -1,20 +1,20 @@
-import React, {useState} from 'react';
-import {payLink} from "../../utils/link_utils";
-import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentOrder, selectMerchantInfo} from "../../store/selector";
-import {toast} from "react-toastify";
-import {IOrder, OrderPaymentMethod} from "../../models";
-import {isBlockchainTestnetMode} from "../../config/appconfig";
-import {userAction} from "../../store/actions";
-import {getAccountChainId, isNumeric} from "../../utils";
-import {useWalletConnectClient} from "../../contexts/walletConnect";
+import React, { useState } from 'react';
+import { payLink } from "../../utils/link_utils";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentOrder, selectMerchantInfo } from "../../store/selector";
+import { toast } from "react-toastify";
+import { IOrder, OrderPaymentMethod } from "../../models";
+import { isBlockchainTestnetMode } from "../../config/appconfig";
+import { userAction } from "../../store/actions";
+import { getAccountChainId, isNumeric } from "../../utils";
+import { useWalletConnectClient } from "../../contexts/walletConnect";
 
 const feesPercentage = 0.0499;
 
 export const CreateOrderPage = () => {
     const dispatch = useDispatch();
     let merchantInfo = useSelector(selectMerchantInfo);
-    const {account} = useWalletConnectClient();
+    const { account } = useWalletConnectClient();
     const [orderId, setOrderId] = useState('');
     const [amount, setAmount] = useState('');
     const [amountValue, setAmountValue] = useState(0);
@@ -97,7 +97,7 @@ export const CreateOrderPage = () => {
             console.info(`creating order ${orderInstance}`);
             dispatch(userAction.createOrder(orderInstance));
             setOrderCreated(true);
-            toast.info("Creating order...", {autoClose: 1500})
+            toast.info("Creating order...", { autoClose: 1500 })
 
         } catch (e) {
             console.warn(`error parsing amount: ${amount} -> ${e}`)
@@ -214,61 +214,61 @@ export const CreateOrderPage = () => {
                         <div className="w-full flex items-center justify-between mt-10">
                             <p className="w-full">Subtotal (USD)</p>
                             <input id='amount' name='amount' placeholder="40.50" value={amount} min="0.01" max="399.99"
-                                   type="number"
-                                   className="w-4/5 bg-white py-1 px-2 rounded" autoComplete="off"
-                                   onChange={handleChange}/>
+                                type="number"
+                                className="w-4/5 bg-white py-1 px-2 rounded" autoComplete="off"
+                                onChange={handleChange} />
                         </div>
 
                         <div className="w-full flex items-center justify-between mt-10 hidden">
                             <p className="w-full ">Tip</p>
                             <input id='tip' name='tip' value={tip} placeholder="0.50" step='0.50' min="0.01"
-                                   max="399.99" type="number"
-                                   className="w-4/5 bg-white  py-1 px-2 rounded" autoComplete="off"
-                                   onChange={handleChange}/>
+                                max="399.99" type="number"
+                                className="w-4/5 bg-white  py-1 px-2 rounded" autoComplete="off"
+                                onChange={handleChange} />
                         </div>
 
                         <div className="w-full flex items-center justify-between mt-10 hidden">
                             <p className="w-full ">Fees</p>
                             <input id='fees' name='fees' value={fees ? fees.toFixed(4) : '0'} type="number"
-                                   className="w-4/5 bg-white py-1 px-2 rounded" autoComplete="off"
-                                   readOnly={true}/>
+                                className="w-4/5 bg-white py-1 px-2 rounded" autoComplete="off"
+                                readOnly={true} />
                         </div>
 
                         <div className="w-full flex items-center justify-between mt-10 hidden">
                             <p className="w-full ">Total (USD)</p>
                             <input id='totalAmount' name='totalAmount'
-                                   value={totalAmount ? totalAmount.toFixed(4) : '-'} type="number"
-                                   className="w-4/5 bg-white bg-opacity-25 py-1 px-2 rounded" readOnly={true}/>
+                                value={totalAmount ? totalAmount.toFixed(4) : '-'} type="number"
+                                className="w-4/5 bg-white bg-opacity-25 py-1 px-2 rounded" readOnly={true} />
                         </div>
 
                         <div className="w-full flex items-center justify-between mt-10">
                             <p className="w-full ">Customer Phone</p>
                             <input id='customerPhone' name='customerPhone' value={customerPhone ?? ''} type="tel"
-                                   style={{alignItems: 'end'}} placeholder="+1234567890"
-                                   className="w-4/5 bg-white py-1 px-2 rounded " autoComplete="off"
-                                   onChange={handleChange}/>
+                                style={{ alignItems: 'end' }} placeholder="+1234567890"
+                                className="w-4/5 bg-white py-1 px-2 rounded " autoComplete="off"
+                                onChange={handleChange} />
                         </div>
 
                         <div className="w-full flex items-center justify-between mt-10">
                             <p className="w-full ">Customer Email</p>
                             <input id='customerEmail' name='customerEmail' value={customerEmail ?? ''} type="email"
-                                   style={{alignItems: 'end'}} placeholder="test@example.com"
-                                   className="w-4/5 bg-white  py-1 px-2 rounded " autoComplete="off"
-                                   onChange={handleChange}/>
+                                style={{ alignItems: 'end' }} placeholder="test@example.com"
+                                className="w-4/5 bg-white  py-1 px-2 rounded " autoComplete="off"
+                                onChange={handleChange} />
                         </div>
 
                         {customerPhone && customerPhone.length > 0 &&
-                        <div className="w-full flex items-center justify-between mt-10">
-                            <p className="w-full ">Fiat Provider</p>
-                            <select id='paymentMethod' name='paymentMethod' style={{alignItems: 'end'}}
+                            <div className="w-full flex items-center justify-between mt-10">
+                                <p className="w-full ">Fiat Provider</p>
+                                <select id='paymentMethod' name='paymentMethod' style={{ alignItems: 'end' }}
                                     className="w-4/5 bg-white py-1 px-2 rounded "
                                     onChange={handleChange}>
-                                <option>{OrderPaymentMethod.CHECKOUT}</option>
-                                <option>{OrderPaymentMethod.TRANSAK}</option>
-                                <option>{OrderPaymentMethod.ONRAMPER}</option>
-                                <option>{OrderPaymentMethod.WYRE}</option>
-                            </select>
-                        </div>}
+                                    <option>{OrderPaymentMethod.CHECKOUT}</option>
+                                    <option>{OrderPaymentMethod.TRANSAK}</option>
+                                    <option>{OrderPaymentMethod.ONRAMPER}</option>
+                                    <option>{OrderPaymentMethod.WYRE}</option>
+                                </select>
+                            </div>}
 
                         {/*<div className="w-full flex items-center justify-between mt-10">*/}
                         {/*  <p className="text-center text-white mr-8">Description</p>*/}
@@ -277,7 +277,7 @@ export const CreateOrderPage = () => {
 
                         <div className="mt-10">
                             <button onClick={handleCreateOrder} disabled={!orderDataComplete}
-                                    className="blackButton flex justify-center items-center rounded-10xl overflow-hidden mt-4 px-4">
+                                className="blackButton flex justify-center items-center rounded-10xl overflow-hidden mt-4 px-4">
                                 <p className="font-bold font-montserrat text-sm">Create Order</p>
                             </button>
                         </div>
