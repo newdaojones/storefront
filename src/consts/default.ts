@@ -2,10 +2,10 @@ import { APP_URL, isBlockchainTestnetMode, MERCHANT_APP_URL } from "../config/ap
 
 export const DEFAULT_MAIN_CHAINS = [
   // "eip155:1",// ethereum mainnet
-  "eip155:43114", // Avalanche
+  // "eip155:43114", // Avalanche
   // "eip155:10",
   // "eip155:100",
-  //"eip155:137",// polygon mainnet infura inodes requires that the account enters a payment method
+  "eip155:137",// polygon mainnet infura inodes requires that the account enters a payment method
   // "eip155:42161",
   // "eip155:42220",
   // "cosmos:cosmoshub-4",
@@ -15,10 +15,10 @@ export const DEFAULT_MAIN_CHAINS = [
 export const DEFAULT_TEST_CHAINS = [
   // testnets
   // "eip155:5",//ethereum gorli
-  "eip155:43113", // Avalanche Fuji
+  // "eip155:43113", // Avalanche Fuji
   // "eip155:42",//ethereum kovan
   // "eip155:69",
-  // "eip155:80001",//polygon mumbai
+  "eip155:80001",//polygon mumbai
   // "eip155:421611",
   // "eip155:44787",
   // "solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K",

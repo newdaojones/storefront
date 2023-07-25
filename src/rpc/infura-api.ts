@@ -1,21 +1,21 @@
 import axios, { AxiosInstance } from "axios";
 import { AssetData, ParsedTx, TxDetails } from "../helpers/types";
-import { avalancheRpcUrl, polygonRpcUrl } from "../config/appconfig";
-import { avalancheWeb3 } from "../utils/walletConnect";
+import { polygonRpcUrl } from "../config/appconfig";
+import { polygonWeb3 } from "../utils/walletConnect";
 import { AbiInput, AbiOutput, AbiType, StateMutabilityType } from "web3-utils";
 import { getCurrency, PAY_WITH_USDC_ENABLED, USDC_TOKEN } from "../config/currencyConfig";
 import { toWad } from "../helpers";
 import { RpcApi } from "./rpc-api";
 
 
-const avalancheInstance: AxiosInstance = axios.create({
-    baseURL: avalancheRpcUrl,
-    timeout: 30000, // 30 secs
-    headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-    },
-});
+// const avalancheInstance: AxiosInstance = axios.create({
+//     baseURL: avalancheRpcUrl,
+//     timeout: 30000, // 30 secs
+//     headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//     },
+// });
 
 const polygonInstance: AxiosInstance = axios.create({
     baseURL: polygonRpcUrl,
@@ -99,7 +99,7 @@ export const getERC20TransferData = async (fromAddress: string, toAddress: strin
             "type": "function"
         }
     ];
-    const contract = new avalancheWeb3.eth.Contract(minABI, currency?.contractAddress, { from: fromAddress });
+    const contract = new polygonWeb3.eth.Contract(minABI, currency?.contractAddress, { from: fromAddress });
     console.debug(`got contract instance ${contract}`)
     const _value = toWad(sendAmount.toString(), currency?.decimals);
     console.info(`send amount ${sendAmount} toWad -> ${_value} for ${token} with decimals: ${currency?.decimals}`)
@@ -121,7 +121,7 @@ export async function infuraGetCustomTokenAccountBalance(address: string, token:
         { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "name": "", "type": "uint8" }], "type": "function" },
         { "constant": false, "inputs": [{ "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" }], "name": "transfer", "outputs": [{ "name": "", "type": "bool" }], "type": "function" }
     ];
-    const contract = new avalancheWeb3.eth.Contract(minABI, currency?.contractAddress);
+    const contract = new polygonWeb3.eth.Contract(minABI, currency?.contractAddress);
     const balance = await contract.methods.balanceOf(address).call()
     await balance
     console.debug(`balance for custom token ${balance}`)
@@ -138,7 +138,7 @@ export async function infuraGetCustomTokenAccountBalance(address: string, token:
 }
 
 async function infuraGetEthAccountBalance(data: any): Promise<AssetData> {
-    const response = await avalancheInstance.post(
+    const response = await polygonInstance.post(
         "",
         data
     );
@@ -184,7 +184,7 @@ export const getPendingTransactions = async (address: string, chainId: string): 
         "params": ["newPendingTransactions"],
         "id": 1
     };
-    const response = await avalancheInstance.post(
+    const response = await polygonInstance.post(
         "",
         data
     );
@@ -207,7 +207,7 @@ export const infuraGetAccountTransactions = async (address: string, chainId: str
         "params": [address],
         "id": 1
     };
-    const response = await avalancheInstance.post(
+    const response = await polygonInstance.post(
         "",
         data
     );
@@ -234,7 +234,7 @@ export const infuraGetTransactionByHash = async (hash: string, chainId: string):
         "params": [hash],
         "id": 1
     };
-    const response = await avalancheInstance.post(
+    const response = await polygonInstance.post(
         "",
         data
     );
@@ -255,7 +255,7 @@ export const infuraGetAccountNonce = async (address: string, chainId: string): P
         "params": [address, "latest"],
         "id": 1
     };
-    const response = await avalancheInstance.post(
+    const response = await polygonInstance.post(
         "",
         data
     );
@@ -271,7 +271,7 @@ const infuraGetGasPrices = async (chainId: string): Promise<string> => {
         "params": [],
         "id": 1
     };
-    const response = await avalancheInstance.post('', data);
+    const response = await polygonInstance.post('', data);
     const { result } = response.data;
     console.debug(`infura got gas price for chainId ${chainId} response ${result}`);
     return result;

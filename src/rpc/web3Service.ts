@@ -1,8 +1,17 @@
-import { avalancheWeb3, ethereumWeb3 } from "../utils/walletConnect";
+import { avalancheWeb3, polygonWeb3, ethereumWeb3 } from "../utils/walletConnect";
 
 class Web3Service {
   async getTransactionReceipt(hash: string) {
     try {
+      const polygonReceipt = await polygonWeb3.eth.getTransactionReceipt(hash);
+
+      if (polygonReceipt) {
+        return {
+          network: 'polygon',
+          receipt: polygonReceipt
+        }
+      }
+
       const avalancheReceipt = await avalancheWeb3.eth.getTransactionReceipt(hash);
 
       if (avalancheReceipt) {

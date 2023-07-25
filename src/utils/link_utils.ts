@@ -30,6 +30,13 @@ export const transactionBlockExplorerLink = (network: string, transactionHash: s
       return `https://testnet.snowtrace.io/tx/${transactionHash}`
     }
     return `https://snowtrace.io/token/tx/${transactionHash}`
+  }
+
+  if (network === 'polygon') {
+    if (isTest) {
+      return `https://mumbai.polygonscan.com/tx/${transactionHash}`
+    }
+    return `https://polygonscan.com/token/tx/${transactionHash}`
 
   }
 

@@ -133,7 +133,7 @@ export const SettingsSimplePage = () => {
 
                             <div className="flex flex-col justify-end bg-white py-1 px-2 rounded">
                                 <div className="flex items-center justify-end  py-1 px-2 rounded">
-                                    <div>{'Avalanche'}</div>
+                                    <div>{'Polygon'}</div>
                                     <label htmlFor="toggle-tesnet" className="flex items-center relative ml-4">
                                         <input type="checkbox" id="toggle-example" className="sr-only" readOnly={true}
                                             checked={true} />

@@ -3,7 +3,7 @@ import { BigNumber, utils } from "ethers";
 
 import { fromWad, toWad } from "./utilities";
 import { AccountBalances, ParsedTx } from "./types";
-import { avalancheWeb3 } from "../utils/walletConnect";
+import { polygonWeb3 } from "../utils/walletConnect";
 import { RpcApi, RpcSourceAdapter } from "../rpc/rpc-api";
 import {
     ETH_DECIMALS,
@@ -37,8 +37,8 @@ function debugTransactionEncodingDecoding(_value: any, value: string) {
     const bigN = BigNumber.from(_value.toString())
     const formatted = utils.formatUnits(bigN, "ether")
     console.info(`transaction value: ${_value} number bigN: ${bigN} formatted: ${formatted} - hex: ${value}`)
-    const val1 = avalancheWeb3.utils.hexToNumber(value);
-    const val2 = avalancheWeb3.utils.toDecimal(value);
+    const val1 = polygonWeb3.utils.hexToNumber(value);
+    const val2 = polygonWeb3.utils.toDecimal(value);
     const val3 = encoding.hexToNumber(value);
     console.debug(`TRANS decoded value 1:${val1} 2:${val2} 3:${val3}`)
 }
@@ -185,12 +185,12 @@ export async function encodeTransaction(account: string, toAddress: string, send
 
 
 export const encodeNumberAsHex = (value: number): string => {
-    const hex3 = avalancheWeb3.utils.numberToHex(value);
+    const hex3 = polygonWeb3.utils.numberToHex(value);
     return encoding.sanitizeHex(hex3);
 }
 
 export const getHexValueAsBigNumberUsingNumber = (value: string): string => {
-    const decoded = avalancheWeb3.utils.hexToNumber(value);
+    const decoded = polygonWeb3.utils.hexToNumber(value);
     return utils.formatUnits(decoded, "ether")
 }
 
